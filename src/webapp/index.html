@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Real Time Forum</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+        <link rel="manifest" href="/images/favicon/site.webmanifest">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Barrio&display=swap" rel="stylesheet"> 
+        <link href="https://fonts.googleapis.com/css2?family=Barrio&family=Rubik:wght@300&display=swap" rel="stylesheet"> 
+
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <script src="https://kit.fontawesome.com/4c286e0ec9.js" crossorigin="anonymous"></script>
+        <div class="wrapper">
+            <div class="header">
+                <div class="login">Login</div>
+            </div>
+            <div class="clockWrapper">
+                <div id="clockBackground">
+                    <div id="hour"></div>
+                    <div id="minute"></div>
+                    <div id="second"></div>
+                </div>
+            </div>
+            <div class="posts">
+                <div class="newPost">
+                    <form action="/post" method="POST">
+                        <input type="text" name="title" placeholder="Title">
+                        <textarea name="content" placeholder="Content"></textarea>
+                        <input type="submit" value="Post">
+                    </form>
+                </div>
+                <div class="post">
+                    <div class="title">
+                        Post title nr 2
+                    </div>
+                    <div class="content">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam id purus et nunc suscipit consequat et ac ante. Phasellus euismod leo mauris, vel sodales ligula convallis sit amet. Morbi porta porttitor auctor. Duis sollicitudin massa et purus porttitor, nec pulvinar enim egestas. Nullam augue lectus, varius nec condimentum ac, luctus non magna.
+                    </div>
+                    <div class="author">
+                        User2
+                    </div>
+                    <div class="date">
+                        07/07/2022 18:32
+                    </div>
+                    <div class="comments">
+                        <i class="fa-regular fa-message"></i> 1
+                    </div>
+                </div>
+                <div class="post">
+                    <div class="title">
+                        Post title nr 1
+                    </div>
+                    <div class="content">
+                        In bibendum, turpis ac tristique luctus, turpis odio mattis nisi, vel vestibulum lacus ex a turpis. Nulla ultricies orci non mauris porta, eget vestibulum eros laoreet. Nullam eu erat justo. Cras in ornare magna. Etiam ultrices libero quis blandit porta. Pellentesque rutrum a purus nec sollicitudin. Integer diam nulla, pretium in rutrum vitae, pellentesque in odio. Pellentesque in euismod nisl. Mauris quis nulla et mi fermentum sodales. 
+                    </div>
+                    <div class="author">
+                        User1
+                    </div>
+                    <div class="date">
+                        07/07/2022 18:30
+                    </div>
+                    <div class="comments">
+                        <i class="fa-regular fa-message"></i> 0
+                    </div>
+                </div>
+            </div>
+            <div class="userlist">
+                <div class="online">
+                    <div class="online heading">
+                        Online: 2
+                    </div>
+                    <div class="userName">
+                        User1
+                    </div>
+                    <div class="userName">
+                        User2
+                    </div>
+                </div>
+                <div class="offline">
+                    <div class="offline heading">
+                        Offline: 5
+                    </div>
+                    <div class="userName">
+                        User3
+                    </div>
+                    <div class="userName">
+                        User4
+                    </div>
+                    <div class="userName">
+                        User5
+                    </div>
+                    <div class="userName">
+                        User6
+                    </div>
+                    <div class="userName">
+                        User7
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <script src="./app.js"></script>
+    </body>
+</html>

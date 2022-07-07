@@ -1,0 +1,105 @@
+body {
+    margin: 0;
+    background-color: rgb(208, 231, 240);
+    font-family: 'Rubik', sans-serif;
+}
+
+.wrapper {
+    margin: 0;
+    display: grid;
+    height: 100vh;
+    align-items: top;
+    grid-template-rows: [header] 5vh [title] 12vw [main] auto [footer] 5vh [row-end];
+    grid-template-columns: [col-start] 5vw [left-bar] 10vw [main-posts] auto [main-users] 20vw [right-bar] 5vw [col-end];
+}
+
+.clockWrapper {
+    grid-row: title / main;
+    grid-column: left-bar / right-bar;
+    display: flex;
+    width: 100%;
+    font-family: 'Barrio', cursive;
+    font-size: 8vw;
+    align-items: center;
+    justify-content: center;
+    line-height: 100%;
+    background-color: rgb(173, 208, 223);
+    margin: 0;
+}
+
+#clockBackground {
+    position: relative;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 1vw;
+    margin-bottom: 1vw;
+    height: 10vw;
+    /*to make the height and width responsive*/
+    width: 10vw;
+    background: url(/images/clock.png) no-repeat;
+    /*setting our background image*/
+    background-size: 100%;
+}
+
+.clockWrapper::before {
+    content: "RT F";
+}
+
+.clockWrapper::after {
+    content: "rum";
+}
+
+#hour,
+#minute,
+#second {
+    position: absolute;
+    background: black;
+    border-radius: 10px;
+    transform-origin: bottom;
+}
+  
+#hour {
+    width: 1.8%;
+    height: 15%;
+    top: 34.5%;
+    left: 48.85%;
+    opacity: 0.8;
+}
+  
+#minute {
+    width: 1.6%;
+    height: 20%;
+    top: 29.5%;
+    left: 48.9%;
+    opacity: 0.8;
+}
+  
+#second {
+    width: 1%;
+    height: 25%;
+    top: 24.5%;
+    left: 49.25%;
+    opacity: 0.8;
+}
+
+.header {
+    margin: 5px;
+    grid-row: header / title;
+    grid-column: left-bar / right-bar;
+    text-align: right;
+    background-color: rgb(129, 174, 193);
+}
+
+.posts {
+    margin: 5px;
+    grid-row: main / footer;
+    grid-column: main-posts / main-users;
+    background-color: rgb(216, 226, 230);
+}
+
+.userlist {
+    margin: 5px;
+    grid-row: main / footer;
+    grid-column: main-users / right-bar;
+    background-color: rgb(68, 119, 141);
+}
