@@ -141,6 +141,12 @@ img:hover {
     overflow: auto;
 }
 
+.newPostHeader {
+    font-weight: bold;
+    font-size: larger;
+    padding: 1%;
+}
+
 input {
     width: 98%;
     border-radius: 10px;
@@ -234,9 +240,39 @@ i {
 /* The users styling */
 
 .userlist {
-    padding: 10px;
+    padding: 2%;
     grid-row: main / footer;
     grid-column: main-users / right-bar;
     color: white;
+    background-color: #ddedf4;
+}
+
+.online,
+.offline {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 98%;
+    height: auto;
+    padding: 1%;
+    border-radius: 10px;
+    border: 1px solid grey;
+    box-shadow: 0px 3px lightgrey;
     background-color: #1181b2;
+}
+
+.offline {
+    color: lightgrey;
+}
+
+.heading {
+    width: 98%;
+    font-weight: bold;
+    font-size: larger;
+    background-color: #44449b;
+}
+
+.userName {
+    padding: 5px;
 }
