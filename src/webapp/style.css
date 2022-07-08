@@ -38,7 +38,7 @@ body {
 }
 
 .login:hover {
-    background-color: lightgrey;
+    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
 }
 
 .clockWrapper {
@@ -135,10 +135,21 @@ img:hover {
 
 .posts {
     padding: 10px;
+    display: flex;
+    flex-direction: column;
     grid-row: main / footer;
     grid-column: main-posts / main-users;
     background-color: rgb(216, 226, 230);
     overflow: auto;
+}
+
+.newPost {
+    display: flex;
+    flex-direction: column;
+    padding: 1%;
+    background-color: #ddedf4;
+    border-radius: 7px;
+    box-shadow: 2px 3px lightgray;
 }
 
 .newPostHeader {
@@ -161,11 +172,23 @@ textarea {
     padding: 1%;
 }
 
+.buttonWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 1%;
+}
+
 button {
     width: 25%;
     border: 1px solid gray;
     border-radius: 10px;
     padding: 1%;
+    align-self: flex-end;
+}
+
+button:hover {
+    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
 }
 
 .single-post {
@@ -208,7 +231,7 @@ button {
 
 .post-footer {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
 }
 
 .post-comments {
@@ -221,6 +244,7 @@ button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    align-self: flex-end;
 }
 
 .post-comments:hover {
@@ -235,6 +259,27 @@ i {
 .active {
     background-color: lightskyblue;
 }
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 10px;
+    border-radius: 7px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 7px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  } 
 
 
 /* The users styling */
