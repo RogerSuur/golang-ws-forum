@@ -27,47 +27,16 @@
                     <div id="second"></div>
                 </div>
             </div>
-            <div class="posts">
+            <div class="posts" id="posts">
                 <div class="newPost">
+                    <div class="newPostHeader">
+                        What's the time? Looks like it's New Post o'clock! Type your message:
+                    </div>
                     <form action="/post" method="POST">
                         <input type="text" name="title" placeholder="Title">
                         <textarea name="content" placeholder="Content"></textarea>
-                        <input type="submit" value="Post">
+                        <button type="submit">Post</button>
                     </form>
-                </div>
-                <div class="post">
-                    <div class="title">
-                        Post title nr 2
-                    </div>
-                    <div class="content">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam id purus et nunc suscipit consequat et ac ante. Phasellus euismod leo mauris, vel sodales ligula convallis sit amet. Morbi porta porttitor auctor. Duis sollicitudin massa et purus porttitor, nec pulvinar enim egestas. Nullam augue lectus, varius nec condimentum ac, luctus non magna.
-                    </div>
-                    <div class="author">
-                        User2
-                    </div>
-                    <div class="date">
-                        07/07/2022 18:32
-                    </div>
-                    <div class="comments">
-                        <i class="fa-regular fa-message"></i> 1
-                    </div>
-                </div>
-                <div class="post">
-                    <div class="title">
-                        Post title nr 1
-                    </div>
-                    <div class="content">
-                        In bibendum, turpis ac tristique luctus, turpis odio mattis nisi, vel vestibulum lacus ex a turpis. Nulla ultricies orci non mauris porta, eget vestibulum eros laoreet. Nullam eu erat justo. Cras in ornare magna. Etiam ultrices libero quis blandit porta. Pellentesque rutrum a purus nec sollicitudin. Integer diam nulla, pretium in rutrum vitae, pellentesque in odio. Pellentesque in euismod nisl. Mauris quis nulla et mi fermentum sodales. 
-                    </div>
-                    <div class="author">
-                        User1
-                    </div>
-                    <div class="date">
-                        07/07/2022 18:30
-                    </div>
-                    <div class="comments">
-                        <i class="fa-regular fa-message"></i> 0
-                    </div>
                 </div>
             </div>
             <div class="userlist">
@@ -105,6 +74,6 @@
             </div>
             
         </div>
-        <script src="./app.js"></script>
+        <script src="./app.js" type="module"></script>
     </body>
 </html>

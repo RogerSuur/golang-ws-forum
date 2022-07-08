@@ -5,12 +5,23 @@ body {
 }
 
 .wrapper {
-    margin: 0;
     display: grid;
     height: 100vh;
     align-items: top;
     grid-template-rows: [header] 5vh [title] 12vw [main] auto [footer] 5vh [row-end];
-    grid-template-columns: [col-start] 5vw [left-bar] 10vw [main-posts] auto [main-users] 20vw [right-bar] 5vw [col-end];
+    grid-template-columns: [col-start] auto [left-bar] 10vw [main-posts] 50vw [main-users] 20vw [right-bar] auto [col-end];
+}
+
+
+/* The header, title and the clock */
+
+.header {
+    padding: 10px;
+    grid-row: header / title;
+    grid-column: main-users / right-bar;
+    text-align: right;
+    background-color: rgb(129, 174, 193);
+    align-items: center;
 }
 
 .clockWrapper {
@@ -24,15 +35,11 @@ body {
     justify-content: center;
     line-height: 100%;
     background-color: rgb(173, 208, 223);
-    margin: 0;
 }
 
 #clockBackground {
     position: relative;
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 1vw;
-    margin-bottom: 1vw;
+    margin: 0 1vw;
     height: 10vw;
     /*to make the height and width responsive*/
     width: 10vw;
@@ -42,10 +49,12 @@ body {
 }
 
 .clockWrapper::before {
-    content: "RT F";
+    margin-right: -0.25em;
+    content: "Real Time F";
 }
 
 .clockWrapper::after {
+    margin-left: -0.25em;
     content: "rum";
 }
 
@@ -82,23 +91,67 @@ body {
     opacity: 0.8;
 }
 
-.header {
-    margin: 5px;
-    grid-row: header / title;
-    grid-column: left-bar / right-bar;
-    text-align: right;
-    background-color: rgb(129, 174, 193);
-}
+/* The posts styling */
 
 .posts {
-    margin: 5px;
+    padding: 10px;
     grid-row: main / footer;
     grid-column: main-posts / main-users;
     background-color: rgb(216, 226, 230);
 }
 
+input {
+    width: 98%;
+    border-radius: 10px;
+    padding: 1%;
+}
+
+textarea {
+    width: 98%;
+    border-radius: 10px;
+    padding: 1%;
+}
+
+button {
+    width: 25%;
+    border-radius: 10px;
+    padding: 1%;
+}
+
+.single-post {
+    padding: 1%;
+    margin: 20px 0;
+    width: 98%;
+    background-color: #fff;
+    height: fit-content;
+    border-radius: 20px;
+    box-shadow: 0px 3px lightgrey;
+}
+
+
+.postHr {
+    border-color: #fcfcfc;
+    margin: 0;
+}
+
+.postBody {
+    padding: 3px 10px 30px;
+}
+
+.post-title {
+    margin-bottom: 20px;
+}
+
+.post-content {
+    line-height: 1.4;
+    text-align: justify;
+}
+
+
+/* The users styling */
+
 .userlist {
-    margin: 5px;
+    padding: 10px;
     grid-row: main / footer;
     grid-column: main-users / right-bar;
     background-color: rgb(68, 119, 141);
