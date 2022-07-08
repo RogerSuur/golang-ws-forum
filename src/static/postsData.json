@@ -1,11 +1,18 @@
 {
   "posts": [
     {
+      "user": "User3",
+      "title": "Post title nr 3",
+      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam id purus et nunc suscipit consequat et ac ante. Phasellus euismod leo mauris, vel sodales ligula convallis sit amet. Morbi porta porttitor auctor. Duis sollicitudin massa et purus porttitor, nec pulvinar enim egestas. Nullam augue lectus, varius nec condimentum ac, luctus non magna.",
+      "date": "07/07/2022 18:34",
+      "comments": 1
+    },
+    {
       "user": "User2",
       "title": "Post title nr 2",
-      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam id purus et nunc suscipit consequat et ac ante. Phasellus euismod leo mauris, vel sodales ligula convallis sit amet. Morbi porta porttitor auctor. Duis sollicitudin massa et purus porttitor, nec pulvinar enim egestas. Nullam augue lectus, varius nec condimentum ac, luctus non magna.",
+      "content": "Morbi dignissim hendrerit blandit. Integer lobortis nibh vitae justo pretium gravida. Praesent vel arcu ut purus varius viverra ut in urna. Morbi non eros orci. Nam quis risus justo. Morbi eget urna in risus luctus pellentesque. In vel accumsan urna.",
       "date": "07/07/2022 18:32",
-      "comments": 1
+      "comments": 0
     },
     {
       "user": "User1",

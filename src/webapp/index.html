@@ -3,14 +3,16 @@
     <head>
         <title>Real Time Forum</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
         <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
         <link rel="manifest" href="/images/favicon/site.webmanifest">
+
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Barrio&display=swap" rel="stylesheet"> 
-        <link href="https://fonts.googleapis.com/css2?family=Barrio&family=Rubik:wght@300&display=swap" rel="stylesheet"> 
+        <link href="https://fonts.googleapis.com/css2?family=Barrio&family=Rubik+Moonrocks&display=swap" rel="stylesheet">
 
         <link rel="stylesheet" href="style.css">
     </head>
@@ -27,15 +29,20 @@
                     <div id="second"></div>
                 </div>
             </div>
+            <div class="ads">
+                <div class="ad">
+                    <a href="https://kood.tech/" target="_blank"><img src="/images/ad.png" alt=""></a>
+                </div>
+            </div>
             <div class="posts" id="posts">
                 <div class="newPost">
                     <div class="newPostHeader">
-                        What's the time? Looks like it's New Post o'clock! Type your message:
+                        What's the time? Looks like it's New Post o'clock!
                     </div>
                     <form action="/post" method="POST">
                         <input type="text" name="title" placeholder="Title">
                         <textarea name="content" placeholder="Content"></textarea>
-                        <button type="submit">Post</button>
+                        <button type="submit">Share Your Thoughts</button>
                     </form>
                 </div>
             </div>
