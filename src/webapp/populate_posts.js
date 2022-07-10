@@ -1,4 +1,4 @@
-const postsElement = document.getElementById('posts');
+import { postsElement } from './app.js';
 
 export const populatePosts = (postsArray) => {
 

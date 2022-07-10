@@ -54,7 +54,7 @@ body {
 }
 
 .userLoggedIn {
-    padding-left: 5px;
+    padding-left: 10px;
     padding-right: 5px;
 }
 
@@ -384,4 +384,8 @@ i {
 .currentUser {
     display: flex;
     align-items: center;
+}
+
+.hidden {
+    display: none;
 }
