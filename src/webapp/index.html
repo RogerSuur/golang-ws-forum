@@ -42,7 +42,7 @@
                     <a href="https://kood.tech/" target="_blank"><img src="/images/ad.png" alt=""></a>
                 </div>
             </div>
-            <div class="posts" id="posts">
+            <div class="posts">
                 <div class="newPost">
                     <div class="newPostHeader">
                         What's the time? Looks like it's New Post o'clock!
@@ -57,37 +57,34 @@
                     </form>
                 </div>
             </div>
+            <div class="messages hidden">
+                <div class="closeButtonWrapper">
+                    <i id="closeButton" class="fas fa-x"></i>
+                </div>
+                <div class="newMessage">
+                    <div class="newMessageHeader"></div>
+                    <form action="/post" method="POST">
+                        <input type="text" name="message" placeholder="Type your message here...">
+                        <div class="buttonWrapper">
+                            <button type="submit">Send Message</button>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
             <div class="userlist">
                 <div class="online">
-                    <div class="online heading">
-                        Online: 2
-                    </div>
-                    <div class="userName">
-                        User1
-                    </div>
-                    <div class="userName">
-                        User2
-                    </div>
+                    <div class="online heading">Online: 2</div>
+                    <div class="userName">User1</div>
+                    <div class="userName">User2</div>
                 </div>
                 <div class="offline">
-                    <div class="offline heading">
-                        Offline: 5
-                    </div>
-                    <div class="userName">
-                        UserWithAnExtraSuperLongName3
-                    </div>
-                    <div class="userName">
-                        User4
-                    </div>
-                    <div class="userName">
-                        User5
-                    </div>
-                    <div class="userName">
-                        User6
-                    </div>
-                    <div class="userName">
-                        User7
-                    </div>
+                    <div class="offline heading">Offline: 5</div>
+                    <div class="userName">UserWithAnExtraSuperLongName3</div>
+                    <div class="userName">User4</div>
+                    <div class="userName">User5</div>
+                    <div class="userName">User6</div>
+                    <div class="userName">User7</div>
                 </div>
             </div>
             
