@@ -8,7 +8,7 @@ body {
     display: grid;
     height: 100vh;
     align-items: top;
-    grid-template-rows: [header] 5vh [title] 12vw [main] auto [footer] 5vh [row-end];
+    grid-template-rows: [header] 40px [title] 12vw [main] auto [footer] 5vh [row-end];
     grid-template-columns: [col-start] auto [left-bar] 10vw [main-posts] 50vw [main-users] 20vw [right-bar] auto [col-end];
 }
 
@@ -26,19 +26,65 @@ body {
     color: white;
 }
 
+.avatar {
+    position: relative;
+    width: 23px;
+    height: 23px;
+    clip-path: circle();
+    border: #44449b solid 2px;
+    background-color: #44449b;
+    overflow: hidden;
+}
+
+.avatar::after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+}
+
+.clipped {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    clip-path: circle();
+}
+
+.userLoggedIn {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.currentUser {
+    padding: 2px;
+    border-radius: 7px;
+}
+
+.currentUser:hover {
+    background-color: lightgrey;
+}
+
+.horizontalSpacer {
+    margin: 10px;
+}
+
 .login {
-    padding: 5px;
-    height: 30px;
+    padding: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    height: 25px;
     border: none;
     border-radius: 7px;
-    background-color: transparent;
     display: inline-flex;
     align-items: center;
     justify-content: center;
 }
 
 .login:hover {
-    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+    background-color: lightgrey;
 }
 
 .clockWrapper {
@@ -123,7 +169,7 @@ body {
 }
 
 img {
-    max-width: 100%;
+    width: 100%;
     height: auto;
 }
 
@@ -300,10 +346,11 @@ i {
     justify-content: flex-start;
     width: 98%;
     height: auto;
-    padding: 1%;
+    margin: 1%;
+    padding: 0.5%;
     border-radius: 10px;
     border: 1px solid grey;
-    box-shadow: 0px 3px lightgrey;
+    box-shadow: 0px 3px slategray;
     background-color: #1181b2;
 }
 
@@ -312,12 +359,29 @@ i {
 }
 
 .heading {
-    width: 98%;
+    width: 97%;
     font-weight: bold;
     font-size: larger;
     background-color: #44449b;
 }
 
 .userName {
-    padding: 5px;
+    margin: 3px;
+    padding: 3px;
+    width: 95%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.userName:hover {
+    background-color: #ddedf4;
+    color: #44449b;
+    border-radius: 7px;
+    box-shadow: 0 0 3px 1px #212221;
+}
+
+.currentUser {
+    display: flex;
+    align-items: center;
 }
