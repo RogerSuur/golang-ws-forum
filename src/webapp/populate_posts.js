@@ -15,7 +15,7 @@ export const populatePosts = (postsArray) => {
         postHeader.appendChild(postDate);
 
         let postAuthor = document.createElement('div');
-        postAuthor.classList.add('post-date');
+        postAuthor.classList.add('post-user');
         postAuthor.innerHTML = `real posting by: <b>${post.user}</b>`;
         postHeader.appendChild(postAuthor);
 

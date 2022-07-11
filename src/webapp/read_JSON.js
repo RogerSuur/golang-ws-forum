@@ -6,7 +6,7 @@ export async function getJSON(path) {
         })
     .then(result => {
             if (result.error) throw Error(result.error)
-            return result.posts
+            return result.data
         })
     .catch(error => {throw error})
     return data

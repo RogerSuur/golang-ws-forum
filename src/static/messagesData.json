@@ -1,0 +1,94 @@
+{
+    "data": [
+      {
+        "from": "User3",
+        "to": "User2",
+        "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "date": "07/07/2022 18:59"
+      },
+      {
+        "from": "User2",
+        "to": "User3",
+        "content": "Morbi dignissim hendrerit blandit.",
+        "date": "07/07/2022 18:58"
+      },
+      {
+        "from": "User2",
+        "to": "User3",
+        "content": "In bibendum, turpis ac tristique luctus, turpis odio mattis nisi, vel vestibulum lacus ex a turpis.",
+        "date": "07/07/2022 18:56"
+      },
+      {
+        "from": "User2",
+        "to": "User3",
+        "content": "Etiam id purus et nunc suscipit consequat et ac ante.",
+        "date": "07/07/2022 18:54"
+      },
+      {
+        "from": "User2",
+        "to": "User3",
+        "content": "Integer lobortis nibh vitae justo pretium gravida.",
+        "date": "07/07/2022 18:52"
+      },
+      {
+        "from": "User3",
+        "to": "User2",
+        "content": "Nulla ultricies orci non mauris porta, eget vestibulum eros laoreet.",
+        "date": "07/07/2022 18:50"
+      },
+      {
+        "from": "User3",
+        "to": "User2",
+        "content": "Phasellus euismod leo mauris, vel sodales ligula convallis sit amet.",
+        "date": "07/07/2022 18:48"
+      },
+      {
+        "from": "User2",
+        "to": "User3",
+        "content": "Praesent vel arcu ut purus varius viverra ut in urna.",
+        "date": "07/07/2022 18:46"
+      },
+      {
+        "from": "User3",
+        "to": "User2",
+        "content": "Nullam eu erat justo. Cras in ornare magna. Etiam ultrices libero quis blandit porta.",
+        "date": "07/07/2022 18:44"
+      },
+      {
+        "from": "User3",
+        "to": "User2",
+        "content": "Morbi porta porttitor auctor. Duis sollicitudin massa et purus porttitor, nec pulvinar enim egestas.",
+        "date": "07/07/2022 18:42"
+      },
+      {
+        "from": "User2",
+        "to": "User3",
+        "content": "Morbi non eros orci. Nam quis risus justo.",
+        "date": "07/07/2022 18:38"
+      },
+      {
+        "from": "User2",
+        "to": "User3",
+        "content": "Pellentesque rutrum a purus nec sollicitudin. Integer diam nulla, pretium in rutrum vitae, pellentesque in odio.",
+        "date": "07/07/2022 18:36"
+      },
+      {
+        "from": "User3",
+        "to": "User2",
+        "content": "Nullam augue lectus, varius nec condimentum ac, luctus non magna.",
+        "date": "07/07/2022 18:34"
+      },
+      {
+        "from": "User2",
+        "to": "User3",
+        "content": "Morbi eget urna in risus luctus pellentesque. In vel accumsan urna.",
+        "date": "07/07/2022 18:32"
+      },
+      {
+        "from": "User3",
+        "to": "User2",
+        "content": "Pellentesque in euismod nisl. Mauris quis nulla et mi fermentum sodales.",
+        "date": "07/07/2022 18:30"
+      }
+    ]
+  }
