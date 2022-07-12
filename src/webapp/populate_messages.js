@@ -2,9 +2,9 @@ const messagesElement = document.querySelector('.messagesWrapper');
 
 export const populateMessages = (messagesArray, currentUser) => {
 
-    let previousUser = '';
+    let previousUser, previousMessage;
 
-    messagesArray.forEach(message => {
+    messagesArray.forEach((message, index) => {
         let singleMessage = document.createElement('div');
         singleMessage.classList.add('single-message');
 
@@ -12,10 +12,10 @@ export const populateMessages = (messagesArray, currentUser) => {
         messageContent.classList.add('message-content');
         messageContent.innerHTML = message.content;
 
-        if (previousUser !== message.from) {
+        if (message.from !== previousUser) {
             let messageAuthor = document.createElement('div');
             messageAuthor.classList.add('message-user');
-            if (message.from === currentUser) {
+            if (message.from !== currentUser) {
                 messageAuthor.innerHTML = `Me`;
                 singleMessage.classList.add('me');
                 messageAuthor.classList.add('me');
@@ -36,7 +36,11 @@ export const populateMessages = (messagesArray, currentUser) => {
         messageDate.classList.add('message-date');
         messageDate.innerHTML = `${message.timestamp}`;
         singleMessage.appendChild(messageDate);
-            
-        messagesElement.appendChild(singleMessage);
+        
+        if (index === 0) {
+            messagesElement.appendChild(singleMessage);
+        }
+        messagesElement.insertBefore(singleMessage, previousMessage);
+        previousMessage = singleMessage;
     });
 }
