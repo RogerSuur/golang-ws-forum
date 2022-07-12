@@ -188,7 +188,7 @@ body {
 
 /* POSTS & THREAD AREA */
 
-.posts,
+.posts-area,
 .thread {
     padding: 10px;
     display: flex;
@@ -286,17 +286,6 @@ body {
         background-color: lightskyblue;
     }
 
-    .more-posts {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        padding-left: 2%;
-        background-color: #ddedf4;
-        border-radius: 7px;
-        box-shadow: 2px 3px lightgray;
-    }
-
 /* USERLIST AREA */
 
 .user-list {
@@ -364,7 +353,7 @@ body {
 
 /* MESSAGES AREA */
 
-.messages {
+.messages-wrapper {
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -424,10 +413,11 @@ body {
         box-shadow: 2px 3px lightgray;
     }
 
-    .messages-wrapper {
+    .messages-area {
         display: flex;
-        flex-direction: column;
+        flex-direction: column-reverse;
         align-items: flex-start;
+        width: 100%;
         padding-right: 10px;
         overflow: scroll;
         scrollbar-width: thin;
@@ -537,6 +527,19 @@ input {
             button:hover {
                 box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
             }
+
+.more-posts,
+.more-messages {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: inherit;
+    justify-content: space-between;
+    padding-left: 2%;
+    background-color: #ddedf4;
+    border-radius: 7px;
+    box-shadow: 2px 3px lightgray;
+}
 
 .load-more {
     color: whitesmoke;

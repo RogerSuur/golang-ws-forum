@@ -1,19 +1,10 @@
 import { messagesWrapper } from "./app.js";
 
 export const populateMessages = (messagesArray, remainingMessages, currentUser) => {
-    
-    messagesWrapper.innerHTML = '';
 
-    let previousUser, previousMessage;
+    let previousUser;
 
-    if (remainingMessages > 0) {
-        let loadMore = document.createElement('div');
-        loadMore.classList.add('load-more');
-        loadMore.innerHTML = `load more ...`;
-        messagesWrapper.appendChild(loadMore);
-    }
-
-    messagesArray.forEach((message, index) => {
+    messagesArray.forEach((message) => {
         let singleMessage = document.createElement('div');
         singleMessage.classList.add('single-message');
 
@@ -46,10 +37,9 @@ export const populateMessages = (messagesArray, remainingMessages, currentUser) 
         messageDate.innerHTML = `${message.timestamp}`;
         singleMessage.appendChild(messageDate);
         
-        if (index === 0) {
-            messagesWrapper.appendChild(singleMessage);
-        }
-        messagesWrapper.insertBefore(singleMessage, previousMessage);
-        previousMessage = singleMessage;
+        messagesWrapper.appendChild(singleMessage);
     });
+    if (remainingMessages < 1) {
+        console.log("No more messages")
+    }
 }
