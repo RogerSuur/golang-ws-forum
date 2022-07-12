@@ -11,7 +11,7 @@ export const populatePosts = (postsArray) => {
 
         let postDate = document.createElement('div');
         postDate.classList.add('post-date');
-        postDate.innerHTML = `real time of posting: ${post.date}`;
+        postDate.innerHTML = `real time of posting: ${post.timestamp}`;
         postHeader.appendChild(postDate);
 
         let postAuthor = document.createElement('div');
