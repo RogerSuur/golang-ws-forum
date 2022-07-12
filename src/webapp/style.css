@@ -372,7 +372,7 @@ i {
 }
 
 .offline {
-    color: lightgrey;
+    color: gray;
     background-color: rgba(17, 129, 178, 0.75);
 }
 
@@ -395,6 +395,12 @@ i {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: whitesmoke;
+}
+
+.userHasNewMessage {
+    font-weight: bold;
+    color:white;
 }
 
 .userName:hover {
@@ -421,7 +427,7 @@ i {
     grid-column: main-posts / main-users;
     max-height: 95%;
     min-height: auto;
-    width: 90%;
+    width: 70%;
     margin-right: 2%;
     background-color: rgb(216, 226, 230);
     justify-content: space-between;

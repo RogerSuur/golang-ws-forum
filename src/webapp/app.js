@@ -28,8 +28,9 @@ const userElements = document.querySelectorAll('.userName');
 
 async function getMessages(fromUser, toUser) {
     let messagesArray = await getJSON('/src/static/messagesData.json');
+    console.log("Loading messages from " + fromUser + " to " + toUser);
     populateMessages(messagesArray, fromUser);
-    console.log("Messages from " + fromUser + " to " + toUser);
+    messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
 }
 
 userElements.forEach((user) => {
@@ -38,7 +39,6 @@ userElements.forEach((user) => {
         messagesElement.classList.remove('hidden');
         getMessages(loggedUser, user.id);
         messageHeader.textContent = `Your conversation with ${user.textContent}`;
-        messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
     });
 });
 

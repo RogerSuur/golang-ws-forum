@@ -14,6 +14,9 @@ const constructUserLists = (usersArray, usersElement, type) => {
         singleUser.classList.add('userName');
         singleUser.setAttribute('id', user.user);
         singleUser.innerHTML = user.user;
+        if (user.newMessage) {
+            singleUser.classList.add('userHasNewMessage');
+        }
         usersElement.appendChild(singleUser);
     });
     let heading = document.querySelector(`.${type}Heading`);
