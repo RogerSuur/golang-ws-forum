@@ -7,9 +7,10 @@ body {
 .wrapper {
     display: grid;
     height: 100vh;
+    width: 100vw;
     align-items: top;
-    grid-template-rows: [header] 40px [title] 12vw [main] auto [footer] 5vh [row-end];
-    grid-template-columns: [col-start] auto [left-bar] 10vw [main-posts] 50vw [main-users] 20vw [right-bar] auto [col-end];
+    grid-template-rows: [header] 5vh [title] 15vh [main] 75vh [footer] 5vh [row-end];
+    grid-template-columns: [col-start] 5vw [left-bar] 15vw [main-posts] 50vw [main-users] 25vw [right-bar] 5vw [col-end];
 }
 
 
@@ -94,7 +95,7 @@ body {
     width: 100%;
     font-family: 'Barrio', cursive;
     color: white;
-    font-size: 8vw;
+    font-size: 8vh;
     align-items: center;
     justify-content: center;
     line-height: 100%;
@@ -103,10 +104,10 @@ body {
 
 #clockBackground {
     position: relative;
-    margin: 0 1vw;
-    height: 10vw;
+    margin: 0 1vh;
+    height: 10vh;
     /*to make the height and width responsive*/
-    width: 10vw;
+    width: 10vh;
     background: url(/images/clock.png) no-repeat;
     /*setting our background image*/
     background-size: 100%;
@@ -415,9 +416,6 @@ i {
 }
 
 .closeButtonWrapper {
-    align-self: flex-end;
-    display: flex;
-    justify-content: center;
     width: auto;
     border-radius: 7px;
     border: 1px solid grey;
@@ -439,18 +437,16 @@ i {
 .messagesWrapper {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
     align-items: flex-start;
     padding: 5px;
+    overflow: auto;
 }
 
 .single-message {
-    overflow: auto;
     display: flex;
     flex-direction: column;
     margin-right: 20px;
     width: auto;
-    height: fit-content;
 }
 
 .message-user {
@@ -484,7 +480,7 @@ i {
     font-size: x-small;
     padding: 3px;
     align-self: flex-end;
-    color: lightgrey;
+    color: slategray;
 }
 
 .me {
