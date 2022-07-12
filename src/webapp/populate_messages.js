@@ -1,6 +1,8 @@
 import { messagesWrapper } from "./app.js";
 
 export const populateMessages = (messagesArray, currentUser) => {
+    
+    messagesWrapper.innerHTML = '';
 
     let previousUser, previousMessage;
 
@@ -15,7 +17,7 @@ export const populateMessages = (messagesArray, currentUser) => {
         if (message.from !== previousUser) {
             let messageAuthor = document.createElement('div');
             messageAuthor.classList.add('message-user');
-            if (message.from !== currentUser) {
+            if (message.from === currentUser) {
                 messageAuthor.innerHTML = `Me`;
                 singleMessage.classList.add('me');
                 messageAuthor.classList.add('me');
@@ -24,7 +26,7 @@ export const populateMessages = (messagesArray, currentUser) => {
                 messageAuthor.innerHTML = `${message.from}`;
             }
             singleMessage.appendChild(messageAuthor);
-        } else if (previousUser === currentUser) {
+        } else if (previousUser !== currentUser) {
             singleMessage.classList.add('me');
             messageContent.classList.add('me');
         }
