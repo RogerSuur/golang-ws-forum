@@ -11,7 +11,7 @@ export const populateMessages = (messagesArray, remainingMessages, currentUser) 
         loadMore.classList.add('load-more');
         loadMore.innerHTML = `load more ...`;
         messagesWrapper.appendChild(loadMore);
-    };
+    }
 
     messagesArray.forEach((message, index) => {
         let singleMessage = document.createElement('div');

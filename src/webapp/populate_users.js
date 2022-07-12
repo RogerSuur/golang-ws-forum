@@ -11,14 +11,18 @@ const constructUserLists = (usersArray, usersElement, type) => {
     usersArray.forEach((user) => {
         counter++
         let singleUser = document.createElement('div');
-        singleUser.classList.add('userName');
+        singleUser.classList.add('user-name');
         singleUser.setAttribute('id', user.user);
         singleUser.innerHTML = user.user;
         if (user.newMessage) {
-            singleUser.classList.add('userHasNewMessage');
+            singleUser.classList.add('unread-messages');
         }
         usersElement.appendChild(singleUser);
     });
-    let heading = document.querySelector(`.${type}Heading`);
-    heading.textContent = `${counter} users ${type}`;
+    let heading = document.querySelector(`.${type}-group`);
+    if (type === 'online') {
+        heading.innerHTML = `<i class="fa-solid fa-comments"></i>${counter} users ${type}`;
+    } else {
+        heading.innerHTML = `<i class="fa-regular fa-comments"></i>${counter} users ${type}`;
+    }
 };

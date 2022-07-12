@@ -1,6 +1,6 @@
-const hour = document.getElementById('hour');
-const minute = document.getElementById('minute');
-const second = document.getElementById('second');
+const hour = document.querySelector('.hour');
+const minute = document.querySelector('.minute');
+const second = document.querySelector('.second');
 
 export const startHeaderClock = setInterval(() => {
     let d = new Date(); //object of date()

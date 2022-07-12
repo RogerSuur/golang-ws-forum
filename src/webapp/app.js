@@ -4,36 +4,33 @@ import { populatePosts } from "./populate_posts.js";
 import { populateMessages } from "./populate_messages.js";
 import { populateUsers } from "./populate_users.js";
 
-export const postsWrapper = document.querySelector('.postsWrapper');
+export const postsWrapper = document.querySelector('.posts-wrapper');
 const messagesElement = document.querySelector('.messages');
-export const messagesWrapper = document.querySelector('.messagesWrapper');
+export const messagesWrapper = document.querySelector('.messages-wrapper');
 export const onlineUsers = document.querySelector('.online');
 export const offlineUsers = document.querySelector('.offline');
 
-const messageHeader = document.querySelector('.messagesHeaderText');
-const closeMessages = document.getElementById('closeButton');
+const messageHeader = document.querySelector('.messages-header-text');
+const closeMessages = document.querySelector('.close-button');
 const overlay = document.querySelector('.overlay');
 
+let postsObject = await getJSON('/src/static/postsData.json');
+let usersObject = await getJSON('/src/static/usersData.json');
 let loggedUser = 'User3';
 
 startHeaderClock;
-
-let postsObject = await getJSON('/src/static/postsData.json');
 populatePosts(postsObject.posts, postsObject.remainingPosts);
-
-let usersObject = await getJSON('/src/static/usersData.json');
 populateUsers(usersObject);
 
-const userElements = document.querySelectorAll('.userName');
+const userElements = document.querySelectorAll('.user-name');
 
 const loadMoreEvent = () => {
     let loadMoreElement = document.querySelectorAll('.load-more');
     loadMoreElement.forEach(element => {
         element.addEventListener('click', () => {
-            console.log(element.parentElement.className);
+            console.log("Load more from: " + element.parentElement.className);
         });
     });
-    console.log(loadMoreElement)
 }    
 
 async function getMessages(fromUser, toUser) {

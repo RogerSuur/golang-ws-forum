@@ -4,6 +4,8 @@
         <title>Real Time Forum</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        <link rel="stylesheet" href="style.css">
+
         <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
@@ -14,97 +16,97 @@
         <link href="https://fonts.googleapis.com/css2?family=Barrio&display=swap" rel="stylesheet"> 
         <link href="https://fonts.googleapis.com/css2?family=Barrio&family=Rubik+Moonrocks&display=swap" rel="stylesheet">
 
-        <link rel="stylesheet" href="style.css">
     </head>
     <body>
+
         <script src="https://kit.fontawesome.com/4c286e0ec9.js" crossorigin="anonymous"></script>
-        <div class="wrapper">
-            
+
+        <div class="wrapper">            
             <div class="header">
-                <div class="currentUser">
-                    <div class="avatar">           
+                <div class="user-profile">
+                    <div class="avatar">
                         <img src="/images/userAvatars/001.jpg" class="clipped" alt="">
                     </div>
-                    <div class="userLoggedIn">User3</div>
+                    <div class="current-user">User3</div>
                 </div>
-                <div class="horizontalSpacer">|</div>
+                <div class="horizontal-spacer">|</div>
                 <div class="login">Logout</div>
             </div>
-            <div class="clockWrapper">
-                <div id="clockBackground">
-                    <div id="hour"></div>
-                    <div id="minute"></div>
-                    <div id="second"></div>
+            <div class="clock-wrapper">
+                <div class="clock-background">
+                    <div class="hour"></div>
+                    <div class="minute"></div>
+                    <div class="second"></div>
                 </div>
             </div>
             <div class="ads">
                 <div class="ad">
                     <a href="https://kood.tech/" target="_blank"><img src="/images/ad.png" alt=""></a>
                 </div>
-                <div class="adText">ads by kood/Ads</div>
+                <div class="ad-text">ads by kood/Ads</div>
             </div>
-            <div class="overlay" style="z-index: -1"></div>
+            <div class="overlay"></div>
             <div class="posts">
-                <div class="newPost">
-                    <div class="newPostHeader">
+                <div class="new-post-area">
+                    <div class="new-post-header">
                         What's the time? Looks like it's New Post o'clock!
                     </div>
                     <form action="/post" method="POST">
                         <input type="text" name="title" placeholder="Title">
                         <textarea name="content" placeholder="Content"></textarea>
-                        <div class="buttonWrapper">
+                        <div class="button-wrapper">
                             <button type="submit">Share Your Thoughts</button>
                         </div>
                     </form>
                 </div>
-                <div class="postsWrapper">
+                <div class="posts-wrapper">
                 </div>
             </div>
             <div class="thread hidden">
-                <div class="newPost">
-                    <div class="newPostHeader">
+                <div class="new-post">
+                    <div class="new-post-header">
                         What's the time? Looks like it's New Post o'clock!
                     </div>
                     <form action="/post" method="POST">
                         <input type="text" name="title" placeholder="Title">
                         <textarea name="content" placeholder="Content"></textarea>
-                        <div class="buttonWrapper">
+                        <div class="button-wrapper">
                             <button type="submit">Share Your Thoughts</button>
                         </div>
                     </form>
                 </div>
-                <div class="postsWrapper">
+                <div class="posts-wrapper">
                 </div>
             </div>
             <div class="messages hidden">
-                <div class="messagesHeader">
-                    <div class="messagesHeaderText"></div>
-                    <div class="closeButtonWrapper">
-                        <i id="closeButton" class="fas fa-x"></i>
+                <div class="messages-header">
+                    <div class="messages-header-text"></div>
+                    <div class="close-button">
+                        <i class="fas fa-x"></i>
                     </div>    
                 </div>
-                <div class="messagesWrapper">
+                <div class="messages-wrapper">
                 </div>
-                <div class="newMessage">
+                <div class="new-message-box">
                     <form action="/post" method="POST">
                         <input type="text" name="message" placeholder="Type your message here...">
-                        <div class="buttonWrapper">
+                        <div class="button-wrapper">
                             <button type="submit">Send Message</button>
                         </div>
-                        
                     </form>
                 </div>
             </div>
-            <div class="userList">
+            <div class="user-list">
                 <div class="online">
-                    <div class="onlineHeading">Online: 2</div>
+                    <div class="online-group">Online: 2</div>
                 </div>
                 <div class="offline">
-                    <div class="offlineHeading">Offline: 5</div>
+                    <div class="offline-group">Offline: 5</div>
                 </div>
             </div>
-            
         </div>
+
         <script src="./app.js" type="module"></script>
+
     </body>
 </html>

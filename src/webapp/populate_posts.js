@@ -24,7 +24,7 @@ export const populatePosts = (postsArray, remainingPosts) => {
         singlePost.appendChild(postHeader);
 
         let hr = document.createElement('hr');
-        hr.classList.add('postHr');
+        hr.classList.add('post-horizontal');
         singlePost.appendChild(hr);
         
         let postBody = document.createElement('div');
@@ -70,7 +70,7 @@ export const populatePosts = (postsArray, remainingPosts) => {
     if (remainingPosts > 5) {
         let morePosts = document.createElement('div');
         morePosts.classList.add('more-posts');
-        morePosts.innerHTML = `${remainingPosts} older posts to read`;
+        morePosts.innerHTML = `There are ${remainingPosts} older posts to read`;
         let loadMore = document.createElement('div');
         loadMore.classList.add('load-more');
         loadMore.innerHTML = `load more ...`;
