@@ -10,6 +10,7 @@ export const messagesWrapper = document.querySelector('.messagesWrapper');
 const userElements = document.querySelectorAll('.userName');
 const messageHeader = document.querySelector('.messagesHeaderText');
 const closeMessages = document.getElementById('closeButton');
+const overlay = document.querySelector('.overlay');
 
 startHeaderClock;
 
@@ -21,7 +22,7 @@ populateMessages(messagesArray, 'User3');
 
 userElements.forEach((user) => {
     user.addEventListener('click', () => {
-        postsElement.classList.add('hidden');
+        overlay.style.zIndex = '1';
         messagesElement.classList.remove('hidden');
         messageHeader.textContent = `Your conversation with ${user.textContent}`;
         messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
@@ -29,6 +30,6 @@ userElements.forEach((user) => {
 });
 
 closeMessages.addEventListener('click', () => {
-    postsElement.classList.remove('hidden');
+    overlay.style.zIndex = '-1';
     messagesElement.classList.add('hidden');
 });

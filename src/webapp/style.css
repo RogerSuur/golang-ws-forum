@@ -169,6 +169,12 @@ body {
     padding: 10px;
 }
 
+.adText {
+    align-self: flex-end;
+    font-size: x-small;
+    color: slategray;
+}
+
 img {
     width: 100%;
     height: auto;
@@ -187,6 +193,7 @@ img:hover {
     grid-row: main / footer;
     grid-column: main-posts / main-users;
     background-color: rgb(216, 226, 230);
+    z-index: 0;
 }
 
 .postsWrapper {
@@ -401,10 +408,16 @@ i {
     padding: 10px;
     display: flex;
     flex-direction: column;
+    align-self: flex-end;
+    justify-self: flex-end;
     grid-row: main / footer;
     grid-column: main-posts / main-users;
+    max-height: 95%;
+    min-height: auto;
+    width: 90%;
     background-color: rgb(216, 226, 230);
     justify-content: space-between;
+    z-index: 2;
 }
 
 .messagesHeader {
@@ -499,6 +512,15 @@ i {
 }
 
 /* general */
+
+.overlay {
+    display: flex;
+    grid-row: main / footer;
+    grid-column: main-posts / main-users;
+    pointer-events: none;
+    cursor: default;
+    background-color: rgba(0,0,0,0.5);
+}
 
 .hidden {
     display: none;
