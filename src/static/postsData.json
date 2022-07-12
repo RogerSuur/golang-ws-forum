@@ -1,5 +1,6 @@
 {
-  "data": [
+  "data": {
+    "posts": [
     {
       "user": "User3",
       "title": "Post title nr 5",
@@ -35,5 +36,7 @@
       "timestamp": "07/07/2022 18:20",
       "comments": 2
     }
-  ]
+  ],
+  "remainingPosts": 13
+  }
 }

@@ -1,6 +1,8 @@
 import { postsWrapper } from './app.js';
 
-export const populatePosts = (postsArray) => {
+export const populatePosts = (postsArray, remainingPosts) => {
+    
+    console.log(remainingPosts);
 
     postsArray.forEach(post => {
         let singlePost = document.createElement('div');
@@ -65,4 +67,14 @@ export const populatePosts = (postsArray) => {
         
         postsWrapper.appendChild(singlePost);
     });
+    if (remainingPosts > 5) {
+        let morePosts = document.createElement('div');
+        morePosts.classList.add('more-posts');
+        morePosts.innerHTML = `${remainingPosts} older posts to read`;
+        let loadMore = document.createElement('div');
+        loadMore.classList.add('load-more');
+        loadMore.innerHTML = `load more ...`;
+        morePosts.appendChild(loadMore);
+        postsWrapper.appendChild(morePosts);
+    }
 }

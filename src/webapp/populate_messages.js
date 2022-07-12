@@ -1,10 +1,17 @@
 import { messagesWrapper } from "./app.js";
 
-export const populateMessages = (messagesArray, currentUser) => {
+export const populateMessages = (messagesArray, remainingMessages, currentUser) => {
     
     messagesWrapper.innerHTML = '';
 
     let previousUser, previousMessage;
+
+    if (remainingMessages > 0) {
+        let loadMore = document.createElement('div');
+        loadMore.classList.add('load-more');
+        loadMore.innerHTML = `load more ...`;
+        messagesWrapper.appendChild(loadMore);
+    };
 
     messagesArray.forEach((message, index) => {
         let singleMessage = document.createElement('div');

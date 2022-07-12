@@ -18,19 +18,30 @@ let loggedUser = 'User3';
 
 startHeaderClock;
 
-let postsArray = await getJSON('/src/static/postsData.json');
-populatePosts(postsArray);
+let postsObject = await getJSON('/src/static/postsData.json');
+populatePosts(postsObject.posts, postsObject.remainingPosts);
 
 let usersObject = await getJSON('/src/static/usersData.json');
 populateUsers(usersObject);
 
 const userElements = document.querySelectorAll('.userName');
 
+const loadMoreEvent = () => {
+    let loadMoreElement = document.querySelectorAll('.load-more');
+    loadMoreElement.forEach(element => {
+        element.addEventListener('click', () => {
+            console.log(element.parentElement.className);
+        });
+    });
+    console.log(loadMoreElement)
+}    
+
 async function getMessages(fromUser, toUser) {
-    let messagesArray = await getJSON('/src/static/messagesData.json');
+    let messagesObject = await getJSON('/src/static/messagesData.json');
     console.log("Loading messages from " + fromUser + " to " + toUser);
-    populateMessages(messagesArray, fromUser);
+    populateMessages(messagesObject.messages, messagesObject.remainingMessages, fromUser);
     messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
+    loadMoreEvent();
 }
 
 userElements.forEach((user) => {
@@ -46,3 +57,5 @@ closeMessages.addEventListener('click', () => {
     overlay.style.zIndex = '-1';
     messagesElement.classList.add('hidden');
 });
+
+loadMoreEvent();
