@@ -3,8 +3,10 @@ import { getJSON } from "./read_JSON.js";
 import { populatePosts } from "./populate_posts.js";
 import { populateMessages } from "./populate_messages.js";
 
-export const postsElement = document.querySelector('.posts');
-const messageElement = document.querySelector('.messages');
+const postsElement = document.querySelector('.posts');
+export const postsWrapper = document.querySelector('.postsWrapper');
+const messagesElement = document.querySelector('.messages');
+export const messagesWrapper = document.querySelector('.messagesWrapper');
 const userElements = document.querySelectorAll('.userName');
 const messageHeader = document.querySelector('.messagesHeaderText');
 const closeMessages = document.getElementById('closeButton');
@@ -20,12 +22,13 @@ populateMessages(messagesArray, 'User3');
 userElements.forEach((user) => {
     user.addEventListener('click', () => {
         postsElement.classList.add('hidden');
-        messageElement.classList.remove('hidden');
+        messagesElement.classList.remove('hidden');
         messageHeader.textContent = `Your conversation with ${user.textContent}`;
+        messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
     });
 });
 
 closeMessages.addEventListener('click', () => {
     postsElement.classList.remove('hidden');
-    messageElement.classList.add('hidden');
+    messagesElement.classList.add('hidden');
 });

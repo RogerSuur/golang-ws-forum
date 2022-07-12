@@ -1,4 +1,4 @@
-import { postsElement } from './app.js';
+import { postsWrapper } from './app.js';
 
 export const populatePosts = (postsArray) => {
 
@@ -63,6 +63,6 @@ export const populatePosts = (postsArray) => {
         postFooter.appendChild(postComments);
         singlePost.appendChild(postFooter);
         
-        postsElement.appendChild(singlePost);
+        postsWrapper.appendChild(singlePost);
     });
 }

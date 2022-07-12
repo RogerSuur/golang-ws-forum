@@ -1,4 +1,4 @@
-const messagesElement = document.querySelector('.messagesWrapper');
+import { messagesWrapper } from "./app.js";
 
 export const populateMessages = (messagesArray, currentUser) => {
 
@@ -38,9 +38,9 @@ export const populateMessages = (messagesArray, currentUser) => {
         singleMessage.appendChild(messageDate);
         
         if (index === 0) {
-            messagesElement.appendChild(singleMessage);
+            messagesWrapper.appendChild(singleMessage);
         }
-        messagesElement.insertBefore(singleMessage, previousMessage);
+        messagesWrapper.insertBefore(singleMessage, previousMessage);
         previousMessage = singleMessage;
     });
 }
