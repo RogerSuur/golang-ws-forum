@@ -5,8 +5,8 @@ import { populateMessages } from "./populate_messages.js";
 import { populateUsers } from "./populate_users.js";
 
 export const postsWrapper = document.querySelector('.posts-wrapper');
-const messagesElement = document.querySelector('.messages-wrapper');
-export const messagesWrapper = document.querySelector('.messages-area');
+const messagesElement = document.querySelector('.messages-area');
+export const messagesWrapper = document.querySelector('.messages-wrapper');
 export const onlineUsers = document.querySelector('.online');
 export const offlineUsers = document.querySelector('.offline');
 
@@ -21,16 +21,25 @@ let loggedUser = 'User3';
 let otherUser;
 
 const createLoadMore = (type) => {
-    let postsArea = document.querySelector(`.${type}-area`);
+    let wrapper, remaining
+    switch (type) {
+        case 'posts':
+            wrapper = postsWrapper;
+            remaining = postsObject.remainingPosts;
+            break;
+        case 'messages':
+            wrapper = messagesWrapper;
+            remaining = messagesObject.remainingMessages;
+            break;
+    }
     let moreContent = document.createElement('div');
     moreContent.classList.add(`more-${type}`);
-    let remaining = (type === 'posts') ? postsObject.remainingPosts : messagesObject.remainingMessages;
     moreContent.innerHTML = `There are ${remaining} older ${type} to read`;
     let loadMore = document.createElement('div');
     loadMore.classList.add(`load-more`, `${type}`);
     loadMore.innerHTML = `load more ...`;
     moreContent.appendChild(loadMore);
-    postsArea.appendChild(moreContent);
+    wrapper.appendChild(moreContent);
     addLoadMoreEvent(loadMore, type);
     }  
 
@@ -65,25 +74,19 @@ closeMessages.addEventListener('click', () => {
     messagesElement.classList.add('hidden');
 });
 
-function addLoadMoreEvent(element) {
-    console.log(element)
+function addLoadMoreEvent(element, type) {
     element.addEventListener('click', () => {
-        console.log(element.parentElement.className)
-        if (element.parentElement.className === 'more-posts') {
-            console.log("loading more posts");
-            populatePosts(postsObject.posts, postsObject.remainingPosts);
-        } else if (element.parentElement.className === 'more-messages') {
-            console.log("loading more messages");
-            getMessages(loggedUser, otherUser);
-            element.parentElement.remove();
+        console.log(`loading more ${type}`);
+        switch (type) {
+            case 'posts':
+                populatePosts(postsObject.posts, postsObject.remainingPosts);
+                if (postsObject.remainingPosts > 0) createLoadMore("posts");
+                break;
+            case 'messages':
+                getMessages(loggedUser, otherUser);
+                break;
         }
+        element.parentElement.remove();
     });
-    if (postsObject.remainingPosts < 5) {
-        let loadMore = document.querySelector('.load-more', '.posts');
-        loadMore.innerHTML = `No more posts`;
-        loadMore.removeEventListener('click', () => {
-            console.log("No more posts");
-        });
-    }
 }
 

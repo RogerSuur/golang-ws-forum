@@ -39,7 +39,4 @@ export const populateMessages = (messagesArray, remainingMessages, currentUser) 
         
         messagesWrapper.appendChild(singleMessage);
     });
-    if (remainingMessages < 1) {
-        console.log("No more messages")
-    }
 }

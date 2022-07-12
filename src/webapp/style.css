@@ -353,7 +353,7 @@ body {
 
 /* MESSAGES AREA */
 
-.messages-wrapper {
+.messages-area {
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -413,7 +413,7 @@ body {
         box-shadow: 2px 3px lightgray;
     }
 
-    .messages-area {
+    .messages-wrapper {
         display: flex;
         flex-direction: column-reverse;
         align-items: flex-start;
