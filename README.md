@@ -79,6 +79,7 @@ To test the mockup:
   ],
   "remainingComments": 3
 }
+```
 
 ### Messages JSON structure
 
