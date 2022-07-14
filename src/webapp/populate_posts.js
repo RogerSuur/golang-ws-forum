@@ -35,9 +35,7 @@ export const populatePosts = (postsArray, isThread) => {
         if (isThread) {
 
             // insert thread before user input area
-            
             let userCommentForm = threadWrapper.lastElementChild;
-            console.log(userCommentForm)
             threadWrapper.insertBefore(singlePost, userCommentForm);
 
         } else {

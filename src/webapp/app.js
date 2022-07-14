@@ -39,9 +39,11 @@ export const createLoadMore = (type) => {
             remaining = messagesObject.remainingMessages;
             break;
     }
+
     let moreContent = createDiv(`more-${type}`, `There are ${remaining} older ${type} to read`);
     let loadMore = createDiv([`load-more`, `${type}`], `load more ...`);
     moreContent.appendChild(loadMore);
+
     if (type === 'comments') {
         let userCommentForm = threadWrapper.lastElementChild;
         wrapper.insertBefore(moreContent, userCommentForm);
@@ -70,7 +72,7 @@ function addLoadMoreEvent(element, type) {
     });
 }
 
-/* Loads next batch of posts and add listener */
+/* Loads next batch of posts and adds event listener for threads*/
 const getPosts = () => {
     
     populatePosts(postsObject.posts, false);
@@ -83,7 +85,6 @@ const getPosts = () => {
         threadLink.addEventListener('click', () => {
             toggleThreadVisibility(true);
             let commentBox = threadWrapper.querySelector('.user-input-area')
-            console.log(commentBox)
             threadWrapper.innerHTML = commentBox.outerHTML; // clear thread box contents
             let selectedPost = postsObject.posts.filter(post => post.postID === threadLink.id)
             threadHeader.innerHTML = selectedPost[0].title;
@@ -112,6 +113,34 @@ function getMessages(fromUser, toUser) {
         createLoadMore('messages');
 }
 
+/* Loads user lists and creates event listeners for them to load the conversations */
+const getUsers = () => {
+
+    populateUsers(usersObject);
+
+    const userElements = document.querySelectorAll('.user-name');
+
+    userElements.forEach((user) => {
+        user.addEventListener('click', () => {
+            toggleMessageBoxVisibility(true);
+            messagesWrapper.innerHTML = ''; // clear messages box contents
+            otherUser = user.id;
+            console.log(otherUser)
+            getMessages(currentUser, otherUser);
+            messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
+            messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
+        });
+    });
+
+    closeMessagesBox.addEventListener('click', () => {
+        toggleMessageBoxVisibility(false);
+    });
+};
+
+startHeaderClock;
+getPosts();
+getUsers();
+
 function toggleMessageBoxVisibility(makeVisible) {
     if (makeVisible) {
         messagesBackgroundOverlay.style.zIndex = '1'; // bring overlay in front of posts area
@@ -131,31 +160,3 @@ function toggleThreadVisibility(makeVisible) {
         threadWrapper.parentElement.classList.add('hidden');
     }
 }
-
-
-/* Loads user lists and creates event listeners for them to load the conversations */
-const getUsers = () => {
-
-    populateUsers(usersObject);
-
-    const userElements = document.querySelectorAll('.user-name');
-
-    userElements.forEach((user) => {
-        user.addEventListener('click', () => {
-            toggleMessageBoxVisibility(true);
-            messagesWrapper.innerHTML = ''; // clear messages box contents
-            otherUser = user.name;
-            getMessages(currentUser, otherUser);
-            messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
-            messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
-        });
-    });
-
-    closeMessagesBox.addEventListener('click', () => {
-        toggleMessageBoxVisibility(false);
-    });
-};
-
-startHeaderClock;
-getPosts();
-getUsers();
