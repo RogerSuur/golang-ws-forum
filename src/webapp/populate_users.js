@@ -12,7 +12,7 @@ const constructUserLists = (usersArray, usersWrapper, type) => {
     let counter = 0;
     usersArray.forEach((user) => {
         counter++
-        let singleUser = createDiv('user-name', user.user, user.user);
+        let singleUser = createDiv('user-name', user.name, user.name);
         
         if (user.newMessage) {
             singleUser.classList.add('unread-messages');

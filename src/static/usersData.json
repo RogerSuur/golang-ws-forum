@@ -2,145 +2,145 @@
   "data": {
     "online": [
       {
-        "user": "SampleUser3",
+        "name": "SampleUser3",
         "newMessage": true
       },
       {
-        "user": "SampleUser84",
+        "name": "SampleUser84",
         "newMessage": false
       },
       {
-        "user": "SampleUser22",
+        "name": "SampleUser22",
         "newMessage": false
       }
     ],
     "offline": [
       {
-        "user": "SampleUser12",
+        "name": "SampleUser12",
         "newMessage": true
       },
       {
-        "user": "SampleUserWithAnExtraLongNameToTestTruncating",
+        "name": "SampleUserWithAnExtraLongNameToTestTruncating",
         "newmessage": false
       },
       {
-        "user": "SampleUser19",
+        "name": "SampleUser19",
         "newmessage": false
       },
       {
-        "user": "SampleUser33",
+        "name": "SampleUser33",
         "newmessage": false
       },
       {
-        "user": "SampleUser45",
+        "name": "SampleUser45",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       },
       {
-        "user": "SampleUser99",
+        "name": "SampleUser99",
         "newmessage": false
       }
     ]

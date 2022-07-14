@@ -3,6 +3,7 @@
     "posts": [
       {
         "user": "User3",
+        "postID": "8351f8765ec782ce42869889fca6ba49",
         "title": "Post title nr 5",
         "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam id purus et nunc suscipit consequat et ac ante. Phasellus euismod leo mauris, vel sodales ligula convallis sit amet. Morbi porta porttitor auctor. Duis sollicitudin massa et purus porttitor, nec pulvinar enim egestas. Nullam augue lectus, varius nec condimentum ac, luctus non magna.",
         "timestamp": "07/07/2022 18:34",
@@ -10,6 +11,7 @@
       },
       {
         "user": "User2",
+        "postID": "9ba55d4972eca5ac4008c3eb9c279b3b",
         "title": "Post title nr 4",
         "content": "Morbi dignissim hendrerit blandit. Integer lobortis nibh vitae justo pretium gravida. Praesent vel arcu ut purus varius viverra ut in urna. Morbi non eros orci. Nam quis risus justo. Morbi eget urna in risus luctus pellentesque. In vel accumsan urna.",
         "timestamp": "07/07/2022 18:32",
@@ -17,6 +19,7 @@
       },
       {
         "user": "User1",
+        "postID": "d59f6d8ce3f10b35c524ee1416425d9c",
         "title": "Post title nr 3",
         "content": "In bibendum, turpis ac tristique luctus, turpis odio mattis nisi, vel vestibulum lacus ex a turpis. Nulla ultricies orci non mauris porta, eget vestibulum eros laoreet. Nullam eu erat justo. Cras in ornare magna. Etiam ultrices libero quis blandit porta. Pellentesque rutrum a purus nec sollicitudin. Integer diam nulla, pretium in rutrum vitae, pellentesque in odio. Pellentesque in euismod nisl. Mauris quis nulla et mi fermentum sodales.",
         "timestamp": "07/07/2022 18:30",
@@ -24,6 +27,7 @@
       },
       {
         "user": "User2",
+        "postID": "f2853971ae5e606e81b071e8f0898c3c",
         "title": "Post title nr 2",
         "content": "Morbi dignissim hendrerit blandit. Integer lobortis nibh vitae justo pretium gravida. Praesent vel arcu ut purus varius viverra ut in urna. Morbi non eros orci. Nam quis risus justo. Morbi eget urna in risus luctus pellentesque. In vel accumsan urna.",
         "timestamp": "07/07/2022 18:22",
@@ -31,6 +35,7 @@
       },
       {
         "user": "User1",
+        "postID": "26938d0464f26a7550d8cb81a5dd7da1",
         "title": "Post title nr 1",
         "content": "In bibendum, turpis ac tristique luctus, turpis odio mattis nisi, vel vestibulum lacus ex a turpis. Nulla ultricies orci non mauris porta, eget vestibulum eros laoreet. Nullam eu erat justo. Cras in ornare magna. Etiam ultrices libero quis blandit porta. Pellentesque rutrum a purus nec sollicitudin. Integer diam nulla, pretium in rutrum vitae, pellentesque in odio. Pellentesque in euismod nisl. Mauris quis nulla et mi fermentum sodales.",
         "timestamp": "07/07/2022 18:20",

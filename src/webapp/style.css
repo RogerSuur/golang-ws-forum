@@ -1,3 +1,13 @@
+:root {
+    --primary-light: #ddedf4;
+    --primary-dark: #212121;
+    --text-light: whitesmoke;
+    --secondary-color: #1181b2;
+    --accent-color: #44449b;
+    --complementary-light: lightgray;
+    --complementary-dark: slategray;
+}
+
 body {
     margin: 0;
     background-color: #212221;
@@ -189,7 +199,7 @@ body {
 /* POSTS & THREAD AREA */
 
 .posts-area,
-.thread {
+.thread-area {
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -199,7 +209,11 @@ body {
     z-index: 0;
 }
 
-.new-post-area {
+.thread-area {
+    background-color: lightgray;
+}
+
+.user-input-area {
     display: flex;
     flex-direction: column;
     padding: 1%;
@@ -214,12 +228,27 @@ body {
         padding: 1%;
     }
 
-    .posts-wrapper {
+    .posts-wrapper,
+    .thread-wrapper {
         display: flex;
         flex-direction: column;
         padding-right: 10px;
         overflow: scroll;
         scrollbar-width: thin;
+    }
+
+    .thread-wrapper > .single-post:first-of-type {
+        margin-left: 0;
+        width: 98%;
+        margin-top: 20px;
+    }
+    
+    .thread-wrapper > .single-post,
+    .thread-wrapper > .more-comments {
+        margin-left: 10%;
+        width: 88%;
+        margin-top: 0;
+        margin-bottom: 20px;
     }
 
         .single-post {
@@ -370,7 +399,8 @@ body {
     z-index: 2;
 }
 
-    .messages-header {
+    .messages-header,
+    .thread-header {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -380,7 +410,8 @@ body {
         box-shadow: 2px 3px lightgray;
     }
 
-        .messages-header-text {
+        .messages-header-text,
+        .thread-header-text {
             font-weight: bold;
             font-size: larger;
             padding: 1%;
@@ -389,7 +420,8 @@ body {
             white-space: nowrap;
         }
 
-        .close-button {
+        .close-messages-button,
+        .close-thread-button {
             width: auto;
             border-radius: 7px;
             color: whitesmoke;
@@ -529,6 +561,7 @@ input {
             }
 
 .more-posts,
+.more-comments,
 .more-messages {
     display: flex;
     flex-direction: row;

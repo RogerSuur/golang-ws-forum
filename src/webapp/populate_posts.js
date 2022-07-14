@@ -1,7 +1,7 @@
-import { postsWrapper } from './app.js';
+import { postsWrapper, threadWrapper } from './app.js';
 import { createDiv, horizontalDivider } from './DOM_helpers.js';
 
-export const populatePosts = (postsArray) => {
+export const populatePosts = (postsArray, isThread) => {
 
     postsArray.forEach(post => {
         let singlePost = createDiv('single-post');
@@ -22,35 +22,50 @@ export const populatePosts = (postsArray) => {
         let postBody = document.createElement('div');
         postBody.classList.add('post-body');
 
-        let postTitle = createDiv('post-title', `${post.title}`);
-        postBody.appendChild(postTitle);
+        if (post.title) {
+            let postTitle = createDiv('post-title', `${post.title}`, `${post.postID}`);
+            postBody.appendChild(postTitle);
+        }
         
         let postContent = createDiv('post-content', `${post.content}`);
         postBody.appendChild(postContent);
 
         singlePost.appendChild(postBody);
 
-        hr = horizontalDivider('post-horizontal');
-        singlePost.appendChild(hr);
-        
-        let postFooter = createDiv('post-footer');
-        
-        let commentIcon = document.createElement('i');
-        commentIcon.classList.add('fa-regular', 'fa-message');
-        if (post.comments > 0) 
-            commentIcon.classList.add('active');
+        if (isThread) {
 
-        let commentCount = commentIcon.outerHTML + `&nbsp;${post.comments} comment`;
-        if (post.comments > 1 || post.comments == 0) 
-            commentCount += 's';
+            // insert thread before user input area
+            
+            let userCommentForm = threadWrapper.lastElementChild;
+            console.log(userCommentForm)
+            threadWrapper.insertBefore(singlePost, userCommentForm);
 
-        let postComments = createDiv('post-comments', commentCount);
-        
-        postFooter.appendChild(postComments);
-        singlePost.appendChild(postFooter);
-        
-        postsWrapper.appendChild(singlePost);
+        } else {
+
+            // add footer with comments count
+            hr = horizontalDivider('post-horizontal');
+            singlePost.appendChild(hr);
+            
+            let postFooter = createDiv('post-footer');
+            
+            let commentIcon = document.createElement('i');
+            commentIcon.classList.add('fa-regular', 'fa-message');
+            if (post.comments > 0) 
+                commentIcon.classList.add('active');
+
+            let commentCount = commentIcon.outerHTML + `&nbsp;${post.comments} comment`;
+            if (post.comments > 1 || post.comments == 0) 
+                commentCount += 's';
+
+            let postComments = createDiv('post-comments', commentCount, `${post.postID}`);
+            
+            postFooter.appendChild(postComments);
+            singlePost.appendChild(postFooter);
+
+            postsWrapper.appendChild(singlePost);
+
+        }
+         
     });
-
 }
 

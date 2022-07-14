@@ -49,7 +49,7 @@
         </div>
         <div class="overlay"></div>
         <div class="posts-area">
-            <div class="new-post-area">
+            <div class="user-input-area">
                 <div class="new-post-header">
                     What's the time? Looks like it's New Post o'clock!
                 </div>
@@ -64,26 +64,31 @@
             <div class="posts-wrapper">
             </div>
         </div>
-        <div class="thread hidden">
-            <div class="new-post">
-                <div class="new-post-header">
-                    What's the time? Looks like it's New Post o'clock!
+        <div class="thread-area hidden">
+            <div class="thread-header">
+                <div class="thread-header-text"></div>
+                <div class="close-thread-button">
+                    <i class="fas fa-x"></i>
                 </div>
-                <form action="/post" method="POST">
-                    <input type="text" name="title" placeholder="Title">
-                    <textarea name="content" placeholder="Content"></textarea>
-                    <div class="button-wrapper">
-                        <button type="submit">Share Your Thoughts</button>
-                    </div>
-                </form>
             </div>
-            <div class="posts-wrapper">
+            <div class="thread-wrapper">
+                <div class="user-input-area">
+                    <div class="new-post-header">
+                        Is this the real life? Is this just fantasy?
+                    </div>
+                    <form action="/post" method="POST">
+                        <textarea name="content" placeholder="Comment"></textarea>
+                        <div class="button-wrapper">
+                            <button type="submit">Post Your Comment</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
         <div class="messages-area hidden">
             <div class="messages-header">
                 <div class="messages-header-text"></div>
-                <div class="close-button">
+                <div class="close-messages-button">
                     <i class="fas fa-x"></i>
                 </div>
             </div>
