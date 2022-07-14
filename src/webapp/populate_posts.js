@@ -50,15 +50,16 @@ export const populatePosts = (postsArray, isThread) => {
             
             let commentIcon = document.createElement('i');
             commentIcon.classList.add('fa-regular', 'fa-message');
-            if (post.comments > 0) 
-                commentIcon.classList.add('active');
-
+            
             let commentCount = commentIcon.outerHTML + `&nbsp;${post.comments} comment`;
             if (post.comments > 1 || post.comments == 0) 
                 commentCount += 's';
 
             let postComments = createDiv('post-comments', commentCount, `${post.postID}`);
             
+            if (post.unread) 
+                postComments.classList.add('unread');
+
             postFooter.appendChild(postComments);
             singlePost.appendChild(postFooter);
 
