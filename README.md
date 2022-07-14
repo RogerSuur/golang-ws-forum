@@ -11,7 +11,8 @@ To test the mockup:
 ### Posts JSON structure
 
 ```json
-[
+{
+  "posts": [
     {
       "user": "Username1",
       "title": "Post title1",
@@ -33,29 +34,73 @@ To test the mockup:
       "timestamp": "07/07/2022 18:30",
       "comments": 2
     }
-  ]
+  ],
+  "remainingPosts": 5
+}
 ```
 
 ### Messages JSON structure
 
 ```json
-[
-      {
-        "from": "Username1",
-        "to": "Username2",
-        "content": "Message content 1.",
-        "timestamp": "07/07/2022 18:59"
-      },
-      {
-        "from": "Username2",
-        "to": "Username1",
-        "content": "Message content 2.",
-        "timestamp": "07/07/2022 18:58"
-      },
-      {
-        "from": "Username2",
-        "to": "Username1",
-        "content": "Message content 3.",
-        "timestamp": "07/07/2022 18:56"
-      }
+{
+  "messages": [
+    {
+      "from": "Username1",
+      "to": "Username2",
+      "content": "Message content 1.",
+      "timestamp": "07/07/2022 18:59"
+    },
+    {
+      "from": "Username2",
+      "to": "Username1",
+      "content": "Message content 2.",
+      "timestamp": "07/07/2022 18:58"
+    },
+    {
+      "from": "Username2",
+      "to": "Username1",
+      "content": "Message content 3.",
+      "timestamp": "07/07/2022 18:56"
+    }
+  ],
+      "remainingMessages": 8
+}
+```
+
+### Users JSON structure
+
+```json
+{
+  "online": [
+    {
+      "user": "SampleUser3",
+      "newMessage": true
+    },
+    {
+      "user": "SampleUser84",
+      "newMessage": false
+    },
+    {
+      "user": "SampleUser22",
+      "newMessage": false
+    }
+  ],
+  "offline": [
+    {
+      "user": "SampleUser12",
+      "newMessage": true
+    },
+    {
+      "user": "SampleUserWithAnExtraLongNameToTestTruncating",
+      "newmessage": false
+    },
+    {
+      "user": "SampleUser19",
+      "newmessage": false
+    },
+    {
+      "user": "SampleUser33",
+      "newmessage": false
+    }
+  ]
 }

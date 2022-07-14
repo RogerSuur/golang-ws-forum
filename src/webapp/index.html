@@ -1,115 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>Real Time Forum</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="stylesheet" href="style.css">
+<head>
+    <title>Real Time Forum</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
-        <link rel="manifest" href="/images/favicon/site.webmanifest">
+    <link rel="stylesheet" href="style.css">
 
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Barrio&display=swap" rel="stylesheet"> 
-        <link href="https://fonts.googleapis.com/css2?family=Barrio&family=Rubik+Moonrocks&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/images/favicon/site.webmanifest">
 
-    </head>
-    <body>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barrio&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barrio&family=Rubik+Moonrocks&display=swap" rel="stylesheet">
 
-        <script src="https://kit.fontawesome.com/4c286e0ec9.js" crossorigin="anonymous"></script>
+</head>
 
-        <div class="wrapper">            
-            <div class="header">
-                <div class="user-profile">
-                    <div class="avatar">
-                        <img src="/images/userAvatars/001.jpg" class="clipped" alt="">
-                    </div>
-                    <div class="current-user">User3</div>
+<body>
+
+    <script src="https://kit.fontawesome.com/4c286e0ec9.js" crossorigin="anonymous"></script>
+
+    <div class="wrapper">
+        <div class="header">
+            <div class="user-profile">
+                <div class="avatar">
+                    <img src="/images/userAvatars/001.jpg" class="clipped" alt="">
                 </div>
-                <div class="horizontal-spacer">|</div>
-                <div class="login">Logout</div>
+                <div class="current-user">User3</div>
             </div>
-            <div class="clock-wrapper">
-                <div class="clock-background">
-                    <div class="hour"></div>
-                    <div class="minute"></div>
-                    <div class="second"></div>
-                </div>
-            </div>
-            <div class="ads">
-                <div class="ad">
-                    <a href="https://kood.tech/" target="_blank"><img src="/images/ad.png" alt=""></a>
-                </div>
-                <div class="ad-text">ads by kood/Ads</div>
-            </div>
-            <div class="overlay"></div>
-            <div class="posts-area">
-                <div class="new-post-area">
-                    <div class="new-post-header">
-                        What's the time? Looks like it's New Post o'clock!
-                    </div>
-                    <form action="/post" method="POST">
-                        <input type="text" name="title" placeholder="Title">
-                        <textarea name="content" placeholder="Content"></textarea>
-                        <div class="button-wrapper">
-                            <button type="submit">Share Your Thoughts</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="posts-wrapper">
-                </div>
-            </div>
-            <div class="thread hidden">
-                <div class="new-post">
-                    <div class="new-post-header">
-                        What's the time? Looks like it's New Post o'clock!
-                    </div>
-                    <form action="/post" method="POST">
-                        <input type="text" name="title" placeholder="Title">
-                        <textarea name="content" placeholder="Content"></textarea>
-                        <div class="button-wrapper">
-                            <button type="submit">Share Your Thoughts</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="posts-wrapper">
-                </div>
-            </div>
-            <div class="messages-area hidden">
-                <div class="messages-header">
-                    <div class="messages-header-text"></div>
-                    <div class="close-button">
-                        <i class="fas fa-x"></i>
-                    </div>    
-                </div>
-                <div class="messages-wrapper">
-                    <div class="more-messages">
-                        <div class="load-more messages">load more ...</div>
-                    </div>
-                </div>
-                <div class="new-message-box">
-                    <form action="/post" method="POST">
-                        <input type="text" name="message" placeholder="Type your message here...">
-                        <div class="button-wrapper">
-                            <button type="submit">Send Message</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="user-list">
-                <div class="online">
-                    <div class="online-group">Online: 2</div>
-                </div>
-                <div class="offline">
-                    <div class="offline-group">Offline: 5</div>
-                </div>
+            <div class="horizontal-spacer">|</div>
+            <div class="login">Logout</div>
+        </div>
+        <div class="clock-wrapper">
+            <div class="clock-background">
+                <div class="hour"></div>
+                <div class="minute"></div>
+                <div class="second"></div>
             </div>
         </div>
+        <div class="ads">
+            <div class="ad">
+                <a href="https://kood.tech/" target="_blank"><img src="/images/ad.png" alt=""></a>
+            </div>
+            <div class="ad-text">ads by kood/Ads</div>
+        </div>
+        <div class="overlay"></div>
+        <div class="posts-area">
+            <div class="new-post-area">
+                <div class="new-post-header">
+                    What's the time? Looks like it's New Post o'clock!
+                </div>
+                <form action="/post" method="POST">
+                    <input type="text" name="title" placeholder="Title">
+                    <textarea name="content" placeholder="Content"></textarea>
+                    <div class="button-wrapper">
+                        <button type="submit">Share Your Thoughts</button>
+                    </div>
+                </form>
+            </div>
+            <div class="posts-wrapper">
+            </div>
+        </div>
+        <div class="thread hidden">
+            <div class="new-post">
+                <div class="new-post-header">
+                    What's the time? Looks like it's New Post o'clock!
+                </div>
+                <form action="/post" method="POST">
+                    <input type="text" name="title" placeholder="Title">
+                    <textarea name="content" placeholder="Content"></textarea>
+                    <div class="button-wrapper">
+                        <button type="submit">Share Your Thoughts</button>
+                    </div>
+                </form>
+            </div>
+            <div class="posts-wrapper">
+            </div>
+        </div>
+        <div class="messages-area hidden">
+            <div class="messages-header">
+                <div class="messages-header-text"></div>
+                <div class="close-button">
+                    <i class="fas fa-x"></i>
+                </div>
+            </div>
+            <div class="messages-wrapper">
+                <div class="more-messages">
+                    <div class="load-more messages">load more ...</div>
+                </div>
+            </div>
+            <div class="new-message-box">
+                <form action="/post" method="POST">
+                    <input type="text" name="message" placeholder="Type your message here...">
+                    <div class="button-wrapper">
+                        <button type="submit">Send Message</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="user-list">
+            <div class="online">
+                <div class="online-group">Online: 2</div>
+            </div>
+            <div class="offline">
+                <div class="offline-group">Offline: 5</div>
+            </div>
+        </div>
+    </div>
 
-        <script src="./app.js" type="module"></script>
+    <script src="./app.js" type="module"></script>
 
-    </body>
+</body>
+
 </html>

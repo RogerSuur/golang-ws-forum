@@ -1,27 +1,22 @@
 import { messagesWrapper } from "./app.js";
+import { createDiv } from "./DOM_helpers.js";
 
-export const populateMessages = (messagesArray, remainingMessages, currentUser) => {
+export const populateMessages = (messagesArray, currentUser) => {
 
     let previousUser;
 
     messagesArray.forEach((message) => {
-        let singleMessage = document.createElement('div');
-        singleMessage.classList.add('single-message');
+        let singleMessage = createDiv('single-message');
 
-        let messageContent = document.createElement('div');
-        messageContent.classList.add('message-content');
-        messageContent.innerHTML = message.content;
-
+        let messageContent = createDiv('message-content', message.content);
+        
         if (message.from !== previousUser) {
-            let messageAuthor = document.createElement('div');
-            messageAuthor.classList.add('message-user');
+            let messageAuthor = createDiv('message-user', message.from);
             if (message.from === currentUser) {
                 messageAuthor.innerHTML = `Me`;
                 singleMessage.classList.add('me');
                 messageAuthor.classList.add('me');
                 messageContent.classList.add('me');
-            } else {
-                messageAuthor.innerHTML = `${message.from}`;
             }
             singleMessage.appendChild(messageAuthor);
         } else if (previousUser !== currentUser) {
@@ -32,9 +27,8 @@ export const populateMessages = (messagesArray, remainingMessages, currentUser) 
 
         singleMessage.appendChild(messageContent);
 
-        let messageDate = document.createElement('div');
-        messageDate.classList.add('message-date');
-        messageDate.innerHTML = `${message.timestamp}`;
+        let messageDate = createDiv('message-date', message.timestamp);
+        
         singleMessage.appendChild(messageDate);
         
         messagesWrapper.appendChild(singleMessage);

@@ -1,24 +1,26 @@
-import { onlineUsers } from "./app.js";
-import { offlineUsers } from "./app.js";
+import { createDiv } from './DOM_helpers.js';
+
+const onlineUsersWrapper = document.querySelector('.online');
+const offlineUsersWrapper = document.querySelector('.offline');
 
 export const populateUsers = (usersObject) => {
-    constructUserLists(usersObject.online, onlineUsers, 'online');
-    constructUserLists(usersObject.offline, offlineUsers, 'offline');
+    constructUserLists(usersObject.online, onlineUsersWrapper, 'online');
+    constructUserLists(usersObject.offline, offlineUsersWrapper, 'offline');
 };
 
-const constructUserLists = (usersArray, usersElement, type) => {
+const constructUserLists = (usersArray, usersWrapper, type) => {
     let counter = 0;
     usersArray.forEach((user) => {
         counter++
-        let singleUser = document.createElement('div');
-        singleUser.classList.add('user-name');
-        singleUser.setAttribute('id', user.user);
-        singleUser.innerHTML = user.user;
+        let singleUser = createDiv('user-name', user.user, user.user);
+        
         if (user.newMessage) {
             singleUser.classList.add('unread-messages');
         }
-        usersElement.appendChild(singleUser);
+
+        usersWrapper.appendChild(singleUser);
     });
+
     let heading = document.querySelector(`.${type}-group`);
     if (type === 'online') {
         heading.innerHTML = `<i class="fa-solid fa-comments"></i>${counter} users ${type}`;

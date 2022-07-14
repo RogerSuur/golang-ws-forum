@@ -1,148 +1,148 @@
 {
-    "data": {
-      "online": [
-        {
-          "user": "SampleUser3",
-          "newMessage": true
-        },
-        {
-          "user": "SampleUser84",
-          "newMessage": false
-        },
-        {
-          "user": "SampleUser22",
-          "newMessage": false
-        }
-      ],
-      "offline": [
-        {
-          "user": "SampleUser12",
-          "newMessage": true
-        },
-        {
-          "user": "SampleUserWithAnExtraLongNameToTestTruncating",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser19",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser33",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser45",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        },
-        {
-          "user": "SampleUser99",
-          "newmessage": false
-        }
-      ]
-    }
+  "data": {
+    "online": [
+      {
+        "user": "SampleUser3",
+        "newMessage": true
+      },
+      {
+        "user": "SampleUser84",
+        "newMessage": false
+      },
+      {
+        "user": "SampleUser22",
+        "newMessage": false
+      }
+    ],
+    "offline": [
+      {
+        "user": "SampleUser12",
+        "newMessage": true
+      },
+      {
+        "user": "SampleUserWithAnExtraLongNameToTestTruncating",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser19",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser33",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser45",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      },
+      {
+        "user": "SampleUser99",
+        "newmessage": false
+      }
+    ]
   }
+}
