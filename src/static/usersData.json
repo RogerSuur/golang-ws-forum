@@ -3,145 +3,145 @@
     "online": [
       {
         "name": "SampleUser3",
-        "newMessage": true
+        "unread": true
       },
       {
         "name": "SampleUser84",
-        "newMessage": false
+        "unread": false
       },
       {
         "name": "SampleUser22",
-        "newMessage": false
+        "unread": true
       }
     ],
     "offline": [
       {
         "name": "SampleUser12",
-        "newMessage": true
+        "unread": false
       },
       {
         "name": "SampleUserWithAnExtraLongNameToTestTruncating",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser19",
-        "newmessage": false
+        "unread": true
       },
       {
         "name": "SampleUser33",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser45",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       },
       {
         "name": "SampleUser99",
-        "newmessage": false
+        "unread": false
       }
     ]
   }

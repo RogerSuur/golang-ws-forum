@@ -3,8 +3,9 @@
 JS Real Time Forum task
 
 To test the mockup:
-1) Run a local Python HTTP server: `python3 -m http.server 8080`
-2) Open [localhost:8080/src/webapp/](http://localhost:8080/src/webapp/)
+
+1. Run a local Python HTTP server: `python3 -m http.server 8080`
+2. Open [localhost:8080/src/webapp/](http://localhost:8080/src/webapp/)
 
 ## SPECS
 
@@ -15,24 +16,30 @@ To test the mockup:
   "posts": [
     {
       "user": "Username1",
+      "postID": "8351f8765ec782ce42869889fca6ba49",
       "title": "Post title1",
       "content": "Post content 1.",
       "timestamp": "07/07/2022 18:34",
-      "comments": 1
+      "comments": 1,
+      "unread": false
     },
     {
       "user": "Username2",
+      "postID": "9ba55d4972eca5ac4008c3eb9c279b3b",
       "title": "Post title2",
       "content": "Post content 2.",
       "timestamp": "07/07/2022 18:32",
-      "comments": 0
+      "comments": 0,
+      "unread": false
     },
     {
       "user": "Username3",
+      "postID": "d59f6d8ce3f10b35c524ee1416425d9c",
       "title": "Post title3",
       "content": "Post content 3.",
       "timestamp": "07/07/2022 18:30",
-      "comments": 2
+      "comments": 2,
+      "unread": true
     }
   ],
   "remainingPosts": 5
@@ -63,7 +70,7 @@ To test the mockup:
       "timestamp": "07/07/2022 18:56"
     }
   ],
-      "remainingMessages": 8
+  "remainingMessages": 8
 }
 ```
 
@@ -73,34 +80,35 @@ To test the mockup:
 {
   "online": [
     {
-      "user": "SampleUser3",
-      "newMessage": true
+      "name": "SampleUser3",
+      "unread": true
     },
     {
-      "user": "SampleUser84",
-      "newMessage": false
+      "name": "SampleUser84",
+      "unread": false
     },
     {
-      "user": "SampleUser22",
-      "newMessage": false
+      "name": "SampleUser22",
+      "unread": false
     }
   ],
   "offline": [
     {
-      "user": "SampleUser12",
-      "newMessage": true
+      "name": "SampleUser12",
+      "unread": true
     },
     {
-      "user": "SampleUserWithAnExtraLongNameToTestTruncating",
-      "newmessage": false
+      "name": "SampleUserWithAnExtraLongNameToTestTruncating",
+      "unread": false
     },
     {
-      "user": "SampleUser19",
-      "newmessage": false
+      "name": "SampleUser19",
+      "unread": false
     },
     {
-      "user": "SampleUser33",
-      "newmessage": false
+      "name": "SampleUser33",
+      "unread": false
     }
   ]
 }
+```
