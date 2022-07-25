@@ -232,6 +232,10 @@ function toggleRegisterVisibility(makeVisible) {
 }
 
 /*
+
+https://medium.com/walmartglobaltech/infinite-scrolling-the-right-way-11b098a08815
+https://jsfiddle.net/valkyris/43fmku20/693/
+
 const initIntersectionObserver = () => {
     const options = {
         root: postsWrapper,
