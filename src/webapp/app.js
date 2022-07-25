@@ -9,6 +9,15 @@ export const postsWrapper = document.querySelector('.posts-wrapper');
 export const threadWrapper = document.querySelector('.thread-wrapper');
 export const messagesWrapper = document.querySelector('.messages-wrapper');
 
+const profile = document.querySelector('.user-profile-container');
+const logout = document.getElementById('logout');
+const adsArea = document.querySelector('.ads-area');
+const loginArea = document.querySelector('.login-area');
+const registerArea = document.querySelector('.register-area');
+const userArea = document.querySelector('.user-list');
+
+const buttons = document.querySelectorAll('button');
+
 const threadHeader = document.querySelector('.thread-header-text');
 const messageBoxHeader = document.querySelector('.messages-header-text');
 const closeMessagesBox = document.querySelector('.close-messages-button');
@@ -141,6 +150,27 @@ startHeaderClock;
 getPosts();
 getUsers();
 
+buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+        switch (button.id) {
+            case 'login':
+                toggleLoginVisibility(false);
+                break;
+            case 'register':
+                toggleRegisterVisibility(true);
+                break;
+            case 'create':
+                toggleRegisterVisibility(false);
+                break;
+            case 'logout':
+                toggleLoginVisibility(true);
+                break;
+            default:
+                console.log(button.id)
+        }
+    });
+});
+
 function toggleMessageBoxVisibility(makeVisible) {
     if (makeVisible) {
         messagesBackgroundOverlay.style.zIndex = '1'; // bring overlay in front of posts area
@@ -158,5 +188,43 @@ function toggleThreadVisibility(makeVisible) {
     } else {
         postsWrapper.parentElement.classList.remove('hidden');
         threadWrapper.parentElement.classList.add('hidden');
+    }
+}
+
+function toggleLoginVisibility(makeVisible) {
+    if (makeVisible) {
+        adsArea.classList.add('hidden');
+        postsWrapper.parentElement.classList.add('hidden');
+        userArea.classList.add('hidden');
+        profile.classList.add('hidden');
+        registerArea.classList.add('hidden');
+        logout.innerHTML = 'Login';
+        loginArea.classList.remove('hidden');
+    } else {
+        adsArea.classList.remove('hidden');
+        postsWrapper.parentElement.classList.remove('hidden');
+        userArea.classList.remove('hidden');
+        profile.classList.remove('hidden');
+        logout.innerHTML = 'Logout';
+        loginArea.classList.add('hidden');
+    }
+}
+
+function toggleRegisterVisibility(makeVisible) {
+    if (makeVisible) {
+        adsArea.classList.add('hidden');
+        postsWrapper.parentElement.classList.add('hidden');
+        userArea.classList.add('hidden');
+        profile.classList.add('hidden');
+        logout.innerHTML = 'Login';
+        loginArea.classList.add('hidden');
+        registerArea.classList.remove('hidden');
+    } else {
+        adsArea.classList.remove('hidden');
+        postsWrapper.parentElement.classList.remove('hidden');
+        userArea.classList.remove('hidden');
+        profile.classList.remove('hidden');
+        logout.innerHTML = 'Logout';
+        registerArea.classList.add('hidden');
     }
 }

@@ -69,7 +69,8 @@ body {
         padding-right: 5px;
     }
 
-        .user-profile {
+        .user-profile,
+        .user-profile-container {
             display: flex;
             align-items: center;
             padding: 2px;
@@ -78,6 +79,7 @@ body {
 
         .user-profile:hover {
             background-color: var(--complementary-light);
+            color: var(--primary-dark);
             cursor: pointer;
         }
 
@@ -85,7 +87,7 @@ body {
         margin: 10px;
     }
 
-    .login {
+    .logout-button {
         padding: 2px;
         padding-left: 5px;
         padding-right: 5px;
@@ -94,11 +96,14 @@ body {
         border-radius: 7px;
         display: inline-flex;
         align-items: center;
+        align-self: center;
         justify-content: center;
+        color: inherit;
     }
 
-        .login:hover {
+        .logout-button:hover {
             background-color: var(--complementary-light);
+            color: var(--primary-dark);
             cursor: pointer;
         }
 
@@ -179,7 +184,7 @@ body {
 
 /* ADS AREA */
 
-.ads {
+.ads-area {
     grid-row: main / footer;
     grid-column: left-bar / main-posts;
     display: flex;
@@ -220,6 +225,20 @@ body {
     z-index: 0;
 }
 
+.login-area,
+.register-area {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    grid-row: main / footer;
+    grid-column: left-bar / right-bar;
+    background-color: var(--complementary-light);
+    z-index: 0;
+}
+
+
 .user-input-area {
     display: flex;
     flex-direction: column;
@@ -229,7 +248,32 @@ body {
     box-shadow: 2px 3px var(--complementary-light);
 }
 
-    .new-post-header {
+    .login-wrapper,
+    .register-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-self: center;
+        margin: auto;
+    }
+
+    .gender-wrapper {
+        display: flex;
+        flex-direction: row;
+        padding: 1%;
+        align-items: center;
+        opacity: 0.5;
+    }
+
+    .login-wrapper > .user-input-area,
+    .register-wrapper > .user-input-area {
+        padding: 5%;
+        white-space: nowrap;
+        width: max-content;
+    }
+
+    .new-post-header,
+    .login-header,
+    .register-header {
         font-weight: bold;
         font-size: larger;
         padding: 1%;
@@ -323,6 +367,21 @@ body {
     .unread {
         background-color: var(--primary-light);
         font-weight: bold;
+    }
+
+    .login-footer,
+    .register-footer {
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        padding: 2%;
+        margin: 1%;
+        width: max-content;
+    }
+
+    .login-footer > button,
+    .register-footer > button {
+        color: var(--accent-color)
     }
 
 /* USERLIST AREA */
@@ -540,6 +599,7 @@ input {
     border-radius: 10px;
     border: 1px solid var(--complementary-light);
     padding: 1%;
+    margin-block: 1%;
     font-family: inherit;
     font-size: inherit;
 }
@@ -561,18 +621,37 @@ input {
     }
 
         button {
-            width: 25%;
-            border: 1px solid var(--complementary-light);
             border-radius: 10px;
-            padding: 1%;
+            padding: 3px;
             align-self: flex-end;
             font-family: inherit;
             font-size: inherit;
         }
 
+        button[type="submit"] {
+            width: 25%;
+            border: 1px solid var(--complementary-light);
+        }
+
+        button[type="button"] {
+            padding-inline: 5px;
+            margin-inline: 5px;
+            border: none;
+            background-color: transparent;
+        }
+
             button:hover {
                 box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
             }
+        
+
+        .mandatory::placeholder {
+            opacity: 1;
+        }
+
+        .optional {
+            background-color: var(--complementary-light);
+        }
 
 .more-posts,
 .more-comments,
@@ -627,5 +706,6 @@ i {
 
 a {
     text-decoration: none;
-    color: var(--accent-color);
+    color: inherit;
+    margin-inline: inherit;
 }

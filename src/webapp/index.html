@@ -25,14 +25,16 @@
 
     <div class="wrapper">
         <div class="header">
-            <div class="user-profile">
-                <div class="avatar">
-                    <img src="/images/userAvatars/001.jpg" class="clipped" alt="">
+            <div class="user-profile-container hidden">
+                <div class="user-profile">
+                    <div class="avatar">
+                        <img src="/images/userAvatars/001.jpg" class="clipped" alt="">
+                    </div>
+                    <div class="current-user">User3</div>
                 </div>
-                <div class="current-user">User3</div>
+                <div class="horizontal-spacer">|</div>
             </div>
-            <div class="horizontal-spacer">|</div>
-            <div class="login">Logout</div>
+                <button id="logout" class="logout-button" type="button">Login</button>
         </div>
         <div class="logo">
             <a href="/src/webapp">
@@ -45,25 +47,23 @@
                 </div>
             </a>
         </div>
-        <div class="ads">
+        <div class="ads-area hidden">
             <div class="ad">
                 <a href="https://kood.tech/" target="_blank"><img class="ad-image" src="/images/ad.png" alt=""></a>
             </div>
             <div class="ad-text">ads by kood/Ads</div>
         </div>
         <div class="overlay"></div>
-        <div class="posts-area">
+        <div class="posts-area hidden">
             <div class="user-input-area">
                 <div class="new-post-header">
                     What's the time? Looks like it's New Post o'clock!
                 </div>
-                <form action="/post" method="POST">
                     <input type="text" name="title" placeholder="Title">
                     <textarea name="content" placeholder="Content"></textarea>
                     <div class="button-wrapper">
-                        <button type="submit">Share Your Thoughts</button>
+                        <button id="post" type="submit">Share Your Thoughts</button>
                     </div>
-                </form>
             </div>
             <div class="posts-wrapper">
             </div>
@@ -80,12 +80,10 @@
                     <div class="new-post-header">
                         Is this the real life? Is this just fantasy?
                     </div>
-                    <form action="/post" method="POST">
                         <textarea name="content" placeholder="Comment"></textarea>
                         <div class="button-wrapper">
-                            <button type="submit">Post Your Comment</button>
+                            <button id="comment" type="submit">Post Your Comment</button>
                         </div>
-                    </form>
                 </div>
             </div>
         </div>
@@ -102,20 +100,67 @@
                 </div>
             </div>
             <div class="user-input-area">
-                <form action="/post" method="POST">
                     <input type="text" name="message" placeholder="Type your message here...">
                     <div class="button-wrapper">
-                        <button type="submit">Send Message</button>
+                        <button id="message" type="submit">Send Message</button>
                     </div>
-                </form>
             </div>
         </div>
-        <div class="user-list">
+        <div class="user-list hidden">
             <div class="online">
                 <div class="online-group">Online: 2</div>
             </div>
             <div class="offline">
                 <div class="offline-group">Offline: 5</div>
+            </div>
+        </div>
+        <div class="login-area">
+            <div class="login-wrapper">
+                <div class="user-input-area">
+                    <div class="login-header">
+                        Enter Your Account Credentials
+                    </div>
+                        <input type="text" name="username" placeholder="Username or email">
+                        <input type="password" name="password" placeholder="Password">
+                        <div class="button-wrapper">
+                            <button id="login" type="submit">Login</button>
+                        </div>
+                </div>
+                <div class="login-footer">
+                    Don't have a Real Time&#8482; account?<button id="register" type="button">Register</button>
+                </div>
+            </div>
+        </div>
+        <div class="register-area hidden">
+            <div class="register-wrapper">
+                <div class="user-input-area">
+                    <div class="register-header">
+                        Create Your Real Time&#8482; Account
+                    </div>
+                        <input type="text" class="mandatory" name="username" placeholder="Username (nickname)">
+                        <input type="email" class="mandatory" name="email" placeholder="Email">
+                        <input type="password" class="mandatory" name="password" placeholder="Password">
+                        <input type="password" class="mandatory" name="password-confirm" placeholder="Confirm Password">
+                        <input type="text" class="optional" name="first-name" placeholder="First Name (optional)">
+                        <input type="text" class="optional" name="last-name" placeholder="Last Name (optional)">
+                        <input type="number" class="optional" name="age" placeholder="Age (optional)">
+                        <div class="gender-wrapper optional">
+                            Gender&nbsp;(optional):
+                            <input type="radio" name="gender" id="female" value="female">
+                            <label for="female">Female</label>
+                            <input type="radio" name="gender" id="male" value="male">
+                            <label for="male">Male</label>
+                            <input type="radio" name="gender" id="other" value="other">
+                            <label for="other">other</label>
+                        </div>
+
+                        <div class="button-wrapper">
+                            <button id="create" type="submit">Register</button>
+                        </div>
+                </div>
+                <div class="register-footer">
+                    Already have a Real Time&#8482; account?<button id="logout" type="button">Login</button>
+                </div>
             </div>
         </div>
     </div>
