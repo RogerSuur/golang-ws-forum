@@ -30,6 +30,7 @@ let usersObject = await getJSON('/src/static/usersData.json');
 let messagesObject = await getJSON('/src/static/messagesData.json');
 let currentUser = 'User3';
 let otherUser;
+let postPage = 0;
 
 /* Creates "Load more" button for posts and messages */
 export const createLoadMore = (type) => {
@@ -84,8 +85,9 @@ function addLoadMoreEvent(element, type) {
 /* Loads next batch of posts and adds event listener for threads*/
 const getPosts = () => {
     
-    populatePosts(postsObject.posts, false);
+    populatePosts(postsObject.posts, false, postPage);
     if (postsObject.remainingPosts > 0) 
+        postPage += 5;
         createLoadMore("posts");
 
     const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
@@ -228,3 +230,35 @@ function toggleRegisterVisibility(makeVisible) {
         registerArea.classList.add('hidden');
     }
 }
+
+/*
+const initIntersectionObserver = () => {
+    const options = {
+        root: postsWrapper,
+    }
+
+    const callback = (entries) => {
+        entries.forEach(entry => {
+            console.log(entry.id. postPage)
+            if (entry.id === 'post-0') {
+                topSentCallback(entry)
+            } else if (entry.id === `post-${postPage - 1}`) {
+                bottomSentCallback(entry)
+            }
+        });
+    }
+    
+    var observer = new IntersectionObserver(callback, options);
+    observer.observe(document.querySelector("#post-0"));
+    observer.observe(document.querySelector(`#post-${postPage - 1}`));
+}
+
+
+const recycleDOM = firstIndex => {
+	for (let i = 0; i < postPage; i++) {
+		const tile = document.querySelector("#post-" + i);
+		//tile.firstElementChild.innerText = DB[i + firstIndex].title;
+		//tile.lastChild.setAttribute("src", DB[i + firstIndex].imgSrc);
+  }
+}
+*/

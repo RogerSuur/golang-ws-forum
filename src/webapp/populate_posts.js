@@ -1,10 +1,12 @@
 import { postsWrapper, threadWrapper } from './app.js';
 import { createDiv, horizontalDivider } from './DOM_helpers.js';
 
-export const populatePosts = (postsArray, isThread) => {
+export const populatePosts = (postsArray, isThread, postNumber) => {
 
     postsArray.forEach(post => {
         let singlePost = createDiv('single-post');
+
+        singlePost.setAttribute('id', `post-${postNumber}`);
 
         let postHeader = createDiv('post-header');
 
@@ -64,6 +66,7 @@ export const populatePosts = (postsArray, isThread) => {
             postsWrapper.appendChild(singlePost);
 
         }
+        postNumber++;
          
     });
 }
