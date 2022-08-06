@@ -1,28 +1,31 @@
-import { createDiv } from "./DOM_helpers.js";
+import { createDiv, $, qS } from "./DOM_helpers.js";
 import { startHeaderClock } from "./header_clock.js";
 import { getJSON } from "./read_JSON.js";
 import { populatePosts } from "./populate_posts.js";
 import { populateMessages } from "./populate_messages.js";
 import { populateUsers } from "./populate_users.js";
 
-export const postsWrapper = document.querySelector('.posts-wrapper');
-export const threadWrapper = document.querySelector('.thread-wrapper');
-export const messagesWrapper = document.querySelector('.messages-wrapper');
+export const postsWrapper = qS('posts-wrapper');
+export const threadWrapper = qS('thread-wrapper');
+export const messagesWrapper = qS('messages-wrapper');
 
-const profile = document.querySelector('.user-profile-container');
-const logout = document.getElementById('logout');
-const adsArea = document.querySelector('.ads-area');
-const loginArea = document.querySelector('.login-area');
-const registerArea = document.querySelector('.register-area');
-const userArea = document.querySelector('.user-list');
+function hide(x) {return x.classList.add('hidden');}
+function show(x) {return x.classList.remove('hidden');}
+
+const profile = qS('user-profile-container');
+const logout = $('logout');
+const adsArea = qS('ads-area');
+const loginArea = qS('login-area');
+const registerArea = qS('register-area');
+const userArea = qS('user-list');
 
 const buttons = document.querySelectorAll('button');
 
-const threadHeader = document.querySelector('.thread-header-text');
-const messageBoxHeader = document.querySelector('.messages-header-text');
-const closeMessagesBox = document.querySelector('.close-messages-button');
-const closeThread = document.querySelector('.close-thread-button');
-const messagesBackgroundOverlay = document.querySelector('.overlay');
+const threadHeader = qS('thread-header-text');
+const messageBoxHeader = qS('messages-header-text');
+const closeMessagesBox = qS('close-messages-button');
+const closeThread = qS('close-thread-button');
+const messagesBackgroundOverlay = qS('overlay');
 
 let postsObject = await getJSON('/src/static/postsData.json');
 let threadObject = await getJSON('/src/static/threadData.json');
@@ -185,30 +188,33 @@ function toggleMessageBoxVisibility(makeVisible) {
 
 function toggleThreadVisibility(makeVisible) {
     if (makeVisible) {
-        postsWrapper.parentElement.classList.add('hidden'); // make posts hidden
-        threadWrapper.parentElement.classList.remove('hidden'); // make thread visible
+        hide(postsWrapper.parentElement); // make posts hidden
+        show(threadWrapper.parentElement); // make thread visible
     } else {
-        postsWrapper.parentElement.classList.remove('hidden');
-        threadWrapper.parentElement.classList.add('hidden');
+        show(postsWrapper.parentElement);
+        hide(threadWrapper.parentElement);
     }
 }
 
 function toggleLoginVisibility(makeVisible) {
     if (makeVisible) {
-        adsArea.classList.add('hidden');
-        postsWrapper.parentElement.classList.add('hidden');
-        userArea.classList.add('hidden');
-        profile.classList.add('hidden');
-        registerArea.classList.add('hidden');
+        hide(adsArea);
+        hide(postsWrapper.parentElement);
+        hide(userArea);
+        hide(profile);
+        hide(registerArea);
+
         logout.innerHTML = 'Login';
-        loginArea.classList.remove('hidden');
+        show(loginArea);
+
     } else {
-        adsArea.classList.remove('hidden');
-        postsWrapper.parentElement.classList.remove('hidden');
-        userArea.classList.remove('hidden');
-        profile.classList.remove('hidden');
+        show(adsArea);
+        show(postsWrapper.parentElement);
+        show(userArea);
+        show(profile);
+
         logout.innerHTML = 'Logout';
-        loginArea.classList.add('hidden');
+        hide(loginArea);
     }
 }
 
@@ -218,14 +224,16 @@ function toggleRegisterVisibility(makeVisible) {
         postsWrapper.parentElement.classList.add('hidden');
         userArea.classList.add('hidden');
         profile.classList.add('hidden');
-        logout.innerHTML = 'Login';
         loginArea.classList.add('hidden');
+        
+        logout.innerHTML = 'Login';
         registerArea.classList.remove('hidden');
     } else {
         adsArea.classList.remove('hidden');
         postsWrapper.parentElement.classList.remove('hidden');
         userArea.classList.remove('hidden');
         profile.classList.remove('hidden');
+        
         logout.innerHTML = 'Logout';
         registerArea.classList.add('hidden');
     }
