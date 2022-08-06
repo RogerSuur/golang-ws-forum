@@ -1,4 +1,4 @@
-import { createDiv, $, qS } from "./DOM_helpers.js";
+import { createDiv, $, qS, horizontalDivider } from "./DOM_helpers.js";
 import { startHeaderClock } from "./header_clock.js";
 import { getJSON } from "./read_JSON.js";
 import { populatePosts } from "./populate_posts.js";
@@ -35,7 +35,231 @@ let currentUser = 'User3';
 let otherUser;
 let postPage = 0;
 
+let topSentinelPreviousY = 0;
+let topSentinelPreviousRatio = 0;
+let bottomSentinelPreviousY = 0;
+let bottomSentinelPreviousRatio = 0;
+
+let listSize = 20;
+let DBSize = 200;
+
+const initDB = num => {
+    const db = [];
+    for (let i = 0; i < num; i++) {
+        db.push({
+        postCounter: i,
+        user: postsObject.posts[i].user,
+        postID: postsObject.posts[i].postID,
+        title: postsObject.posts[i].title,
+        content: postsObject.posts[i].content,
+        timestamp: postsObject.posts[i].timestamp,
+        comments: postsObject.posts[i].comments,
+        unread: postsObject.posts[i].unread,
+    })
+  }
+  return db;
+}
+
+let DB = [];
+
+let currentIndex = 0;
+
+const initList = num => {
+  
+    for (let i = 0; i < num; i++) {
+        const singlePost = createDiv('single-post');
+        singlePost.setAttribute('id', `post-${i}`);
+
+        let postHeader = createDiv('post-header');
+
+        let postDate = createDiv('post-date', `real time of posting: ${postsObject.posts[i].timestamp}`);
+        postHeader.appendChild(postDate);
+
+        let postAuthor = createDiv('post-user', `real posting by: <b>${postsObject.posts[i].user}</b>`);
+        postHeader.appendChild(postAuthor);
+
+        singlePost.appendChild(postHeader);
+
+        let hr = horizontalDivider('post-horizontal');
+        singlePost.appendChild(hr);
+
+        let postBody = document.createElement('div');
+        postBody.classList.add('post-body');
+
+        if (postsObject.posts[i].title) {
+            let postTitle = createDiv('post-title', `${postsObject.posts[i].title}`, `${postsObject.posts[i].postID}`);
+            postBody.appendChild(postTitle);
+        }
+
+        let postContent = createDiv('post-content', `${postsObject.posts[i].content}`);
+        postBody.appendChild(postContent);
+
+        singlePost.appendChild(postBody);
+
+        /*
+        if (isThread) {
+
+            // insert thread before user input area
+            let userCommentForm = threadWrapper.lastElementChild;
+            threadWrapper.insertBefore(singlePost, userCommentForm);
+
+        } else {
+            */
+
+            // add footer with comments count
+            hr = horizontalDivider('post-horizontal');
+            singlePost.appendChild(hr);
+            
+            let postFooter = createDiv('post-footer');
+            
+            let commentIcon = document.createElement('i');
+            commentIcon.classList.add('fa-regular', 'fa-message');
+            
+            let commentCount = commentIcon.outerHTML + `&nbsp;${postsObject.posts[i].comments} comment`;
+            if (postsObject.posts[i].comments > 1 || postsObject.posts[i].comments == 0) 
+                commentCount += 's';
+
+            let postComments = createDiv('post-comments', commentCount, `${postsObject.posts[i].postID}`);
+            
+            if (postsObject.posts[i].unread) 
+                postComments.classList.add('unread');
+
+            postFooter.appendChild(postComments);
+            singlePost.appendChild(postFooter);
+
+            postsWrapper.appendChild(singlePost);
+
+        //}
+  }
+  
+}
+
+const getSlidingWindow = isScrollDown => {
+	const increment = Math.floor(listSize / 2);
+	let firstIndex;
+  
+    if (isScrollDown) {
+        firstIndex = currentIndex + increment;
+    } else {
+        firstIndex = currentIndex - increment - listSize;
+    }
+  
+    if (firstIndex < 0) {
+        firstIndex = 0;
+    }
+  
+    return firstIndex;
+}
+
+const recycleDOM = firstIndex => {
+	for (let i = 0; i < listSize; i++) {
+        const tile = $("post-" + i);
+        tile.childNodes[0].childNodes[0].innerHTML = `real time of posting: ${DB[firstIndex + i].timestamp}`;
+        tile.childNodes[0].childNodes[1].innerHTML = `real posting by: <b>${DB[firstIndex + i].user}</b>`;
+        tile.childNodes[2].childNodes[0].innerHTML = `${DB[firstIndex + i].title}`;
+        tile.childNodes[2].childNodes[1].innerHTML = `${DB[firstIndex + i].content}`;
+    }
+}
+
+const getNumFromStyle = numStr => Number(numStr.substring(0, numStr.length - 2));
+
+const adjustPaddings = isScrollDown => {
+    const container = postsWrapper;
+    const currentPaddingTop = getNumFromStyle(container.style.paddingTop);
+    const currentPaddingBottom = getNumFromStyle(container.style.paddingBottom);
+    const remPaddingsVal = 170 * (listSize / 2);
+	if (isScrollDown) {
+        container.style.paddingTop = currentPaddingTop + remPaddingsVal + "px";
+        container.style.paddingBottom = currentPaddingBottom === 0 ? "0px" : currentPaddingBottom - remPaddingsVal + "px";
+    } else {
+        container.style.paddingBottom = currentPaddingBottom + remPaddingsVal + "px";
+        container.style.paddingTop = currentPaddingTop === 0 ? "0px" : currentPaddingTop - remPaddingsVal + "px";
+    }
+}
+
+const topSentCallback = entry => {
+    if (currentIndex === 0) {
+		const container = postsWrapper;
+        container.style.paddingTop = "0px";
+        container.style.paddingBottom = "0px";
+    }
+
+    const currentY = entry.boundingClientRect.top;
+    const currentRatio = entry.intersectionRatio;
+    const isIntersecting = entry.isIntersecting;
+
+  // conditional check for Scrolling up
+    if (
+        currentY > topSentinelPreviousY &&
+        isIntersecting &&
+        currentRatio >= topSentinelPreviousRatio &&
+        currentIndex !== 0
+    ) {
+        const firstIndex = getSlidingWindow(false);
+        adjustPaddings(false);
+        recycleDOM(firstIndex);
+        currentIndex = firstIndex;
+    }
+
+    topSentinelPreviousY = currentY;
+    topSentinelPreviousRatio = currentRatio;
+}
+
+const botSentCallback = entry => {
+	if (currentIndex === DBSize - listSize) {
+        return;
+    }
+    const currentY = entry.boundingClientRect.top;
+    const currentRatio = entry.intersectionRatio;
+    const isIntersecting = entry.isIntersecting;
+
+  // conditional check for Scrolling down
+    if (
+        currentY < bottomSentinelPreviousY &&
+        currentRatio > bottomSentinelPreviousRatio &&
+        isIntersecting
+    ) {
+        const firstIndex = getSlidingWindow(true);
+        adjustPaddings(true);
+        recycleDOM(firstIndex);
+        currentIndex = firstIndex;
+    }
+
+    bottomSentinelPreviousY = currentY;
+    bottomSentinelPreviousRatio = currentRatio;
+}
+
+const initIntersectionObserver = () => {
+    const options = {
+        /* root: document.querySelector(".cat-list") */
+    }
+  
+    const callback = entries => {
+      entries.forEach(entry => {
+        if (entry.target.id === 'post-0') {
+          topSentCallback(entry);
+        } else if (entry.target.id === `post-${listSize - 1}`) {
+          botSentCallback(entry);
+        }
+      });
+    }
+  
+    var observer = new IntersectionObserver(callback, options);
+    observer.observe($("post-0"));
+    observer.observe($(`post-${listSize - 1}`));
+  }
+
+const start = () => {
+
+    DB = initDB(DBSize);
+	initList(listSize);
+	initIntersectionObserver();
+}
+
+start();
+
 /* Creates "Load more" button for posts and messages */
+/*
 export const createLoadMore = (type) => {
     let wrapper, remaining
     switch (type) {
@@ -84,8 +308,9 @@ function addLoadMoreEvent(element, type) {
         }
     });
 }
-
+*/
 /* Loads next batch of posts and adds event listener for threads*/
+/*
 const getPosts = () => {
     
     populatePosts(postsObject.posts, false, postPage);
@@ -110,8 +335,9 @@ const getPosts = () => {
         toggleThreadVisibility(false);
     });
 }
-
+*/
 /* Loads a thread */
+/*
 const getThread = () => {
     console.log("Opening thread");
     populatePosts(threadObject.posts, true);
@@ -152,7 +378,7 @@ const getUsers = () => {
 };
 
 startHeaderClock;
-getPosts();
+//getPosts();
 getUsers();
 
 buttons.forEach((button) => {
