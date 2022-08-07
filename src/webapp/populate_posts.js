@@ -48,12 +48,7 @@ export const populatePosts = (postsArray, isThread, postNumber) => {
             
             let postFooter = createDiv('post-footer');
             
-            let commentIcon = document.createElement('i');
-            commentIcon.classList.add('fa-regular', 'fa-message');
-            
-            let commentCount = commentIcon.outerHTML + `&nbsp;${post.comments} comment`;
-            if (post.comments > 1 || post.comments == 0) 
-                commentCount += 's';
+            let commentCount = createCommentNode(post);
 
             let postComments = createDiv('post-comments', commentCount, `${post.postID}`);
             
@@ -69,5 +64,15 @@ export const populatePosts = (postsArray, isThread, postNumber) => {
         postNumber++;
          
     });
+}
+
+export function createCommentNode(post) {
+    let commentIcon = document.createElement('i');
+    commentIcon.classList.add('fa-regular', 'fa-message');
+
+    let commentCount = commentIcon.outerHTML + `&nbsp;${post.comments} comment`;
+    if (post.comments > 1 || post.comments == 0)
+        commentCount += 's';
+    return commentCount;
 }
 

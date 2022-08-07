@@ -1,7 +1,7 @@
 import { createDiv, $, qS, horizontalDivider } from "./DOM_helpers.js";
 import { startHeaderClock } from "./header_clock.js";
 import { getJSON } from "./read_JSON.js";
-import { populatePosts } from "./populate_posts.js";
+import { populatePosts, createCommentNode } from "./populate_posts.js";
 import { populateMessages } from "./populate_messages.js";
 import { populateUsers } from "./populate_users.js";
 
@@ -154,10 +154,14 @@ const getSlidingWindow = isScrollDown => {
 const recycleDOM = firstIndex => {
 	for (let i = 0; i < listSize; i++) {
         const tile = $("post-" + i);
-        tile.childNodes[0].childNodes[0].innerHTML = `real time of posting: ${DB[firstIndex + i].timestamp}`;
-        tile.childNodes[0].childNodes[1].innerHTML = `real posting by: <b>${DB[firstIndex + i].user}</b>`;
-        tile.childNodes[2].childNodes[0].innerHTML = `${DB[firstIndex + i].title}`;
-        tile.childNodes[2].childNodes[1].innerHTML = `${DB[firstIndex + i].content}`;
+        tile.childNodes[0].firstChild.innerHTML = `real time of posting: ${DB[firstIndex + i].timestamp}`;
+        tile.childNodes[0].lastChild.innerHTML = `real posting by: <b>${DB[firstIndex + i].user}</b>`;
+        tile.childNodes[2].firstChild.innerHTML = `${DB[firstIndex + i].title}`;
+        tile.childNodes[2].firstChild.setAttribute('id', `${DB[firstIndex + i].postID}`);
+        tile.childNodes[2].lastChild.innerHTML = `${DB[firstIndex + i].content}`;
+        let commentCount = createCommentNode(DB[firstIndex + i]);
+        tile.childNodes[4].firstChild.innerHTML = commentCount;
+        tile.childNodes[4].firstChild.setAttribute('id', `${DB[firstIndex + i].postID}`);
     }
 }
 
