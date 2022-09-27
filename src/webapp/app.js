@@ -4,6 +4,8 @@ import { getJSON } from "./read_JSON.js";
 import { populatePosts } from "./populate_posts.js";
 import { populateMessages } from "./populate_messages.js";
 import { populateUsers } from "./populate_users.js";
+import { Forum } from './ws.js';
+
 
 export const postsWrapper = document.querySelector('.posts-wrapper');
 export const threadWrapper = document.querySelector('.thread-wrapper');
@@ -24,12 +26,14 @@ const closeMessagesBox = document.querySelector('.close-messages-button');
 const closeThread = document.querySelector('.close-thread-button');
 const messagesBackgroundOverlay = document.querySelector('.overlay');
 
-let postsObject = await getJSON('/src/static/postsData.json');
-let threadObject = await getJSON('/src/static/threadData.json');
-let usersObject = await getJSON('/src/static/usersData.json');
-let messagesObject = await getJSON('/src/static/messagesData.json');
-let currentUser = 'User3';
+let postsObject = await getJSON('/static/postsData.json');
+let threadObject = await getJSON('/static/threadData.json');
+//let usersObject = await getJSON('/static/usersData.json');
+let messagesObject = await getJSON('/static/messagesData.json');
+let currentUser = document.getElementById("username");
 let otherUser;
+
+const forum = new Forum()
 
 /* Creates "Load more" button for posts and messages */
 export const createLoadMore = (type) => {
@@ -59,7 +63,7 @@ export const createLoadMore = (type) => {
     } else {
         wrapper.appendChild(moreContent);
     }
-    
+
     addLoadMoreEvent(loadMore, type);
 };
 
@@ -83,9 +87,9 @@ function addLoadMoreEvent(element, type) {
 
 /* Loads next batch of posts and adds event listener for threads*/
 const getPosts = () => {
-    
+
     populatePosts(postsObject.posts, false);
-    if (postsObject.remainingPosts > 0) 
+    if (postsObject.remainingPosts > 0)
         createLoadMore("posts");
 
     const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
@@ -110,7 +114,7 @@ const getPosts = () => {
 const getThread = () => {
     console.log("Opening thread");
     populatePosts(threadObject.posts, true);
-    if (threadObject.remainingComments> 0)
+    if (threadObject.remainingComments > 0)
         createLoadMore("comments");
 }
 
@@ -123,9 +127,8 @@ function getMessages(fromUser, toUser) {
 }
 
 /* Loads user lists and creates event listeners for them to load the conversations */
-const getUsers = () => {
-
-    populateUsers(usersObject);
+export const getUsers = () => {
+    populateUsers();
 
     const userElements = document.querySelectorAll('.user-name');
 
