@@ -128,9 +128,8 @@ function getMessages(fromUser, toUser) {
 
 /* Loads user lists and creates event listeners for them to load the conversations */
 export const getUsers = () => {
-    populateUsers();
-
-    const userElements = document.querySelectorAll('.user-name');
+    populateUsers().then(() => {
+        const userElements = document.querySelectorAll('.user-name');
 
     userElements.forEach((user) => {
         user.addEventListener('click', () => {
@@ -146,6 +145,7 @@ export const getUsers = () => {
 
     closeMessagesBox.addEventListener('click', () => {
         toggleMessageBoxVisibility(false);
+    });
     });
 };
 

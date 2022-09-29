@@ -73,7 +73,7 @@ func WsEndPoint(w http.ResponseWriter, r *http.Request) {
 func ListenForWs(conn *WebSocketConnection) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Println("error", fmt.Sprintf("%v", r))
+			log.Println("ListenFor Ws error", fmt.Sprintf("%v", r))
 		}
 	}()
 
@@ -112,8 +112,8 @@ func ListenToWsChannel() {
 			case "left":
 				response.Action = "list_users"
 				delete(clients, e.Conn)
-				fmt.Println("action left", clients)
 				users := getUserList()
+				fmt.Println("action left", users)
 				database.UpdateOnlineUsers(users)
 				response.ConnectedUsers = users
 				BroadcastToAll(response)
