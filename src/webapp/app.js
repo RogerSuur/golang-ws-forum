@@ -131,6 +131,7 @@ const initList = num => {
 
         //}
   }
+  postsWrapper.appendChild(createDiv('load-more', 'Loading more...', 'load-more'));
   
 }
 
@@ -168,10 +169,19 @@ const recycleDOM = firstIndex => {
 const getNumFromStyle = numStr => Number(numStr.substring(0, numStr.length - 2));
 
 const adjustPaddings = isScrollDown => {
+    /*
+    if (isScrollDown) {
+        const currentItem = $("post-" + (listSize - 3));
+        currentItem.scrollIntoView();
+    } else {
+        const currentItem = $("post-13");
+        currentItem.scrollIntoView();
+    }
+ 
     const container = postsWrapper;
     const currentPaddingTop = getNumFromStyle(container.style.paddingTop);
     const currentPaddingBottom = getNumFromStyle(container.style.paddingBottom);
-    const remPaddingsVal = 170 * (listSize / 2);
+    const remPaddingsVal = 100 * (listSize / 2);
 	if (isScrollDown) {
         container.style.paddingTop = currentPaddingTop + remPaddingsVal + "px";
         container.style.paddingBottom = currentPaddingBottom === 0 ? "0px" : currentPaddingBottom - remPaddingsVal + "px";
@@ -179,6 +189,7 @@ const adjustPaddings = isScrollDown => {
         container.style.paddingBottom = currentPaddingBottom + remPaddingsVal + "px";
         container.style.paddingTop = currentPaddingTop === 0 ? "0px" : currentPaddingTop - remPaddingsVal + "px";
     }
+    */
 }
 
 const topSentCallback = entry => {
@@ -209,14 +220,15 @@ const topSentCallback = entry => {
     topSentinelPreviousRatio = currentRatio;
 }
 
-const botSentCallback = entry => {
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+const bottomSentCallback = entry => {
 	if (currentIndex === DBSize - listSize) {
         return;
     }
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-
   // conditional check for Scrolling down
     if (
         currentY < bottomSentinelPreviousY &&
@@ -235,22 +247,25 @@ const botSentCallback = entry => {
 
 const initIntersectionObserver = () => {
     const options = {
-        /* root: document.querySelector(".cat-list") */
+        //root: $("load-more"),
     }
   
     const callback = entries => {
       entries.forEach(entry => {
         if (entry.target.id === 'post-0') {
           topSentCallback(entry);
-        } else if (entry.target.id === `post-${listSize - 1}`) {
-          botSentCallback(entry);
+        } else if (entry.target.id === `load-more`) {
+            setTimeout(() => {
+                bottomSentCallback(entry);
+            }, 1000);
         }
       });
     }
   
     var observer = new IntersectionObserver(callback, options);
     observer.observe($("post-0"));
-    observer.observe($(`post-${listSize - 1}`));
+    observer.observe($("load-more"));
+    //observer.observe($(`post-${listSize - 1}`));
   }
 
 const start = () => {

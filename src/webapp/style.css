@@ -19,8 +19,8 @@ body {
     height: 100vh;
     width: 100vw;
     align-items: top;
-    grid-template-rows: [header] 5vh [title] 15vh [main] 75vh [footer] 5vh [row-end];
-    grid-template-columns: [col-start] 5vw [left-bar] 15vw [main-posts] 50vw [main-users] 25vw [right-bar] 5vw [col-end];
+    grid-template-rows: [header] 5vh [title] 15vh [main] 80vh [row-end];
+    grid-template-columns: [col-start] 5fr [left-bar] 15vw [main-posts] 50vw [main-users] 25vw [right-bar] 5fr [col-end];
 }
 
 
@@ -29,7 +29,7 @@ body {
 .header {
     display: flex;
     padding: 10px;
-    grid-row: header / title;
+    grid-row: header / row-end;
     grid-column: main-users / right-bar;
     text-align: right;
     align-items: center;
@@ -185,7 +185,7 @@ body {
 /* ADS AREA */
 
 .ads-area {
-    grid-row: main / footer;
+    grid-row: main / row-end;
     grid-column: left-bar / main-posts;
     display: flex;
     flex-direction: column;
@@ -217,9 +217,8 @@ body {
 .posts-area,
 .thread-area {
     padding: 10px;
-    display: flex;
-    flex-direction: column;
-    grid-row: main / footer;
+    display: grid;
+    grid-row: main / row-end;
     grid-column: main-posts / main-users;
     background-color: var(--complementary-light);
     z-index: 0;
@@ -232,7 +231,7 @@ body {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    grid-row: main / footer;
+    grid-row: main / row-end;
     grid-column: left-bar / right-bar;
     background-color: var(--complementary-light);
     z-index: 0;
@@ -388,7 +387,7 @@ body {
 
 .user-list {
     padding: 1%;
-    grid-row: main / footer;
+    grid-row: main / row-end;
     grid-column: main-users / right-bar;
     color: white;
     background-color: var(--primary-light);
@@ -460,7 +459,7 @@ body {
     flex-direction: column;
     align-self: flex-end;
     justify-self: flex-end;
-    grid-row: main / footer;
+    grid-row: main / row-end;
     grid-column: main-posts / main-users;
     max-height: 95%;
     min-height: auto;
@@ -692,7 +691,7 @@ i {
 
 .overlay {
     display: flex;
-    grid-row: main / footer;
+    grid-row: main / row-end;
     grid-column: main-posts / main-users;
     pointer-events: none;
     cursor: default;
