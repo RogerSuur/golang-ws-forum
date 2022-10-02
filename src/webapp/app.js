@@ -131,7 +131,7 @@ const initList = num => {
 
         //}
   }
-  postsWrapper.appendChild(createDiv('load-more', 'Loading more...', 'load-more'));
+  //postsWrapper.appendChild(createDiv('load-more', 'Loading more...', 'load-more'));
   
 }
 
@@ -142,7 +142,7 @@ const getSlidingWindow = isScrollDown => {
     if (isScrollDown) {
         firstIndex = currentIndex + increment;
     } else {
-        firstIndex = currentIndex - increment - listSize;
+        firstIndex = currentIndex - increment;
     }
   
     if (firstIndex < 0) {
@@ -161,23 +161,31 @@ const recycleDOM = firstIndex => {
         tile.childNodes[2].firstChild.setAttribute('id', `${DB[firstIndex + i].postID}`);
         tile.childNodes[2].lastChild.innerHTML = `${DB[firstIndex + i].content}`;
         let commentCount = createCommentNode(DB[firstIndex + i]);
+        if (DB[firstIndex + i].unread) 
+            commentCount.classList.add('unread');
         tile.childNodes[4].firstChild.innerHTML = commentCount;
         tile.childNodes[4].firstChild.setAttribute('id', `${DB[firstIndex + i].postID}`);
+        /*
+        if (i == listSize / 2) {
+            const lastTile = $("post-9");
+            lastTile.scrollIntoView({behavior: 'smooth', block: 'end'});
+        }
+        */
     }
 }
 
 const getNumFromStyle = numStr => Number(numStr.substring(0, numStr.length - 2));
 
 const adjustPaddings = isScrollDown => {
-    /*
+    
     if (isScrollDown) {
-        const currentItem = $("post-" + (listSize - 3));
-        currentItem.scrollIntoView();
+        const scrollPpintItem = $("post-9");
+        scrollPpintItem.scrollIntoView({behavior: 'auto', block: 'end'});
     } else {
-        const currentItem = $("post-13");
-        currentItem.scrollIntoView();
+        const scrollPpintItem = $("post-11");
+        scrollPpintItem.scrollIntoView({behavior: 'auto', block: 'start'});
     }
- 
+    /*
     const container = postsWrapper;
     const currentPaddingTop = getNumFromStyle(container.style.paddingTop);
     const currentPaddingBottom = getNumFromStyle(container.style.paddingBottom);
@@ -193,11 +201,12 @@ const adjustPaddings = isScrollDown => {
 }
 
 const topSentCallback = entry => {
-    if (currentIndex === 0) {
+    /*if (currentIndex === 0) {
 		const container = postsWrapper;
         container.style.paddingTop = "0px";
         container.style.paddingBottom = "0px";
     }
+    */
 
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
@@ -254,7 +263,7 @@ const initIntersectionObserver = () => {
       entries.forEach(entry => {
         if (entry.target.id === 'post-0') {
           topSentCallback(entry);
-        } else if (entry.target.id === `load-more`) {
+        } else if (entry.target.id === `post-${listSize - 1}`) {
             setTimeout(() => {
                 bottomSentCallback(entry);
             }, 1000);
@@ -264,8 +273,8 @@ const initIntersectionObserver = () => {
   
     var observer = new IntersectionObserver(callback, options);
     observer.observe($("post-0"));
-    observer.observe($("load-more"));
-    //observer.observe($(`post-${listSize - 1}`));
+    //observer.observe($("load-more"));
+    observer.observe($(`post-${listSize - 1}`));
   }
 
 const start = () => {

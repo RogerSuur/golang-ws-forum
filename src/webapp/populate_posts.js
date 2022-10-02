@@ -52,8 +52,8 @@ export const populatePosts = (postsArray, isThread, postNumber) => {
 
             let postComments = createDiv('post-comments', commentCount, `${post.postID}`);
             
-            if (post.unread) 
-                postComments.classList.add('unread');
+            //if (post.unread) 
+            //    postComments.classList.add('unread');
 
             postFooter.appendChild(postComments);
             singlePost.appendChild(postFooter);
