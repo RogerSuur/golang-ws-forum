@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
 )
 
 type Online struct {
@@ -17,9 +18,17 @@ type Offline struct {
 	Unread   bool   `json:"unread"`
 }
 
+type Message struct {
+	From      string `json:"from"`
+	To        string `json:"to"`
+	Content   string `json:"content"`
+	Timestamp string `json:"timestamp"`
+}
+
 type Status struct {
 	Online  []Online  `json:"online"`
 	Offline []Offline `json:"offline"`
+	Message []Message `json:"messages"`
 }
 
 type Data struct {
@@ -49,17 +58,13 @@ func UpdateOnlineUsers(usersList []string) {
 	if len(usersList) > len(users.Status.Online) {
 		for _, v := range usersList {
 			userExists := false
-			// fmt.Println(v, i)
 			for _, k := range users.Status.Online {
-				//	fmt.Println(k)
 				if k.Username == v {
-					//		fmt.Println(k.Username, " == ", v)
 					userExists = true
 					break
 				}
 			}
 			if !userExists {
-				//	fmt.Println("!userExists:", v, i)
 				users.Status.Online = append(users.Status.Online, Online{
 					Username: v,
 					Unread:   false,
@@ -69,11 +74,8 @@ func UpdateOnlineUsers(usersList []string) {
 	} else {
 		for i, v := range users.Status.Online {
 			userExists := false
-			// fmt.Println(v, i)
 			for _, k := range usersList {
-				//	fmt.Println(k)
 				if v.Username == k {
-					//		fmt.Println(k.Username, " == ", v)
 					userExists = true
 					break
 				}
@@ -85,9 +87,6 @@ func UpdateOnlineUsers(usersList []string) {
 		}
 	}
 
-	// fmt.Println("list of users.Status.Online:", users.Status.Online)
-	// fmt.Println("database.go UpdateOnlineUsers:", usersList)
-
 	// Preparing the data to be marshalled and written.
 	result, e := json.MarshalIndent(users, "", "\t")
 	if e != nil {
@@ -95,6 +94,43 @@ func UpdateOnlineUsers(usersList []string) {
 	}
 
 	err = ioutil.WriteFile("./src/webapp/static/usersData.json", result, 0o644)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func UpdateMessagesData(sender string, receiver string, message string) {
+	jsonFile, err := os.Open("./src/webapp/static/messagesData.json")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	// we initialize our Users array
+	var users Data
+
+	json.Unmarshal(byteValue, &users)
+
+	dt := time.Now()
+	// dt.Format("01/02/2006 15:04")
+
+	users.Status.Message = append(users.Status.Message, Message{
+		From:      sender,
+		To:        receiver,
+		Content:   message,
+		Timestamp: dt.Format("01/02/2006 15:04"),
+	})
+
+	// Preparing the data to be marshalled and written.
+	result, e := json.MarshalIndent(users, "", "\t")
+	if e != nil {
+		fmt.Println("error", err)
+	}
+
+	err = ioutil.WriteFile("./src/webapp/static/messagesData.json", result, 0o644)
 	if err != nil {
 		panic(err)
 	}

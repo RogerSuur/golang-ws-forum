@@ -124,10 +124,13 @@
           <input
             type="text"
             name="message"
+            class="form-control"
+            id="message"
             placeholder="Type your message here..."
           />
           <div class="button-wrapper">
-            <button id="message" type="submit">Send Message</button>
+            <button a href="javascript:void(0);" id="sendMessage" type="submit">Send Message</button>
+            <input type="hidden" name="action" id="action">
           </div>
         </div>
       </div>
@@ -145,6 +148,7 @@
             <div class="login-header">Enter Your Account Credentials</div>
             <input
               type="text"
+              id="usernameinput"
               name="username"
               placeholder="Username or email"
             />

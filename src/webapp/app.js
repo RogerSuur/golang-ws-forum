@@ -5,6 +5,9 @@ import { populatePosts } from "./populate_posts.js";
 import { populateMessages } from "./populate_messages.js";
 import { populateUsers } from "./populate_users.js";
 import { Forum } from './ws.js';
+import { sendMessage } from "./ws.js";
+import { socket } from "./ws.js";
+
 
 
 export const postsWrapper = document.querySelector('.posts-wrapper');
@@ -30,8 +33,11 @@ let postsObject = await getJSON('/static/postsData.json');
 let threadObject = await getJSON('/static/threadData.json');
 //let usersObject = await getJSON('/static/usersData.json');
 let messagesObject = await getJSON('/static/messagesData.json');
-let currentUser = document.getElementById("username");
-let otherUser;
+export let currentUser = document.getElementById("username");
+export let otherUser;
+// export let messagesObject;
+
+
 
 const forum = new Forum()
 
@@ -122,6 +128,7 @@ const getThread = () => {
 function getMessages(fromUser, toUser) {
     console.log("Loading messages from " + fromUser + " to " + toUser);
     populateMessages(messagesObject.messages, fromUser);
+    console.log(messagesObject.messages)
     if (messagesObject.remainingMessages > 0)
         createLoadMore('messages');
 }
@@ -136,7 +143,6 @@ export const getUsers = () => {
             toggleMessageBoxVisibility(true);
             messagesWrapper.innerHTML = ''; // clear messages box contents
             otherUser = user.id;
-            console.log(otherUser)
             getMessages(currentUser, otherUser);
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
@@ -154,7 +160,7 @@ getPosts();
 getUsers();
 
 buttons.forEach((button) => {
-    button.addEventListener('click', () => {
+    button.addEventListener('click', function(event)  {
         switch (button.id) {
             case 'login':
                 toggleLoginVisibility(false);
@@ -168,11 +174,31 @@ buttons.forEach((button) => {
             case 'logout':
                 toggleLoginVisibility(true);
                 break;
+            case 'sendMessage':
+                if (message.value === ""){
+                    alert("fill out user nad message")
+                    return False
+                } else {
+                    sendMessage()
+                }
+                break;
             default:
                 console.log(button.id)
         }
     });
 });
+
+document.getElementById("message").addEventListener("keydown", function(event) {
+    if (event.code === "Enter") {
+        if (!socket) {
+            console.log("no connection");
+            return false
+        }
+        event.preventDefault();//dont send the form
+        event.stopPropagation();
+        sendMessage()
+    }
+})
 
 function toggleMessageBoxVisibility(makeVisible) {
     if (makeVisible) {

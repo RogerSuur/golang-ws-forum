@@ -1,8 +1,13 @@
 export const userInput = document.getElementById("username")
-import {getUsers} from './app.js'
+export const userNameInput = document.getElementById("usernameinput")
+export let socket = null;
+import {currentUser, getUsers} from './app.js'
+import { otherUser } from './app.js';
+
+//import {getMessages} from './app.js';
+
 
 export function Forum() {
-    let socket = null;
 
     window.onbeforeunload = function () {
         let jsonData = {};
@@ -28,19 +33,46 @@ export function Forum() {
                 case "list_users":
                     getUsers()
                     break;
+                case "broadcast":
+                    console.log("socket case")
+                    //getMessages(currentUser.value, otherUser)
             }
         };
-
-        //let userInput = document.getElementById("username"); //reference to form control
-        userInput.addEventListener("change", function () {
-            let jsonData = {}; // json send to websocket
-            jsonData["action"] = "username";
-            jsonData["username"] = this.value; // whatever i type in the form input
-            socket.send(JSON.stringify(jsonData)); //send it as jsondata
-        });
 
         socket.onerror = (error) => {
             console.log("there was an error");
         };
+
+        //Later be replaced
+        userInput.addEventListener("change", function () {
+            let jsonData = {}; // json send to websocket
+            jsonData["action"] = "username";
+            jsonData["username"] = this.value; // whatever i type in the form input
+            let currentUser = document.querySelector(".current-user").textContent = this.value
+            socket.send(JSON.stringify(jsonData)); //send it as jsondata
+        });
+
+        userNameInput.addEventListener("change", function () {
+            let jsonData = {}; 
+            jsonData["action"] = "username";
+            jsonData["username"] = this.value; 
+            let currentUser = document.querySelector(".current-user").textContent = this.value
+            console.log(currentUser);
+            socket.send(JSON.stringify(jsonData)); 
+        });
+
     // });
+}
+
+//send messages to server
+export function sendMessage() {
+    let jsonData = {};
+    jsonData["action"] = "broadcast";
+    console.log("other user from sendMessage func:", otherUser);
+    console.log(document.getElementById("username").value);
+    jsonData["other_user"] = otherUser;
+    jsonData["username"] = document.getElementById("username").value;
+    jsonData["message"] = document.getElementById("message").value;
+    socket.send(JSON.stringify(jsonData))
+    document.getElementById("message").value = "";
 }

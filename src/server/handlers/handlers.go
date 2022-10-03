@@ -49,10 +49,11 @@ type WebSocketConnection struct {
 
 // sending to the server
 type WsPayload struct {
-	Action   string              `json:"action"`
-	Username string              `json:"username"`
-	Message  string              `json:"message"`
-	Conn     WebSocketConnection `json:"-"`
+	Action          string              `json:"action"`
+	Username        string              `json:"username"`
+	MessageReceiver string              `json:"other_user"`
+	Message         string              `json:"message"`
+	Conn            WebSocketConnection `json:"-"`
 }
 
 // takes a regular connection and upgrades it to websocket connection
@@ -99,24 +100,30 @@ func ListenToWsChannel() {
 			// response.Action = "Got here"
 			// response.Message = fmt.Sprintf("Some message and action was%v", e.Action)
 			switch e.Action {
+
 			case "username":
 				// get a list of all users and send it back via broadcast
 				clients[e.Conn] = e.Username
 				users := getUserList()
-				// fmt.Println("ListenToWsChannel finds username to be:", e.Username)
-				fmt.Println("my users list: ", users)
 				database.UpdateOnlineUsers(users)
 				response.Action = "list_users"
 				response.ConnectedUsers = users
 				BroadcastToAll(response)
+
 			case "left":
 				response.Action = "list_users"
 				delete(clients, e.Conn)
 				users := getUserList()
-				fmt.Println("action left", users)
 				database.UpdateOnlineUsers(users)
 				response.ConnectedUsers = users
 				BroadcastToAll(response)
+
+			case "broadcast":
+				response.Action = "broadcast"
+				response.Message = e.Message
+				// write message to database
+				database.UpdateMessagesData(e.Username, e.MessageReceiver, e.Message)
+				BroadcastToClient(e.MessageReceiver, response)
 			}
 		}
 	}
@@ -125,7 +132,9 @@ func ListenToWsChannel() {
 func getUserList() []string {
 	var userList []string
 	for _, x := range clients {
-		userList = append(userList, x)
+		if x != "" {
+			userList = append(userList, x)
+		}
 	}
 	sort.Strings(userList)
 	return userList
@@ -133,11 +142,25 @@ func getUserList() []string {
 
 func BroadcastToAll(response WsJsonResponse) {
 	for client := range clients {
+		fmt.Println("client:", client)
 		err := client.WriteJSON(response)
 		if err != nil {
 			log.Println("websocket error")
 			_ = client.Close()
 			delete(clients, client)
+		}
+	}
+}
+
+func BroadcastToClient(sendText string, response WsJsonResponse) {
+	for client := range clients {
+		if clients[client] == sendText {
+			err := client.WriteJSON(response)
+			if err != nil {
+				log.Println("websocket error")
+				_ = client.Close()
+				delete(clients, client)
+			}
 		}
 	}
 }

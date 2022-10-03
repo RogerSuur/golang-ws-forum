@@ -1,10 +1,7 @@
 {
 	"data": {
 		"online": [
-			{
-				"name": "JollyRoger",
-				"unread": false
-			}
+			
 		],
 		"offline": [
 			{
@@ -27,6 +24,7 @@
 				"name": "SampleUser45",
 				"unread": false
 			}
-		]
+		],
+		"messages": null
 	}
 }
