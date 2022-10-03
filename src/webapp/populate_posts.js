@@ -5,7 +5,11 @@ export const initPosts = (DB, num, isThread) => {
   
     for (let i = 0; i < num; i++) {
         const singlePost = createDiv('single-post');
-        singlePost.setAttribute('id', `post-${i}`);
+        if (isThread) {
+            singlePost.setAttribute('id', `thread-${i}`);
+        } else {
+            singlePost.setAttribute('id', `post-${i}`);
+        }
 
         let postHeader = createDiv('post-header');
 
