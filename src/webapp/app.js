@@ -85,8 +85,6 @@ const recycleDOM = (firstIndex, isThread) => {
     }
 }
 
-// const getNumFromStyle = numStr => Number(numStr.substring(0, numStr.length - 2));
-
 const keepPostInFocus = isScrollDown => {
     if (isScrollDown) {
         const scrollPpintItem = $(`post-` + (listSize / 2 - 1));
@@ -211,93 +209,6 @@ const start = () => {
 
 start();
 
-/* Creates "Load more" button for posts and messages */
-/*
-export const createLoadMore = (type) => {
-    let wrapper, remaining
-    switch (type) {
-        case 'posts':
-            wrapper = postsWrapper;
-            remaining = postsObject.remainingPosts;
-            break;
-        case 'comments':
-            wrapper = threadWrapper;
-            remaining = threadObject.remainingComments;
-            break;
-        case 'messages':
-            wrapper = messagesWrapper;
-            remaining = messagesObject.remainingMessages;
-            break;
-    }
-
-    let moreContent = createDiv(`more-${type}`, `There are ${remaining} older ${type} to read`);
-    let loadMore = createDiv([`load-more`, `${type}`], `load more ...`);
-    moreContent.appendChild(loadMore);
-
-    if (type === 'comments') {
-        let userCommentForm = threadWrapper.lastElementChild;
-        wrapper.insertBefore(moreContent, userCommentForm);
-    } else {
-        wrapper.appendChild(moreContent);
-    }
-    
-    addLoadMoreEvent(loadMore, type);
-};
-
-function addLoadMoreEvent(element, type) {
-    element.addEventListener('click', () => {
-        element.parentElement.remove();
-        console.log(`loading more ${type}`);
-        switch (type) {
-            case 'posts':
-                getPosts();
-                break;
-            case 'comments':
-                getThread();
-                break;
-            case 'messages':
-                getMessages(currentUser, otherUser);
-                break;
-        }
-    });
-}
-*/
-/* Loads next batch of posts and adds event listener for threads*/
-/*
-const getPosts = () => {
-    
-    populatePosts(postsObject.posts, false, postPage);
-    if (postsObject.remainingPosts > 0) 
-        postPage += 5;
-        createLoadMore("posts");
-
-    const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
-
-    threadOpeningElements.forEach((threadLink) => {
-        threadLink.addEventListener('click', () => {
-            toggleThreadVisibility(true);
-            let commentBox = threadWrapper.querySelector('.user-input-area')
-            threadWrapper.innerHTML = commentBox.outerHTML; // clear thread box contents
-            let selectedPost = postsObject.posts.filter(post => post.postID === threadLink.id)
-            threadHeader.innerHTML = selectedPost[0].title;
-            getThread();
-        });
-    });
-
-    closeThread.addEventListener('click', () => {
-        toggleThreadVisibility(false);
-    });
-}
-*/
-/* Loads a thread */
-/*
-const getThread = () => {
-    console.log("Opening thread");
-    populatePosts(threadObject.posts, true);
-    if (threadObject.remainingComments> 0)
-        createLoadMore("comments");
-}
-
 /* Loads next batch of messages in a conversation */
 function getMessages(fromUser, toUser) {
     console.log("Loading messages from " + fromUser + " to " + toUser);
@@ -336,7 +247,6 @@ const getUsers = () => {
 };
 
 startHeaderClock;
-//getPosts();
 getUsers();
 
 buttons.forEach((button) => {
