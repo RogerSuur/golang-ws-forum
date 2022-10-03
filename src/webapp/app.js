@@ -1,7 +1,7 @@
 import { createDiv, $, qS, horizontalDivider } from "./DOM_helpers.js";
 import { startHeaderClock } from "./header_clock.js";
 import { getJSON } from "./read_JSON.js";
-import { populatePosts, createCommentNode } from "./populate_posts.js";
+import { initPosts, createCommentNode } from "./populate_posts.js";
 import { populateMessages } from "./populate_messages.js";
 import { populateUsers } from "./populate_users.js";
 
@@ -43,18 +43,18 @@ let bottomSentinelPreviousRatio = 0;
 let listSize = 20;
 let DBSize = 200;
 
-const initDB = num => {
+const initDB = (num, object) => {
     const db = [];
     for (let i = 0; i < num; i++) {
         db.push({
         postCounter: i,
-        user: postsObject.posts[i].user,
-        postID: postsObject.posts[i].postID,
-        title: postsObject.posts[i].title,
-        content: postsObject.posts[i].content,
-        timestamp: postsObject.posts[i].timestamp,
-        comments: postsObject.posts[i].comments,
-        unread: postsObject.posts[i].unread,
+        user: object.posts[i].user,
+        postID: object.posts[i].postID,
+        title: object.posts[i].title,
+        content: object.posts[i].content,
+        timestamp: object.posts[i].timestamp,
+        comments: object.posts[i].comments,
+        unread: object.posts[i].unread,
     })
   }
   return db;
@@ -63,77 +63,6 @@ const initDB = num => {
 let DB = [];
 
 let currentIndex = 0;
-
-const initList = num => {
-  
-    for (let i = 0; i < num; i++) {
-        const singlePost = createDiv('single-post');
-        singlePost.setAttribute('id', `post-${i}`);
-
-        let postHeader = createDiv('post-header');
-
-        let postDate = createDiv('post-date', `real time of posting: ${postsObject.posts[i].timestamp}`);
-        postHeader.appendChild(postDate);
-
-        let postAuthor = createDiv('post-user', `real posting by: <b>${postsObject.posts[i].user}</b>`);
-        postHeader.appendChild(postAuthor);
-
-        singlePost.appendChild(postHeader);
-
-        let hr = horizontalDivider('post-horizontal');
-        singlePost.appendChild(hr);
-
-        let postBody = document.createElement('div');
-        postBody.classList.add('post-body');
-
-        if (postsObject.posts[i].title) {
-            let postTitle = createDiv('post-title', `${postsObject.posts[i].title}`, `${postsObject.posts[i].postID}`);
-            postBody.appendChild(postTitle);
-        }
-
-        let postContent = createDiv('post-content', `${postsObject.posts[i].content}`);
-        postBody.appendChild(postContent);
-
-        singlePost.appendChild(postBody);
-
-        /*
-        if (isThread) {
-
-            // insert thread before user input area
-            let userCommentForm = threadWrapper.lastElementChild;
-            threadWrapper.insertBefore(singlePost, userCommentForm);
-
-        } else {
-            */
-
-            // add footer with comments count
-            hr = horizontalDivider('post-horizontal');
-            singlePost.appendChild(hr);
-            
-            let postFooter = createDiv('post-footer');
-            
-            let commentIcon = document.createElement('i');
-            commentIcon.classList.add('fa-regular', 'fa-message');
-            
-            let commentCount = commentIcon.outerHTML + `&nbsp;${postsObject.posts[i].comments} comment`;
-            if (postsObject.posts[i].comments > 1 || postsObject.posts[i].comments == 0) 
-                commentCount += 's';
-
-            let postComments = createDiv('post-comments', commentCount, `${postsObject.posts[i].postID}`);
-            
-            if (postsObject.posts[i].unread) 
-                postComments.classList.add('unread');
-
-            postFooter.appendChild(postComments);
-            singlePost.appendChild(postFooter);
-
-            postsWrapper.appendChild(singlePost);
-
-        //}
-  }
-  //postsWrapper.appendChild(createDiv('load-more', 'Loading more...', 'load-more'));
-  
-}
 
 const getSlidingWindow = isScrollDown => {
 	const increment = Math.floor(listSize / 2);
@@ -161,23 +90,18 @@ const recycleDOM = firstIndex => {
         tile.childNodes[2].firstChild.setAttribute('id', `${DB[firstIndex + i].postID}`);
         tile.childNodes[2].lastChild.innerHTML = `${DB[firstIndex + i].content}`;
         let commentCount = createCommentNode(DB[firstIndex + i]);
-        if (DB[firstIndex + i].unread) 
-            commentCount.classList.add('unread');
         tile.childNodes[4].firstChild.innerHTML = commentCount;
         tile.childNodes[4].firstChild.setAttribute('id', `${DB[firstIndex + i].postID}`);
-        /*
-        if (i == listSize / 2) {
-            const lastTile = $("post-9");
-            lastTile.scrollIntoView({behavior: 'smooth', block: 'end'});
-        }
-        */
+        if (DB[firstIndex + i].unread) 
+            tile.childNodes[4].firstChild.classList.add('unread');
+        else
+            tile.childNodes[4].firstChild.classList.remove('unread');
     }
 }
 
-const getNumFromStyle = numStr => Number(numStr.substring(0, numStr.length - 2));
+// const getNumFromStyle = numStr => Number(numStr.substring(0, numStr.length - 2));
 
-const adjustPaddings = isScrollDown => {
-    
+const keepPostInFocus = isScrollDown => {
     if (isScrollDown) {
         const scrollPpintItem = $("post-9");
         scrollPpintItem.scrollIntoView({behavior: 'auto', block: 'end'});
@@ -185,29 +109,9 @@ const adjustPaddings = isScrollDown => {
         const scrollPpintItem = $("post-11");
         scrollPpintItem.scrollIntoView({behavior: 'auto', block: 'start'});
     }
-    /*
-    const container = postsWrapper;
-    const currentPaddingTop = getNumFromStyle(container.style.paddingTop);
-    const currentPaddingBottom = getNumFromStyle(container.style.paddingBottom);
-    const remPaddingsVal = 100 * (listSize / 2);
-	if (isScrollDown) {
-        container.style.paddingTop = currentPaddingTop + remPaddingsVal + "px";
-        container.style.paddingBottom = currentPaddingBottom === 0 ? "0px" : currentPaddingBottom - remPaddingsVal + "px";
-    } else {
-        container.style.paddingBottom = currentPaddingBottom + remPaddingsVal + "px";
-        container.style.paddingTop = currentPaddingTop === 0 ? "0px" : currentPaddingTop - remPaddingsVal + "px";
-    }
-    */
 }
 
 const topSentCallback = entry => {
-    /*if (currentIndex === 0) {
-		const container = postsWrapper;
-        container.style.paddingTop = "0px";
-        container.style.paddingBottom = "0px";
-    }
-    */
-
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
@@ -220,7 +124,7 @@ const topSentCallback = entry => {
         currentIndex !== 0
     ) {
         const firstIndex = getSlidingWindow(false);
-        adjustPaddings(false);
+        keepPostInFocus(false);
         recycleDOM(firstIndex);
         currentIndex = firstIndex;
     }
@@ -245,7 +149,7 @@ const bottomSentCallback = entry => {
         isIntersecting
     ) {
         const firstIndex = getSlidingWindow(true);
-        adjustPaddings(true);
+        keepPostInFocus(true);
         recycleDOM(firstIndex);
         currentIndex = firstIndex;
     }
@@ -255,10 +159,7 @@ const bottomSentCallback = entry => {
 }
 
 const initIntersectionObserver = () => {
-    const options = {
-        //root: $("load-more"),
-    }
-  
+
     const callback = entries => {
       entries.forEach(entry => {
         if (entry.target.id === 'post-0') {
@@ -271,16 +172,32 @@ const initIntersectionObserver = () => {
       });
     }
   
-    var observer = new IntersectionObserver(callback, options);
+    var observer = new IntersectionObserver(callback);
     observer.observe($("post-0"));
-    //observer.observe($("load-more"));
     observer.observe($(`post-${listSize - 1}`));
-  }
+}
 
 const start = () => {
+    DB = initDB(DBSize, postsObject);
+	initPosts(DB, listSize);
+    const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
 
-    DB = initDB(DBSize);
-	initList(listSize);
+    threadOpeningElements.forEach((threadLink) => {
+        threadLink.addEventListener('click', () => {
+            toggleThreadVisibility(true);
+            let commentBox = threadWrapper.querySelector('.user-input-area')
+            threadWrapper.innerHTML = commentBox.outerHTML; // clear thread box contents
+            let selectedPost = postsObject.posts.filter(post => post.postID === threadLink.id)
+            threadHeader.innerHTML = selectedPost[0].title;
+            let threadDB = initDB(selectedPost[0].comments, threadObject);
+            initPosts(threadDB, selectedPost[0].comments, true);
+        });
+    });
+
+    closeThread.addEventListener('click', () => {
+        toggleThreadVisibility(false);
+    });
+
 	initIntersectionObserver();
 }
 
@@ -492,39 +409,3 @@ function toggleRegisterVisibility(makeVisible) {
         registerArea.classList.add('hidden');
     }
 }
-
-/*
-
-https://medium.com/walmartglobaltech/infinite-scrolling-the-right-way-11b098a08815
-https://jsfiddle.net/valkyris/43fmku20/693/
-
-const initIntersectionObserver = () => {
-    const options = {
-        root: postsWrapper,
-    }
-
-    const callback = (entries) => {
-        entries.forEach(entry => {
-            console.log(entry.id. postPage)
-            if (entry.id === 'post-0') {
-                topSentCallback(entry)
-            } else if (entry.id === `post-${postPage - 1}`) {
-                bottomSentCallback(entry)
-            }
-        });
-    }
-    
-    var observer = new IntersectionObserver(callback, options);
-    observer.observe(document.querySelector("#post-0"));
-    observer.observe(document.querySelector(`#post-${postPage - 1}`));
-}
-
-
-const recycleDOM = firstIndex => {
-	for (let i = 0; i < postPage; i++) {
-		const tile = document.querySelector("#post-" + i);
-		//tile.firstElementChild.innerText = DB[i + firstIndex].title;
-		//tile.lastChild.setAttribute("src", DB[i + firstIndex].imgSrc);
-  }
-}
-*/

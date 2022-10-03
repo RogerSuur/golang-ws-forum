@@ -220,6 +220,7 @@ body {
     display: grid;
     grid-row: main / row-end;
     grid-column: main-posts / main-users;
+    align-content: flex-start;
     background-color: var(--complementary-light);
     z-index: 0;
 }
@@ -475,6 +476,7 @@ body {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        height: fit-content;
         align-items: center;
         background-color: var(--primary-light);
         border-radius: 7px;
