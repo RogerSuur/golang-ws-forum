@@ -32,6 +32,7 @@ const messagesBackgroundOverlay = document.querySelector('.overlay');
 let postsObject = await getJSON('/static/postsData.json');
 let threadObject = await getJSON('/static/threadData.json');
 //let usersObject = await getJSON('/static/usersData.json');
+
 let messagesObject = await getJSON('/static/messagesData.json');
 export let currentUser = document.getElementById("username");
 export let otherUser;
@@ -93,7 +94,6 @@ function addLoadMoreEvent(element, type) {
 
 /* Loads next batch of posts and adds event listener for threads*/
 const getPosts = () => {
-
     populatePosts(postsObject.posts, false);
     if (postsObject.remainingPosts > 0)
         createLoadMore("posts");
@@ -125,25 +125,28 @@ const getThread = () => {
 }
 
 /* Loads next batch of messages in a conversation */
-function getMessages(fromUser, toUser) {
+export async function getMessages(fromUser, toUser) {
     console.log("Loading messages from " + fromUser + " to " + toUser);
-    populateMessages(messagesObject.messages, fromUser);
-    console.log(messagesObject.messages)
-    if (messagesObject.remainingMessages > 0)
-        createLoadMore('messages');
+    await populateMessages(fromUser)
+        if (messagesObject.remainingMessages > 0)
+            createLoadMore('messages'); 
 }
 
 /* Loads user lists and creates event listeners for them to load the conversations */
-export const getUsers = () => {
-    populateUsers().then(() => {
+export async function getUsers() {
+    await populateUsers()
         const userElements = document.querySelectorAll('.user-name');
-
+        console.log("getUsers")
+        // console.log("currentUser:", currentUser)
+        // console.log("otherUser: ", otherUser)
     userElements.forEach((user) => {
         user.addEventListener('click', () => {
             toggleMessageBoxVisibility(true);
             messagesWrapper.innerHTML = ''; // clear messages box contents
             otherUser = user.id;
-            getMessages(currentUser, otherUser);
+            // console.log("currentUser:", currentUser)
+            // console.log("otherUser: ", otherUser)
+             getMessages(currentUser, otherUser);
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
         });
@@ -151,7 +154,6 @@ export const getUsers = () => {
 
     closeMessagesBox.addEventListener('click', () => {
         toggleMessageBoxVisibility(false);
-    });
     });
 };
 

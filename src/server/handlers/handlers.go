@@ -155,6 +155,7 @@ func BroadcastToAll(response WsJsonResponse) {
 func BroadcastToClient(sendText string, response WsJsonResponse) {
 	for client := range clients {
 		if clients[client] == sendText {
+			fmt.Println("broadcasting to client:", clients[client])
 			err := client.WriteJSON(response)
 			if err != nil {
 				log.Println("websocket error")

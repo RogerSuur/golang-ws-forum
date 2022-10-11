@@ -10,6 +10,7 @@ export async function populateUsers  ()  {
     const usersObject = await getJSON('/static/usersData.json');
     onlineUsersWrapper.innerHTML = '';
     offlineUsersWrapper.innerHTML = '';
+    console.log("usersObject.online", usersObject.online)
     constructUserLists(usersObject.online, onlineUsersWrapper, 'online');
     constructUserLists(usersObject.offline, offlineUsersWrapper, 'offline');
 };

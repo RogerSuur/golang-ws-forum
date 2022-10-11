@@ -3,8 +3,7 @@ export const userNameInput = document.getElementById("usernameinput")
 export let socket = null;
 import {currentUser, getUsers} from './app.js'
 import { otherUser } from './app.js';
-
-//import {getMessages} from './app.js';
+import {getMessages} from './app.js';
 
 
 export function Forum() {
@@ -32,10 +31,13 @@ export function Forum() {
             switch (data.action) {
                 case "list_users":
                     getUsers()
+                    console.log("currentUser:", currentUser.value)
+                    console.log("otherUser: ", otherUser)
                     break;
                 case "broadcast":
-                    console.log("socket case")
-                    //getMessages(currentUser.value, otherUser)
+                    console.log("currentUser:", currentUser.value)
+                    console.log("otherUser: ", otherUser)
+                    getMessages(currentUser.value, otherUser)
             }
         };
 
@@ -57,7 +59,6 @@ export function Forum() {
             jsonData["action"] = "username";
             jsonData["username"] = this.value; 
             let currentUser = document.querySelector(".current-user").textContent = this.value
-            console.log(currentUser);
             socket.send(JSON.stringify(jsonData)); 
         });
 
@@ -68,7 +69,7 @@ export function Forum() {
 export function sendMessage() {
     let jsonData = {};
     jsonData["action"] = "broadcast";
-    console.log("other user from sendMessage func:", otherUser);
+    console.log("sendMesagge from js func");
     console.log(document.getElementById("username").value);
     jsonData["other_user"] = otherUser;
     jsonData["username"] = document.getElementById("username").value;

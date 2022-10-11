@@ -1,7 +1,10 @@
 {
 	"data": {
 		"online": [
-			
+			{
+				"name": "Jollyroger",
+				"unread": false
+			}
 		],
 		"offline": [
 			{
