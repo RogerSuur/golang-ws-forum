@@ -48,6 +48,8 @@ let trackable = "post";
 
 let currentIndex = 0;
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
 const getSlidingWindow = isScrollDown => {
 	const increment = Math.floor(listSize / 2);
 	let firstIndex;
@@ -85,17 +87,12 @@ const recycleDOM = (firstIndex, isThread) => {
     }
 }
 
-const keepPostInFocus = isScrollDown => {
-    if (isScrollDown) {
-        const scrollPpintItem = $(`post-` + (listSize / 2 - 1));
-        scrollPpintItem.scrollIntoView({behavior: 'auto', block: 'end'});
-    } else {
-        const scrollPpintItem = $(`post-` + (listSize / 2 + 1));
-        scrollPpintItem.scrollIntoView({behavior: 'auto', block: 'start'});
-    }
+const keepPostInFocus = (postNr, position) => {
+    const scrollPointItem = $(`post-` + postNr);
+    scrollPointItem.scrollIntoView({behavior: 'auto', block: position});
 }
 
-const topSentCallback = entry => {
+const topSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
@@ -107,8 +104,16 @@ const topSentCallback = entry => {
         currentRatio >= topSentinelPreviousRatio &&
         currentIndex !== 0
     ) {
+        // set spinner
+        let x = entry.target.getBoundingClientRect().left + entry.target.getBoundingClientRect().width / 2;
+        let y = entry.target.parentElement.getBoundingClientRect().top;
+        spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
+        show(spinner);
+        await sleep(loadTime);
+        hide(spinner);
+        // load new data
         const firstIndex = getSlidingWindow(false);
-        keepPostInFocus(false);
+        keepPostInFocus(listSize / 2, 'start');
         recycleDOM(firstIndex, false);
         currentIndex = firstIndex;
     }
@@ -121,7 +126,7 @@ const topSentCallback = entry => {
     topSentinelPreviousRatio = currentRatio;
 }
 
-const bottomSentCallback = entry => {
+const bottomSentCallback = async entry => {
 	if (currentIndex === DBSize - listSize) {
         return;
     }
@@ -134,8 +139,18 @@ const bottomSentCallback = entry => {
         currentRatio > bottomSentinelPreviousRatio &&
         isIntersecting
     ) {
+        // set spinner
+        let x = entry.target.getBoundingClientRect().left + entry.target.getBoundingClientRect().width / 2;
+        let y = entry.target.parentElement.getBoundingClientRect().bottom - 100;
+        spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
+        if (entry.target.getBoundingClientRect().top < window.innerHeight) {
+            show(spinner);
+            await sleep(loadTime);
+            hide(spinner);
+        }
+        // load new data
         const firstIndex = getSlidingWindow(true);
-        keepPostInFocus(true);
+        keepPostInFocus(listSize / 2 - 1, 'end');
         recycleDOM(firstIndex, false);
         currentIndex = firstIndex;
     }
@@ -149,24 +164,9 @@ const initIntersectionObserver = () => {
     const callback = entries => {
       entries.forEach(entry => {
         if (entry.target.id === `${trackable}-0`) {
-            setTimeout(() => {
-                let x = entry.target.getBoundingClientRect().left + entry.target.getBoundingClientRect().width / 2;
-                let y = entry.target.parentElement.getBoundingClientRect().top;
-                spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
-                show(spinner);
-                topSentCallback(entry);
-            }, loadTime);
-            hide(spinner);
+            topSentCallback(entry);
         } else if (entry.target.id === `${trackable}-${listSize - 1}`) {
-            setTimeout(() => {
-                let x = entry.target.getBoundingClientRect().left + entry.target.getBoundingClientRect().width / 2;
-                let y = entry.target.parentElement.getBoundingClientRect().bottom - 100;
-                spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
-                if (entry.target.getBoundingClientRect().top < window.innerHeight) 
-                    show(spinner);
-                bottomSentCallback(entry);
-            }, loadTime);
-            hide(spinner);
+            bottomSentCallback(entry);
         }
       });
     }
@@ -180,6 +180,7 @@ const start = () => {
 
     //DB = initDB(DBSize, postsObject);
 	initPosts(DB, listSize, false);
+    keepPostInFocus(0, 'start');
 
     const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
     threadOpeningElements.forEach((threadLink) => {
@@ -206,8 +207,6 @@ const start = () => {
 
 	initIntersectionObserver();
 }
-
-start();
 
 /* Loads next batch of messages in a conversation */
 function getMessages(fromUser, toUser) {
@@ -254,6 +253,7 @@ buttons.forEach((button) => {
         switch (button.id) {
             case 'login':
                 toggleLoginVisibility(false);
+                start();
                 break;
             case 'register':
                 toggleRegisterVisibility(true);

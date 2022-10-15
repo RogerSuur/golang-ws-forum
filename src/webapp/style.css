@@ -29,7 +29,7 @@ body {
 .header {
     display: flex;
     padding: 10px;
-    grid-row: header / row-end;
+    grid-row: header / title;
     grid-column: main-users / right-bar;
     text-align: right;
     align-items: center;
