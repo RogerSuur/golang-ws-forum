@@ -44,7 +44,8 @@ const listSize = 20;
 const loadTime = 1500;
 let DBSize = postsObject.posts.length;
 let DB = postsObject.posts;
-let trackable = "post";
+let trackable = 'post';
+let isThread = false;
 
 let currentIndex = 0;
 
@@ -67,9 +68,15 @@ const getSlidingWindow = isScrollDown => {
     return firstIndex;
 }
 
-const recycleDOM = (firstIndex, isThread) => {
+const recycleDOM = firstIndex => {
+    console.log("First", firstIndex, ", DB", DBSize);
+    //let shift = 0;
+    //if (DBSize - firstIndex < listSize) {
+    //    shift = listSize - (DBSize - firstIndex);
+    //}
+    //console.log("Shift", shift);
 	for (let i = 0; i < listSize; i++) {
-        const tile = $("post-" + i);
+        const tile = $(`${trackable}-` + i);
         tile.childNodes[0].firstChild.innerHTML = `real time of posting: ${DB[firstIndex + i].timestamp}`;
         tile.childNodes[0].lastChild.innerHTML = `real posting by: <b>${DB[firstIndex + i].user}</b>`;
         tile.childNodes[2].firstChild.innerHTML = `${DB[firstIndex + i].title}`;
@@ -84,11 +91,12 @@ const recycleDOM = (firstIndex, isThread) => {
             else
                 tile.childNodes[4].firstChild.classList.remove('unread');
         }
+        
     }
 }
 
 const keepPostInFocus = (postNr, position) => {
-    const scrollPointItem = $(`post-` + postNr);
+    const scrollPointItem = $(`${trackable}-` + postNr);
     scrollPointItem.scrollIntoView({behavior: 'auto', block: position});
 }
 
@@ -114,7 +122,7 @@ const topSentCallback = async entry => {
         // load new data
         const firstIndex = getSlidingWindow(false);
         keepPostInFocus(listSize / 2, 'start');
-        recycleDOM(firstIndex, false);
+        recycleDOM(firstIndex);
         currentIndex = firstIndex;
     }
 
@@ -128,6 +136,7 @@ const topSentCallback = async entry => {
 
 const bottomSentCallback = async entry => {
 	if (currentIndex === DBSize - listSize) {
+        console.log("Returning");
         return;
     }
     const currentY = entry.boundingClientRect.top;
@@ -150,8 +159,9 @@ const bottomSentCallback = async entry => {
         }
         // load new data
         const firstIndex = getSlidingWindow(true);
+        console.log(entry.target.id); // currently recycles 20 posts, needs exception for last <20 posts
         keepPostInFocus(listSize / 2 - 1, 'end');
-        recycleDOM(firstIndex, false);
+        recycleDOM(firstIndex);
         currentIndex = firstIndex;
     }
 
@@ -163,6 +173,7 @@ const initIntersectionObserver = () => {
 
     const callback = entries => {
       entries.forEach(entry => {
+        console.log("Tracking", trackable);
         if (entry.target.id === `${trackable}-0`) {
             topSentCallback(entry);
         } else if (entry.target.id === `${trackable}-${listSize - 1}`) {
@@ -186,26 +197,34 @@ const start = () => {
     threadOpeningElements.forEach((threadLink) => {
         threadLink.addEventListener('click', () => {
             toggleThreadVisibility(true);
-            let commentBox = threadWrapper.querySelector('.user-input-area')
-            threadWrapper.innerHTML = commentBox.outerHTML; // clear thread box contents
+            threadWrapper.innerHTML = ""; // clear thread box contents
             let selectedPost = postsObject.posts.filter(post => post.postID === threadLink.id)[0]
             threadHeader.innerHTML = selectedPost.title;
             //let threadDB = initDB(selectedPost.comments, threadObject);
-            if (selectedPost.comments < listSize) {
-                initPosts(threadObject.posts, selectedPost.comments + 1, true);
-            } else { 
-                initPosts(threadObject.posts, listSize, true);
-            }
             trackable = 'thread';
+            DB = threadObject.posts;
+            DBSize = selectedPost.comments + 1;
+            isThread = true;
+            if (selectedPost.comments < listSize) {
+                initPosts(DB, DBSize, true);
+            } else { 
+                initPosts(DB, listSize, true);
+                initIntersectionObserver();
+            }
         });
     });
 
     closeThread.addEventListener('click', () => {
         toggleThreadVisibility(false);
         trackable = 'post';
+        DB = postsObject.posts;
+        DBSize = postsObject.posts.length;
+        isThread = false;
     });
 
-	initIntersectionObserver();
+    if (listSize < DBSize) {
+        initIntersectionObserver();
+    }
 }
 
 /* Loads next batch of messages in a conversation */

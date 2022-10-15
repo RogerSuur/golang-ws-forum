@@ -38,11 +38,7 @@ export const initPosts = (DB, num, isThread) => {
         singlePost.appendChild(postBody);
 
         if (isThread) {
-
-            // insert thread before user input area
-            let userCommentForm = threadWrapper.lastElementChild;
-            threadWrapper.insertBefore(singlePost, userCommentForm);
-
+            threadWrapper.appendChild(singlePost);
         } else {
         
             // add footer with comments count
@@ -67,7 +63,6 @@ export const initPosts = (DB, num, isThread) => {
             singlePost.appendChild(postFooter);
 
             postsWrapper.appendChild(singlePost);
-
         }
   }
 }
