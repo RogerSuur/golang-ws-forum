@@ -69,13 +69,7 @@ const getSlidingWindow = isScrollDown => {
 }
 
 const recycleDOM = firstIndex => {
-    console.log("First", firstIndex, ", DB", DBSize);
-    //let shift = 0;
-    //if (DBSize - firstIndex < listSize) {
-    //    shift = listSize - (DBSize - firstIndex);
-    //}
-    //console.log("Shift", shift);
-	for (let i = 0; i < listSize; i++) {
+    for (let i = 0; i < listSize; i++) {
         const tile = $(`${trackable}-` + i);
         tile.childNodes[0].firstChild.innerHTML = `real time of posting: ${DB[firstIndex + i].timestamp}`;
         tile.childNodes[0].lastChild.innerHTML = `real posting by: <b>${DB[firstIndex + i].user}</b>`;
@@ -104,8 +98,11 @@ const topSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-
-  // conditional check for Scrolling up
+    // calculate shift in case last scroll is less than listSize
+    let shift = 0
+    if (currentIndex < listSize/2)
+        shift = listSize/2 - currentIndex;
+    // conditional check for Scrolling up
     if (
         currentY > topSentinelPreviousY &&
         isIntersecting &&
@@ -121,7 +118,7 @@ const topSentCallback = async entry => {
         hide(spinner);
         // load new data
         const firstIndex = getSlidingWindow(false);
-        keepPostInFocus(listSize / 2, 'start');
+        keepPostInFocus(listSize / 2 - shift, 'start');
         recycleDOM(firstIndex);
         currentIndex = firstIndex;
     }
@@ -136,13 +133,17 @@ const topSentCallback = async entry => {
 
 const bottomSentCallback = async entry => {
 	if (currentIndex === DBSize - listSize) {
-        console.log("Returning");
+        // if we are at the end of the DB, do nothing
         return;
     }
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-  // conditional check for Scrolling down
+    // calculate shift in case last scroll is less than listSize
+    let shift = 0
+    if (DBSize - currentIndex - listSize/2 < listSize)
+        shift = DBSize - currentIndex - listSize - listSize/2;
+    // conditional check for Scrolling down
     if (
         currentY < bottomSentinelPreviousY &&
         currentRatio > bottomSentinelPreviousRatio &&
@@ -159,10 +160,9 @@ const bottomSentCallback = async entry => {
         }
         // load new data
         const firstIndex = getSlidingWindow(true);
-        console.log(entry.target.id); // currently recycles 20 posts, needs exception for last <20 posts
-        keepPostInFocus(listSize / 2 - 1, 'end');
-        recycleDOM(firstIndex);
-        currentIndex = firstIndex;
+        keepPostInFocus(listSize / 2 - 1 - shift, 'end');
+        recycleDOM(firstIndex + shift);
+        currentIndex = firstIndex + shift;
     }
 
     bottomSentinelPreviousY = currentY;
