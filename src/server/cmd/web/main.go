@@ -8,15 +8,17 @@ import (
 )
 
 func main() {
-	// mux := routes()
+	mux := routes() // redirects a request to a handler.
 
-	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("./src/webapp"))))
-	// http.Handle("/src/webapp/", http.StripPrefix("/src/webapp/", http.FileServer(http.Dir("webapp"))))
-
-	// mux.HandleFunc("/src/server/", handlers.Home)
-	http.HandleFunc("/ws", handlers.WsEndPoint)
+	// http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("./src/webapp"))))
+	// http.HandleFunc("/ws", handlers.WsEndPoint)
+	// _ = http.ListenAndServe(":8080", nil)
 
 	go handlers.ListenToWsChannel()
 	log.Println("Starting web server on port 8080")
-	_ = http.ListenAndServe(":8080", nil)
+	server := &http.Server{
+		Addr:    "localhost:8080",
+		Handler: mux,
+	}
+	server.ListenAndServe()
 }

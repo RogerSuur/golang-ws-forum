@@ -1,33 +1,28 @@
 {
-	"data": {
-		"online": [
-			{
-				"name": "Jollyroger",
-				"unread": false
-			}
-		],
-		"offline": [
-			{
-				"name": "SampleUser12",
-				"unread": false
-			},
-			{
-				"name": "SampleUserWithAnExtraLongNameToTestTruncating",
-				"unread": false
-			},
-			{
-				"name": "SampleUser19",
-				"unread": true
-			},
-			{
-				"name": "SampleUser33",
-				"unread": false
-			},
-			{
-				"name": "SampleUser45",
-				"unread": false
-			}
-		],
-		"messages": null
-	}
+  "data": {
+    "online": [],
+    "offline": [
+      {
+        "name": "SampleUser12",
+        "unread": false
+      },
+      {
+        "name": "SampleUserWithAnExtraLongNameToTestTruncating",
+        "unread": false
+      },
+      {
+        "name": "SampleUser19",
+        "unread": true
+      },
+      {
+        "name": "SampleUser33",
+        "unread": false
+      },
+      {
+        "name": "SampleUser45",
+        "unread": false
+      }
+    ],
+    "messages": null
+  }
 }

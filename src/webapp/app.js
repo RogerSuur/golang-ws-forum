@@ -41,7 +41,6 @@ export let otherUser;
 
 
 const forum = new Forum()
-
 /* Creates "Load more" button for posts and messages */
 export const createLoadMore = (type) => {
     let wrapper, remaining
@@ -92,6 +91,7 @@ function addLoadMoreEvent(element, type) {
     });
 }
 
+
 /* Loads next batch of posts and adds event listener for threads*/
 const getPosts = () => {
     populatePosts(postsObject.posts, false);
@@ -127,18 +127,20 @@ const getThread = () => {
 /* Loads next batch of messages in a conversation */
 export async function getMessages(fromUser, toUser) {
     console.log("Loading messages from " + fromUser + " to " + toUser);
+    messagesWrapper.innerHTML = '';
     await populateMessages(fromUser)
-        if (messagesObject.remainingMessages > 0)
-            createLoadMore('messages'); 
+    if (messagesObject.remainingMessages > 0)
+        createLoadMore('messages');
 }
 
 /* Loads user lists and creates event listeners for them to load the conversations */
 export async function getUsers() {
+    debugger
     await populateUsers()
-        const userElements = document.querySelectorAll('.user-name');
-        console.log("getUsers")
-        // console.log("currentUser:", currentUser)
-        // console.log("otherUser: ", otherUser)
+    const userElements = document.querySelectorAll('.user-name');
+    console.log("getUsers")
+    // console.log("currentUser:", currentUser)
+    // console.log("otherUser: ", otherUser)
     userElements.forEach((user) => {
         user.addEventListener('click', () => {
             toggleMessageBoxVisibility(true);
@@ -146,7 +148,7 @@ export async function getUsers() {
             otherUser = user.id;
             // console.log("currentUser:", currentUser)
             // console.log("otherUser: ", otherUser)
-             getMessages(currentUser, otherUser);
+            getMessages(currentUser, otherUser);
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
         });
@@ -162,7 +164,7 @@ getPosts();
 getUsers();
 
 buttons.forEach((button) => {
-    button.addEventListener('click', function(event)  {
+    button.addEventListener('click', function (event) {
         switch (button.id) {
             case 'login':
                 toggleLoginVisibility(false);
@@ -177,7 +179,7 @@ buttons.forEach((button) => {
                 toggleLoginVisibility(true);
                 break;
             case 'sendMessage':
-                if (message.value === ""){
+                if (message.value === "") {
                     alert("fill out user nad message")
                     return False
                 } else {
@@ -190,7 +192,7 @@ buttons.forEach((button) => {
     });
 });
 
-document.getElementById("message").addEventListener("keydown", function(event) {
+document.getElementById("message").addEventListener("keydown", function (event) {
     if (event.code === "Enter") {
         if (!socket) {
             console.log("no connection");

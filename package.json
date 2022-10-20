@@ -1,0 +1,22 @@
+{
+  "name": "real-time-forum",
+  "version": "1.0.0",
+  "description": "JS Real Time Forum task",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://01.kood.tech/git/jrms/real-time-forum"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.8.4"
+  },
+  "scripts": {
+    "start": "node out/app.js",
+    "prestart": "npm run build",
+    "build": "tsc"
+  },
+  "ci-build": "npx tsc"
+}

@@ -2,15 +2,16 @@ import { messagesWrapper } from "./app.js";
 import { createDiv } from "./DOM_helpers.js";
 import { getJSON } from "./read_JSON.js";
 
-export async function populateMessages (currentUser)  {
+export async function populateMessages(currentUser) {
 
     let previousUser;
     let messagesObject = await getJSON('/static/messagesData.json');
 
+
     messagesObject.messages.forEach((message) => {
         let singleMessage = createDiv('single-message');
         let messageContent = createDiv('message-content', message.content);
-        
+
         if (message.from !== previousUser) {
             let messageAuthor = createDiv('message-user', message.from);
             if (message.from === currentUser) {
@@ -29,9 +30,9 @@ export async function populateMessages (currentUser)  {
         singleMessage.appendChild(messageContent);
 
         let messageDate = createDiv('message-date', message.timestamp);
-        
+
         singleMessage.appendChild(messageDate);
-        
+
         messagesWrapper.appendChild(singleMessage);
     })
 
