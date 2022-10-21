@@ -34,7 +34,7 @@ let threadObject = await getJSON('/static/threadData.json');
 //let usersObject = await getJSON('/static/usersData.json');
 
 let messagesObject = await getJSON('/static/messagesData.json');
-export let currentUser = document.getElementById("username");
+export let currentUser = document.getElementById("username-register");
 export let otherUser;
 // export let messagesObject;
 
@@ -73,29 +73,29 @@ export const createLoadMore = (type) => {
     addLoadMoreEvent(loadMore, type);
 };
 
-// function signUp() {
-//     const data = new FormData(document.getElementsByClassName('register-area'));
-//     fetch('/src/server/signup', {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({
-//             username: data.get('username-register'),
-//             age: parseInt(data.get('age-register')),
-//             gender: data.get('gender-register'),
-//             firstname: data.get('first-name-register'),
-//             lastname: data.get('last-name-register'),
-//             email: data.get('email-register'),
-//             password: data.get('password-register'),
-//         }),
-//     })
-//         .then((response) => response.json())
-//         .then((data) => {
-//               //make a cookie =)
-//         })
-//         .catch((err) => {
-//             console.log(err);
-//         });
-// }
+function signUp() {
+    const data = new FormData(document.getElementById('register-area'));
+    fetch('/src/server/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: data.get('username-register'),
+            age: parseInt(data.get('age-register')),
+            gender: data.get('gender-register'),
+            firstname: data.get('first-name-register'),
+            lastname: data.get('last-name-register'),
+            email: data.get('email-register'),
+            password: data.get('password-register'),
+        }),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            //make a cookie =)
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+}
 
 function addLoadMoreEvent(element, type) {
     element.addEventListener('click', () => {
@@ -159,7 +159,6 @@ export async function getMessages(fromUser, toUser) {
 
 /* Loads user lists and creates event listeners for them to load the conversations */
 export async function getUsers() {
-    //debugger
     await populateUsers()
     const userElements = document.querySelectorAll('.user-name');
     console.log("getUsers")

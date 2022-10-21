@@ -150,11 +150,15 @@
             <div class="login-header">Enter Your Account Credentials</div>
             <input
               type="text"
-              id="usernameinput"
-              name="username"
+              id="username-login"
+              name="username-login"
               placeholder="Username or email"
             />
-            <input type="password" name="password" placeholder="Password" />
+            <input
+              type="password"
+              name="password-login"
+              placeholder="Password"
+            />
             <div class="button-wrapper">
               <button id="login" type="submit">Login</button>
             </div>
@@ -169,7 +173,7 @@
           </div>
         </div>
       </div>
-      <div class="register-area hidden">
+      <div class="register-area hidden" id="register-area">
         <div class="register-wrapper">
           <div class="user-input-area">
             <div class="register-header">
@@ -178,12 +182,12 @@
             <input
               type="text"
               class="mandatory"
-              id="username"
-              name="username"
+              id="username-register"
+              name="username-register"
               placeholder="Username (nickname)"
             />
             <input
-              type="email"
+              type="email-register"
               class="mandatory"
               name="email-register"
               id="email-register"

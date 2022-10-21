@@ -3,7 +3,7 @@ import { createDiv } from "./DOM_helpers.js";
 import { getJSON } from "./read_JSON.js";
 
 export async function populateMessages(currentUser) {
-
+    //debugger
     let previousUser;
     let messagesObject = await getJSON('/static/messagesData.json');
 

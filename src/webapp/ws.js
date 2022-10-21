@@ -1,5 +1,5 @@
-export const userInput = document.getElementById("username")
-export const userNameInput = document.getElementById("usernameinput")
+export const userRegister = document.getElementById("username-register")
+export const userNameLogin = document.getElementById("username-login")
 export let socket = null;
 import { currentUser, getUsers } from './app.js'
 import { otherUser } from './app.js';
@@ -45,7 +45,7 @@ export function Forum() {
     };
 
     //Later be replaced
-    userInput.addEventListener("change", function () {
+    userRegister.addEventListener("change", function () {
         let jsonData = {}; // json send to websocket
         jsonData["action"] = "username";
         jsonData["username"] = this.value; // whatever i type in the form input
@@ -53,7 +53,7 @@ export function Forum() {
         socket.send(JSON.stringify(jsonData)); //send it as jsondata
     });
 
-    userNameInput.addEventListener("change", function () {
+    userNameLogin.addEventListener("change", function () {
         let jsonData = {};
         jsonData["action"] = "username";
         jsonData["username"] = this.value;
@@ -71,7 +71,7 @@ export function sendMessage() {
     //console.log("sendMesagge from js func");
     //console.log(document.getElementById("username").value);
     jsonData["other_user"] = otherUser;
-    jsonData["username"] = document.getElementById("username").value;
+    jsonData["username"] = document.getElementById("username-register").value;
     jsonData["message"] = document.getElementById("message").value;
     socket.send(JSON.stringify(jsonData))
     document.getElementById("message").value = "";
