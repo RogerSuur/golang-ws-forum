@@ -13,7 +13,7 @@ func routes() http.Handler {
 
 	// mux.HandleFunc("/src/server/login", login)
 	// mux.HandleFunc("/src/server/logout", logout)
-	// mux.HandleFunc("/src/server/signup", signup)
+	// mux.HandleFunc("/src/server/signup", handlers.Signup)
 	// mux.HandleFunc("/src/server/signup_account", signupAccount)
 	// mux.HandleFunc("/src/server/authenticate", authenticate)
 	mux.HandleFunc("/ws", handlers.WsEndPoint)

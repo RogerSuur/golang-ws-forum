@@ -185,49 +185,56 @@
             <input
               type="email"
               class="mandatory"
-              name="email"
+              name="email-register"
+              id="email-register"
               placeholder="Email"
             />
             <input
               type="password"
               class="mandatory"
-              name="password"
+              name="password-register"
+              id="password-register"
               placeholder="Password"
             />
             <input
               type="password"
               class="mandatory"
-              name="password-confirm"
+              name="password-confirm-register"
+              id="password-congirm-register"
               placeholder="Confirm Password"
             />
             <input
               type="text"
               class="optional"
-              name="first-name"
+              name="first-name-register"
+              id="first-name-register"
               placeholder="First Name (optional)"
             />
             <input
               type="text"
               class="optional"
-              name="last-name"
+              name="last-name-register"
+              id="last-name-register"
               placeholder="Last Name (optional)"
             />
             <input
               type="number"
               class="optional"
-              name="age"
+              name="age-register"
+              id="age-register"
               placeholder="Age (optional)"
             />
             <div class="gender-wrapper optional">
               Gender&nbsp;(optional):
-              <input type="radio" name="gender" id="female" value="female" />
-              <label for="female">Female</label>
-              <input type="radio" name="gender" id="male" value="male" />
-              <label for="male">Male</label>
-              <input type="radio" name="gender" id="other" value="other" />
-              <label for="other">other</label>
+              <div name="gender-register" id="gender-register">
+                <input type="radio" name="gender" id="female" value="female" />
+                <label for="female">Female</label>
+                <input type="radio" name="gender" id="male" value="male" />
+                <label for="male">Male</label>
+                <input type="radio" name="gender" id="other" value="other" />
+                <label for="other">other</label>
+              </div>
             </div>
-
             <div class="button-wrapper">
               <button id="create" type="submit">Register</button>
             </div>

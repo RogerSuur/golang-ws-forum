@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	//"01.kood.tech/git/jrms/real-time-forum/src/server/database"
 	"01.kood.tech/git/jrms/real-time-forum/src/server/handlers"
 )
 
@@ -14,6 +15,7 @@ func main() {
 	// http.HandleFunc("/ws", handlers.WsEndPoint)
 	// _ = http.ListenAndServe(":8080", nil)
 
+	// database.DatabaseGod()
 	go handlers.ListenToWsChannel()
 	log.Println("Starting web server on port 8080")
 	server := &http.Server{

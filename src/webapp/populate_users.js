@@ -5,7 +5,7 @@ import { getJSON } from "./read_JSON.js";
 let onlineUsersWrapper = document.querySelector(".online");
 let offlineUsersWrapper = document.querySelector(".offline");
 
-export async function populateUsers  ()  {
+export async function populateUsers() {
     //loads fresh set of user
     const usersObject = await getJSON('/static/usersData.json');
     onlineUsersWrapper.innerHTML = '';
@@ -17,11 +17,11 @@ export async function populateUsers  ()  {
 
 
 const constructUserLists = (usersArray, usersWrapper, type) => {
-    
+
     let heading = createDiv(`${type}-group`, `<i class="fa-solid fa-comments"></i>${usersArray.length} users ${type}`);
     usersWrapper.appendChild(heading);
 
-    usersArray.forEach((user) => { 
+    usersArray.forEach((user) => {
         let singleUser = createDiv('user-name', user.name, user.name);
         if (user.unread) {
             singleUser.classList.add('unread-messages');

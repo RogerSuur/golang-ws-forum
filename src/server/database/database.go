@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"os"
 	"time"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Online struct {
@@ -34,6 +36,42 @@ type Status struct {
 type Data struct {
 	Status Status `json:"data"`
 }
+
+// func DatabaseGod() {
+// 	if _, err := os.Stat("forum.db"); err != nil {
+// 		file, err := os.Create("forum.db")
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+// 		file.Close()
+// 		db, err := sql.Open("sqlite3", "./forum.db")
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+// 		createTable(db)
+// 	}
+// }
+
+// func createTable(db *sql.DB) {
+// 	users_table := `CREATE TABLE user (
+// 		id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+// 			username TEXT UNIQUE NOT NULL,
+// 			password TEXT NOT NULL,
+// 			age INTEGER NOT NULL,
+// 			gender TEXT NOT NULL,
+// 			first_name TEXT NOT NULL,
+// 			last_name TEXT NOT NULL,
+// 			email TEXT UNIQUE NOT NULL
+// 	)
+// 	;`
+// 	query, err := db.Prepare(users_table)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	query.Exec()
+// 	fmt.Println("Table created successfully!")
+// 	defer db.Close()
+// }
 
 // remove or add users to jsonfile
 func UpdateOnlineUsers(usersList []string) {
