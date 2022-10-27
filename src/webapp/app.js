@@ -32,7 +32,7 @@ let postsObject = await getJSON('/src/static/postsData.json');
 let threadObject = await getJSON('/src/static/threadData.json');
 let usersObject = await getJSON('/src/static/usersData.json');
 let messagesObject = await getJSON('/src/static/messagesData.json');
-let currentUser = 'User3';
+let currentUser = 'Petra Marsh';
 let otherUser;
 
 let topSentinelPreviousY = 0;
@@ -71,12 +71,19 @@ const getSlidingWindow = isScrollDown => {
 const recycleDOM = firstIndex => {
     for (let i = 0; i < listSize; i++) {
         const tile = $(`${trackable}-` + i);
-        tile.childNodes[0].firstChild.innerHTML = `real time of posting: ${DB[firstIndex + i].timestamp}`;
-        tile.childNodes[0].lastChild.innerHTML = `real posting by: <b>${DB[firstIndex + i].user}</b>`;
-        tile.childNodes[2].firstChild.innerHTML = `${DB[firstIndex + i].title}`;
-        tile.childNodes[2].firstChild.setAttribute('id', `${DB[firstIndex + i].postID}`);
-        tile.childNodes[2].lastChild.innerHTML = `${DB[firstIndex + i].content}`;
-        if (!isThread) {
+        if (trackable !== 'message') {
+            tile.childNodes[0].firstChild.innerHTML = `real time of posting: ${DB[firstIndex + i].timestamp}`;
+            tile.childNodes[0].lastChild.innerHTML = `real posting by: <b>${DB[firstIndex + i].user}</b>`;
+            tile.childNodes[2].firstChild.innerHTML = `${DB[firstIndex + i].title}`;
+            tile.childNodes[2].firstChild.setAttribute('id', `${DB[firstIndex + i].postID}`);
+            tile.childNodes[2].lastChild.innerHTML = `${DB[firstIndex + i].content}`;
+        } else {
+            tile.childNodes[0].innerHTML = `${DB[firstIndex + i].from}`;
+            tile.childNodes[1].innerHTML = `${DB[firstIndex + i].content}`;
+            tile.childNodes[2].innerHTML = `${DB[firstIndex + i].timestamp}`;
+        }
+        
+        if (trackable === 'post') {
             let commentCount = createCommentNode(DB[firstIndex + i]);
             tile.childNodes[4].firstChild.innerHTML = commentCount;
             tile.childNodes[4].firstChild.setAttribute('id', `${DB[firstIndex + i].postID}`);
@@ -90,6 +97,7 @@ const recycleDOM = firstIndex => {
 }
 
 const keepPostInFocus = (postNr, position) => {
+    console.log(`focus on: ${trackable}-` + postNr)
     const scrollPointItem = $(`${trackable}-` + postNr);
     scrollPointItem.scrollIntoView({behavior: 'auto', block: position});
 }
@@ -100,14 +108,16 @@ const topSentCallback = async entry => {
     const isIntersecting = entry.isIntersecting;
     // calculate shift in case last scroll is less than listSize
     let shift = 0
-    if (currentIndex < listSize/2)
-        shift = listSize/2 - currentIndex;
+    if (currentIndex < listSize/2 && trackable !== 'message') {
+        shift = currentIndex - listSize/2;
+    }
     // conditional check for Scrolling up
-    if (
+    if (currentIndex === 0 && trackable !== 'message') {
+        hide(spinner);
+    } else if (
         currentY > topSentinelPreviousY &&
         isIntersecting &&
-        currentRatio >= topSentinelPreviousRatio &&
-        currentIndex !== 0
+        currentRatio >= topSentinelPreviousRatio
     ) {
         // set spinner
         let x = entry.target.getBoundingClientRect().left + entry.target.getBoundingClientRect().width / 2;
@@ -116,15 +126,17 @@ const topSentCallback = async entry => {
         show(spinner);
         await sleep(loadTime);
         hide(spinner);
-        // load new data
-        const firstIndex = getSlidingWindow(false);
-        keepPostInFocus(listSize / 2 - shift, 'start');
-        recycleDOM(firstIndex);
-        currentIndex = firstIndex;
-    }
 
-    if (currentIndex === 0) {
-        hide(spinner);
+        // load new data
+        if (trackable === 'message') {
+            // to do
+        } else {
+            const firstIndex = getSlidingWindow(false);
+            console.log('firstIndex', firstIndex);
+            keepPostInFocus(listSize / 2 + shift, 'start');
+            recycleDOM(firstIndex);
+            currentIndex = firstIndex;
+        }
     }
 
     topSentinelPreviousY = currentY;
@@ -144,7 +156,9 @@ const bottomSentCallback = async entry => {
     if (DBSize - currentIndex - listSize/2 < listSize)
         shift = DBSize - currentIndex - listSize - listSize/2;
     // conditional check for Scrolling down
-    if (
+    if (currentIndex === 0 && trackable === 'message') {
+        hide(spinner);
+    } else if (
         currentY < bottomSentinelPreviousY &&
         currentRatio > bottomSentinelPreviousRatio &&
         isIntersecting
@@ -158,11 +172,17 @@ const bottomSentCallback = async entry => {
             await sleep(loadTime);
             hide(spinner);
         }
+
         // load new data
-        const firstIndex = getSlidingWindow(true);
-        keepPostInFocus(listSize / 2 - 1 - shift, 'end');
-        recycleDOM(firstIndex + shift);
-        currentIndex = firstIndex + shift;
+        if (trackable === 'message') {
+            // to do
+        } else {
+            const firstIndex = getSlidingWindow(true);
+            console.log('firstIndex', firstIndex);
+            keepPostInFocus(listSize / 2 - 1 - shift, 'end');
+            recycleDOM(firstIndex + shift);
+            currentIndex = firstIndex + shift;
+        }
     }
 
     bottomSentinelPreviousY = currentY;
@@ -170,10 +190,10 @@ const bottomSentCallback = async entry => {
 }
 
 const initIntersectionObserver = () => {
-
+    
     const callback = entries => {
       entries.forEach(entry => {
-        console.log("Tracking", trackable);
+        //console.log("Trackable: ", trackable);
         if (entry.target.id === `${trackable}-0`) {
             topSentCallback(entry);
         } else if (entry.target.id === `${trackable}-${listSize - 1}`) {
@@ -228,6 +248,7 @@ const start = () => {
 }
 
 /* Loads next batch of messages in a conversation */
+/* currently unused
 function getMessages(fromUser, toUser) {
     console.log("Loading messages from " + fromUser + " to " + toUser);
     //let messageDB = initDB(messagesObject.messages.length, messagesObject);
@@ -237,6 +258,7 @@ function getMessages(fromUser, toUser) {
         initMessages(messagesObject.messages, listSize, fromUser);
     }
 }
+*/
 
 /* Loads user lists and creates event listeners for them to load the conversations */
 const getUsers = () => {
@@ -251,8 +273,16 @@ const getUsers = () => {
             messagesWrapper.innerHTML = ''; // clear messages box contents
             otherUser = user.id;
             console.log(otherUser)
-            getMessages(currentUser, otherUser);
+            //DB = getMessages(currentUser, otherUser);
             trackable = 'message';
+            DB = messagesObject.messages;
+            DBSize = messagesObject.messages.length;
+            if (DBSize < listSize) {
+                initMessages(DB, DBSize, currentUser);
+            } else {
+                initMessages(DB, listSize, currentUser);
+                initIntersectionObserver();
+            }
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
         });
@@ -261,6 +291,13 @@ const getUsers = () => {
     closeMessagesBox.addEventListener('click', () => {
         toggleMessageBoxVisibility(false);
         trackable = 'post';
+        if (isThread) {
+            DB = threadObject.posts;
+            DBSize = threadObject.posts.length;
+        } else {
+            DB = postsObject.posts;
+            DBSize = postsObject.posts.length;
+        }
     });
 };
 
