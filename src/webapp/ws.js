@@ -45,21 +45,21 @@ export function Forum() {
     };
 
     //Later be replaced
-    userRegister.addEventListener("change", function () {
-        let jsonData = {}; // json send to websocket
-        jsonData["action"] = "username";
-        jsonData["username"] = this.value; // whatever i type in the form input
-        let currentUser = document.querySelector(".current-user").textContent = this.value
-        socket.send(JSON.stringify(jsonData)); //send it as jsondata
-    });
+    // userRegister.addEventListener("change", function () {
+    //     let jsonData = {}; // json send to websocket
+    //     jsonData["action"] = "username";
+    //     jsonData["username"] = this.value; // whatever i type in the form input
+    //     let currentUser = document.querySelector(".current-user").textContent = this.value
+    //     socket.send(JSON.stringify(jsonData)); //send it as jsondata
+    // });
 
-    userNameLogin.addEventListener("change", function () {
-        let jsonData = {};
-        jsonData["action"] = "username";
-        jsonData["username"] = this.value;
-        let currentUser = document.querySelector(".current-user").textContent = this.value
-        socket.send(JSON.stringify(jsonData));
-    });
+    // userNameLogin.addEventListener("change", function () {
+    //     let jsonData = {};
+    //     jsonData["action"] = "username";
+    //     jsonData["username"] = this.value;
+    //     let currentUser = document.querySelector(".current-user").textContent = this.value
+    //     socket.send(JSON.stringify(jsonData));
+    // });
 
     // });
 }

@@ -7,7 +7,8 @@ import { populateUsers } from "./populate_users.js";
 import { Forum } from './ws.js';
 import { sendMessage } from "./ws.js";
 import { socket } from "./ws.js";
-
+import { signUpValidation } from "./validate.js";
+import { badValidation } from "./validate.js";
 
 
 export const postsWrapper = document.querySelector('.posts-wrapper');
@@ -74,24 +75,46 @@ export const createLoadMore = (type) => {
 };
 
 function signUp() {
-    const data = new FormData(document.getElementById('register-area'));
+    debugger
+    var data = new FormData(document.getElementById('register-area'));
+    var dataToSend = Object.fromEntries(data)
+
     fetch('/src/server/signup', {
-        method: 'POST',
+        method: "POST",
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            username: data.get('username-register'),
-            age: parseInt(data.get('age-register')),
-            gender: data.get('gender-register'),
-            firstname: data.get('first-name-register'),
-            lastname: data.get('last-name-register'),
-            email: data.get('email-register'),
-            password: data.get('password-register'),
-        }),
+        body: JSON.stringify(dataToSend)
     })
-        .then((response) => response.json())
-        .then((data) => {
-            //make a cookie =)
+
+        .then((res) => {
+            if (res.status == 200) {
+                toggleRegisterVisibility(false)
+            } else {
+                return res.json()
+            }
         })
+
+        .then((result) => {
+            badValidation(result.message, result.requirement)
+        })
+
+        // .then((result) => {
+        //     //if (result.status != 200) { throw new Error("Bad sservu Response"); }
+        //     console.log(result.status);
+        //     if (result.status == 200) {
+        //         toggleRegisterVisibility(false)
+        //     } else {
+        //         return result.json();
+
+        //     }
+        //     // console.log(result.message);
+        //     //console.log(result.status)
+        // })
+
+        // // (D) SERVER RESPONSE
+        // .then((response) => {
+        //     console.log(response.message);
+        //     badValidation(response.message)
+        // })
         .catch((err) => {
             console.log(err);
         });
@@ -161,7 +184,7 @@ export async function getMessages(fromUser, toUser) {
 export async function getUsers() {
     await populateUsers()
     const userElements = document.querySelectorAll('.user-name');
-    console.log("getUsers")
+    // console.log("getUsers")
     // console.log("currentUser:", currentUser)
     // console.log("otherUser: ", otherUser)
     userElements.forEach((user) => {
@@ -196,8 +219,6 @@ buttons.forEach((button) => {
                 toggleRegisterVisibility(true);
                 break;
             case 'create':
-                toggleRegisterVisibility(false);
-                //signUp()
                 break;
             case 'logout':
                 toggleLoginVisibility(true);
@@ -214,6 +235,15 @@ buttons.forEach((button) => {
                 console.log(button.id)
         }
     });
+});
+
+document.getElementById('register-area').addEventListener('submit', (e) => {
+    if (signUpValidation()) {
+        signUp();
+        //toggleRegisterVisibility(false)
+    }
+    console.log("register-area eventlistener");
+    e.preventDefault();
 });
 
 document.getElementById("message").addEventListener("keydown", function (event) {

@@ -167,5 +167,3 @@ func BroadcastToClient(sender string, receiver string, response WsJsonResponse) 
 	}
 }
 
-func Signup(w http.ResponseWriter, r *http.Request) {
-}

@@ -1,11 +1,6 @@
 {
 	"data": {
-		"online": [
-			{
-				"name": "Jollyroger",
-				"unread": false
-			}
-		],
+		"online": [],
 		"offline": [
 			{
 				"name": "SampleUser12",

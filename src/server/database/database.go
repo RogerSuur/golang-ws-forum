@@ -39,6 +39,8 @@ type Data struct {
 	Status Status `json:"data"`
 }
 
+var Statements = map[string]*sql.Stmt{}
+
 func DatabaseGod() {
 	if _, err := os.Stat("forum.db"); err != nil {
 		file, err := os.Create("forum.db")
@@ -46,33 +48,68 @@ func DatabaseGod() {
 			log.Fatal(err)
 		}
 		file.Close()
-		db, err := sql.Open("sqlite3", "./forum.db")
-		if err != nil {
-			log.Fatal(err)
-		}
-		createTable(db)
 	}
+	createTable()
 }
 
-func createTable(db *sql.DB) {
-	users_table := `CREATE TABLE user (
-		id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-			username TEXT UNIQUE NOT NULL,
-			password TEXT NOT NULL,
-			age INTEGER NOT NULL,
-			gender TEXT NOT NULL,
-			first_name TEXT NOT NULL,
-			last_name TEXT NOT NULL,
-			email TEXT UNIQUE NOT NULL
-	)
-	;`
-	query, err := db.Prepare(users_table)
+func createTable() {
+	db, err := sql.Open("sqlite3", "./forum.db")
 	if err != nil {
 		log.Fatal(err)
 	}
-	query.Exec()
-	fmt.Println("Table created successfully!")
-	defer db.Close()
+	_, err = db.Exec(` CREATE TABLE IF NOT EXISTS users  (
+		user_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+			username TEXT UNIQUE NOT NULL,
+			email TEXT UNIQUE NOT NULL,
+			password TEXT NOT NULL,
+			first_name TEXT,
+			last_name TEXT,
+			age INTEGER,
+			gender TEXT
+	);
+	CREATE TABLE IF NOT EXISTS posts (
+		post_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+		title VARCHAR NOT NULL,
+		content VARCHAR NOT NULL,
+		timestamp VARCHAR NOT NULL,
+		categories VARCHAR,
+		post_author INTEGER NOT NULL,
+		FOREIGN KEY (post_author) REFERENCES users (user_id)
+	);
+	CREATE TABLE IF NOT EXISTS messages (
+		message_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+		content VARCHAR NOT NULL,
+		timestamp VARCHAR NOT NULL,
+		from_id INTEGER NOT NULL REFERENCES users (user_id),
+		to_id INTEGER NOT NULL REFERENCES users (user_id)
+	);
+	CREATE TABLE IF NOT EXISTS comments (
+		comment_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+		content VARCHAR NOT NULL,
+		user_id INTEGER NOT NULL REFERENCES users (id),
+		post_id INTEGER NOT NULL REFERENCES posts
+	)
+	;
+	INSERT OR IGNORE INTO users (username, email, password) 
+	VALUES ("Mark", "Mark@gmail.com","1234" ),
+		   ("Kate", "Kate@gmail.com", "1234"),
+		   ("John", "John@gmail.com", "1234"),
+		   ("Susan", "Susan@gmail.com", "1234")
+	;
+	`)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	fmt.Println("Database created successfully!")
+
+	for key, query := range map[string]string{
+		"addUser": `INSERT INTO users (username, email, password, first_name, last_name, age, gender) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+	} {
+		Statements[key], _ = db.Prepare(query)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+	}
 }
 
 // remove or add users to jsonfile

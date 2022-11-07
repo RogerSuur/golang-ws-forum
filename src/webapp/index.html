@@ -173,7 +173,7 @@
           </div>
         </div>
       </div>
-      <div class="register-area hidden" id="register-area">
+      <form class="register-area hidden" id="register-area">
         <div class="register-wrapper">
           <div class="user-input-area">
             <div class="register-header">
@@ -182,60 +182,72 @@
             <input
               type="text"
               class="mandatory"
-              id="username-register"
               name="username-register"
+              id="username-registerID"
               placeholder="Username (nickname)"
             />
             <input
-              type="email-register"
+              type="email"
               class="mandatory"
+              id="email-registerID"
               name="email-register"
-              id="email-register"
               placeholder="Email"
             />
             <input
               type="password"
               class="mandatory"
+              id="password-registerID"
               name="password-register"
-              id="password-register"
               placeholder="Password"
             />
             <input
               type="password"
               class="mandatory"
-              name="password-confirm-register"
-              id="password-congirm-register"
+              id="password-register-confirmID"
+              name="password-register-confirm"
               placeholder="Confirm Password"
             />
             <input
               type="text"
               class="optional"
               name="first-name-register"
-              id="first-name-register"
               placeholder="First Name (optional)"
             />
             <input
               type="text"
               class="optional"
               name="last-name-register"
-              id="last-name-register"
               placeholder="Last Name (optional)"
             />
             <input
-              type="number"
+              type="text"
               class="optional"
               name="age-register"
-              id="age-register"
               placeholder="Age (optional)"
             />
             <div class="gender-wrapper optional">
               Gender&nbsp;(optional):
-              <div name="gender-register" id="gender-register">
-                <input type="radio" name="gender" id="female" value="female" />
+              <div name="gender-register">
+                <input
+                  type="radio"
+                  name="gender-register"
+                  id="female"
+                  value="female"
+                />
                 <label for="female">Female</label>
-                <input type="radio" name="gender" id="male" value="male" />
+                <input
+                  type="radio"
+                  name="gender-register"
+                  id="male"
+                  value="male"
+                />
                 <label for="male">Male</label>
-                <input type="radio" name="gender" id="other" value="other" />
+                <input
+                  type="radio"
+                  name="gender-register"
+                  id="other"
+                  value="other"
+                />
                 <label for="other">other</label>
               </div>
             </div>
@@ -252,7 +264,7 @@
             </button>
           </div>
         </div>
-      </div>
+      </form>
     </div>
 
     <!-- <script src="./ws.js" type="module"></script>
