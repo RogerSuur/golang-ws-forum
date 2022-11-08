@@ -10,6 +10,7 @@ import (
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Online struct {
@@ -29,7 +30,18 @@ type Message struct {
 	Timestamp string `json:"timestamp"`
 }
 
+type Post struct {
+	User       string `json:"user"`
+	PostID     string `json:"postID"`
+	Title      string `json:"title"`
+	Content    string `json:"content"`
+	Timestamp  string `json:"timestamp"`
+	Comments   int    `json:"comments"`
+	Categories string `json:"categories"`
+}
+
 type Status struct {
+	Post    []Post    `json:"posts"`
 	Online  []Online  `json:"online"`
 	Offline []Offline `json:"offline"`
 	Message []Message `json:"messages"`
@@ -42,6 +54,7 @@ type Data struct {
 var Statements = map[string]*sql.Stmt{}
 
 func DatabaseGod() {
+	// At one point we need to close the db with defer db.Close(), but where?
 	if _, err := os.Stat("forum.db"); err != nil {
 		file, err := os.Create("forum.db")
 		if err != nil {
@@ -69,11 +82,12 @@ func createTable() {
 	);
 	CREATE TABLE IF NOT EXISTS posts (
 		post_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+		post_author INTEGER NOT NULL,
 		title VARCHAR NOT NULL,
 		content VARCHAR NOT NULL,
 		timestamp VARCHAR NOT NULL,
 		categories VARCHAR,
-		post_author INTEGER NOT NULL,
+		comments INT,
 		FOREIGN KEY (post_author) REFERENCES users (user_id)
 	);
 	CREATE TABLE IF NOT EXISTS messages (
@@ -90,18 +104,13 @@ func createTable() {
 		post_id INTEGER NOT NULL REFERENCES posts
 	)
 	;
-	INSERT OR IGNORE INTO users (username, email, password) 
-	VALUES ("Mark", "Mark@gmail.com","1234" ),
-		   ("Kate", "Kate@gmail.com", "1234"),
-		   ("John", "John@gmail.com", "1234"),
-		   ("Susan", "Susan@gmail.com", "1234")
-	;
 	`)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	fmt.Println("Database created successfully!")
 
+	sampledata(db)
 	for key, query := range map[string]string{
 		"addUser": `INSERT INTO users (username, email, password, first_name, last_name, age, gender) VALUES (?, ?, ?, ?, ?, ?, ?);`,
 	} {
@@ -111,6 +120,16 @@ func createTable() {
 		}
 	}
 }
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+// func CheckPasswordHash(password, hash string) bool {
+// 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+// 	return err == nil
+// }
 
 // remove or add users to jsonfile
 func UpdateOnlineUsers(usersList []string) {

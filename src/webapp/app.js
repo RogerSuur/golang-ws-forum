@@ -94,7 +94,9 @@ function signUp() {
         })
 
         .then((result) => {
-            badValidation(result.message, result.requirement)
+            if (result !== undefined) {
+                badValidation(result.message, result.requirement)
+            }
         })
 
         // .then((result) => {
