@@ -41,7 +41,7 @@ func insertSamplePosts(db *sql.DB) {
 	}
 
 	for _, v := range posts.Status.Post {
-		statement.Exec(arr[rand.Intn(3)*2], v.Title, v.Content, v.Timestamp, v.Categories, v.Comments)
+		statement.Exec(rand.Intn(6)+1, v.Title, v.Content, v.Timestamp, v.Categories, v.Comments)
 	}
 
 	if err != nil {
@@ -103,7 +103,12 @@ func insertSampleMessages(db *sql.DB) {
 	}
 
 	for _, v := range posts.Status.Message {
-		user := rand.Intn(3) * 2
-		statement.Exec(v.Content, v.Timestamp, arr[user], arr[user+2])
+		ranInt := rand.Intn(7 - 1)
+		ranInt2 := rand.Intn(7 - 1)
+		if ranInt == ranInt2 {
+			statement.Exec(v.Content, v.Timestamp, ranInt, ranInt+1)
+		} else {
+			statement.Exec(v.Content, v.Timestamp, ranInt, ranInt2)
+		}
 	}
 }

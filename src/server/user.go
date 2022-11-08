@@ -75,3 +75,6 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Added %s to the database", data.Username)
 	}
 }
+
+func getUsers() {
+}
