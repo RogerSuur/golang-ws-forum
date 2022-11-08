@@ -44,32 +44,12 @@ export function Forum() {
         console.log("there was an error");
     };
 
-    //Later be replaced
-    // userRegister.addEventListener("change", function () {
-    //     let jsonData = {}; // json send to websocket
-    //     jsonData["action"] = "username";
-    //     jsonData["username"] = this.value; // whatever i type in the form input
-    //     let currentUser = document.querySelector(".current-user").textContent = this.value
-    //     socket.send(JSON.stringify(jsonData)); //send it as jsondata
-    // });
-
-    // userNameLogin.addEventListener("change", function () {
-    //     let jsonData = {};
-    //     jsonData["action"] = "username";
-    //     jsonData["username"] = this.value;
-    //     let currentUser = document.querySelector(".current-user").textContent = this.value
-    //     socket.send(JSON.stringify(jsonData));
-    // });
-
-    // });
 }
 
 //send messages to server
 export function sendMessage() {
     let jsonData = {};
     jsonData["action"] = "broadcast";
-    //console.log("sendMesagge from js func");
-    //console.log(document.getElementById("username").value);
     jsonData["other_user"] = otherUser;
     jsonData["username"] = document.getElementById("username-register").value;
     jsonData["message"] = document.getElementById("message").value;
