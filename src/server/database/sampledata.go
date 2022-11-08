@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"math/rand"
 	"os"
@@ -23,21 +23,16 @@ func sampledata(db *sql.DB) {
 
 func insertSamplePosts(db *sql.DB) {
 	jsonFile, err := os.Open("./src/webapp/static/postsData.json")
-	// if we os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	// defer the closing of our jsonFile so that we can parse it later on
 	defer jsonFile.Close()
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, _ := io.ReadAll(jsonFile)
 
-	// we initialize our Users array
 	var posts Data
 
-	// we unmarshal our byteArray which contains our
-	// jsonFile's content into 'users' which we defined above
 	json.Unmarshal(byteValue, &posts)
 
 	statement, err := db.Prepare("INSERT OR IGNORE INTO posts (post_author, title, content, timestamp, categories, comments) VALUES (?,?,?,?,?,?)")
@@ -90,21 +85,16 @@ func insertSampleUsers(db *sql.DB) {
 
 func insertSampleMessages(db *sql.DB) {
 	jsonFile, err := os.Open("./src/webapp/static/messagesData.json")
-	// if we os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	// defer the closing of our jsonFile so that we can parse it later on
 	defer jsonFile.Close()
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, _ := io.ReadAll(jsonFile)
 
-	// we initialize our Users array
 	var posts Data
 
-	// we unmarshal our byteArray which contains our
-	// jsonFile's content into 'users' which we defined above
 	json.Unmarshal(byteValue, &posts)
 
 	statement, err := db.Prepare("INSERT OR IGNORE INTO messages (content, timestamp, from_id, to_id) VALUES (?,?,?,?)")

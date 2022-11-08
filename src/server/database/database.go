@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"time"
@@ -133,19 +133,14 @@ func HashPassword(password string) (string, error) {
 
 // remove or add users to jsonfile
 func UpdateOnlineUsers(usersList []string) {
-	// Open our jsonFile
 	jsonFile, err := os.Open("./src/webapp/static/usersData.json")
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	// defer the closing of our jsonFile so that we can parse it later on
 	defer jsonFile.Close()
+	byteValue, _ := io.ReadAll(jsonFile)
 
-	// read our opened jsonFile as a byte array.
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	// we initialize our Users array
 	var users Data
 
 	json.Unmarshal(byteValue, &users)
@@ -189,7 +184,7 @@ func UpdateOnlineUsers(usersList []string) {
 		fmt.Println("error", err)
 	}
 
-	err = ioutil.WriteFile("./src/webapp/static/usersData.json", result, 0o644)
+	err = os.WriteFile("./src/webapp/static/usersData.json", result, 0o644)
 	if err != nil {
 		panic(err)
 	}
@@ -203,15 +198,13 @@ func UpdateMessagesData(sender string, receiver string, message string) {
 
 	defer jsonFile.Close()
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, _ := io.ReadAll(jsonFile)
 
-	// we initialize our Users array
 	var users Data
 
 	json.Unmarshal(byteValue, &users)
 
 	dt := time.Now()
-	// dt.Format("01/02/2006 15:04")
 
 	users.Status.Message = append(users.Status.Message, Message{
 		From:      sender,
@@ -226,7 +219,7 @@ func UpdateMessagesData(sender string, receiver string, message string) {
 		fmt.Println("error", err)
 	}
 
-	err = ioutil.WriteFile("./src/webapp/static/messagesData.json", result, 0o644)
+	err = os.WriteFile("./src/webapp/static/messagesData.json", result, 0o644)
 	if err != nil {
 		panic(err)
 	}
