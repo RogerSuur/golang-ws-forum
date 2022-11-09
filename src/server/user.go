@@ -122,9 +122,7 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var users Data
-
 	for rows.Next() {
-
 		var username Offline
 
 		err = rows.Scan(&username.Username)

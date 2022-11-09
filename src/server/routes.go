@@ -15,7 +15,7 @@ func routes() http.Handler {
 	// mux.HandleFunc("/src/server/logout", logout)
 	mux.HandleFunc("/src/server/signup", SignUpHandler)
 	mux.HandleFunc("/src/server/getUsersHandler", getUsersHandler)
-	// mux.HandleFunc("/src/server/getPostsHandler", getPostsHandler)
+	mux.HandleFunc("/src/server/getPostsHandler", getPostsHandler)
 	// mux.HandleFunc("/src/server/signup_account", signupAccount)
 	// mux.HandleFunc("/src/server/authenticate", authenticate)
 	mux.HandleFunc("/ws", handlers.WsEndPoint)

@@ -12,29 +12,22 @@ func getPostsHandler(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.Statements["getPosts"].Query()
 	if err != nil {
 		log.Println(err.Error())
-		w.WriteHeader(400)
 		return
 	}
-	var users Data
+	var posts Data
 
 	for rows.Next() {
-		var username Offline
-		err = rows.Scan(&username.Username)
-		users.Status.Offline = append(users.Status.Offline, Offline{
-			Username: username.Username,
-			Unread:   false,
-		})
+		var post Post
+		err = rows.Scan(&post.PostID, &post.User, &post.Title, &post.Timestamp, &post.Comments, &post.Content, &post.Categories)
+
+		posts.Status.Post = append(posts.Status.Post, post)
 
 		if err != nil {
 			log.Println(err.Error())
-			w.WriteHeader(400)
 			return
 		}
 	}
 
-	// empty online struct to avoid null.length() problems on client side.
-	users.Status.Online = []Online{}
-
-	jsonResponse, _ := json.Marshal(users)
+	jsonResponse, _ := json.Marshal(posts)
 	w.Write(jsonResponse)
 }

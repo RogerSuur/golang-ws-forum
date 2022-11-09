@@ -30,7 +30,7 @@ const closeMessagesBox = document.querySelector('.close-messages-button');
 const closeThread = document.querySelector('.close-thread-button');
 const messagesBackgroundOverlay = document.querySelector('.overlay');
 
-let postsObject = await getJSON('/static/postsData.json');
+let postsObject = await getJSON('/src/server/getPostsHandler');
 let threadObject = await getJSON('/static/threadData.json');
 //let usersObject = await getJSON('/static/usersData.json');
 
