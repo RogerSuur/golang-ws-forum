@@ -7,7 +7,7 @@ let offlineUsersWrapper = document.querySelector(".offline");
 
 export async function populateUsers() {
     //loads fresh set of user
-    const usersObject = await getJSON('/static/usersData.json');
+    const usersObject = await getJSON('/src/server/getUsersHandler');
     onlineUsersWrapper.innerHTML = '';
     offlineUsersWrapper.innerHTML = '';
     //console.log("usersObject.online", usersObject.online)

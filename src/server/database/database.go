@@ -110,9 +110,11 @@ func createTable() {
 	}
 	fmt.Println("Database created successfully!")
 
-	//sampledata(db)
+	// sampledata(db)
 	for key, query := range map[string]string{
-		"addUser": `INSERT INTO users (username, email, password, first_name, last_name, age, gender) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+		"addUser":  `INSERT INTO users (username, email, password, first_name, last_name, age, gender) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+		"getUsers": `SELECT username from users`,
+		"getPosts": `SELECT post_id, username,title,timestamp, comments, content, categories FROM posts LEFT JOIN users AS u2 ON posts.post_author = u2.user_id`,
 	} {
 		Statements[key], _ = db.Prepare(query)
 		if err != nil {
