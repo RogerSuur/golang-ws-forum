@@ -10,6 +10,7 @@ import { socket } from "./ws.js";
 import { signUpValidation } from "./validate.js";
 import { badValidation } from "./validate.js";
 
+const forum = new Forum()
 
 export const postsWrapper = qS('posts-wrapper');
 export const threadWrapper = qS('thread-wrapper');
@@ -34,12 +35,12 @@ const closeMessagesBox = qS('close-messages-button');
 const closeThread = qS('close-thread-button');
 const messagesBackgroundOverlay = qS('overlay');
 
-let postsObject = await getJSON('/src/static/postsData.json');
-let threadObject = await getJSON('/src/static/threadData.json');
-let usersObject = await getJSON('/src/static/usersData.json');
-let messagesObject = await getJSON('/src/static/messagesData.json');
-let currentUser = 'Petra Marsh';
-let otherUser;
+let postsObject = await getJSON('/src/server/getPostsHandler');
+let threadObject = await getJSON('/static/threadData.json');
+//let usersObject = await getJSON('/static/usersData.json');
+let messagesObject = await getJSON('/static/messagesData.json');
+export let currentUser = 'Petra Marsh';
+export let otherUser;
 
 let topSentinelPreviousY = 0;
 let topSentinelPreviousRatio = 0;
@@ -283,8 +284,8 @@ const start = () => {
 }
 
 /* Loads next batch of messages in a conversation */
-/* currently unused
-function getMessages(fromUser, toUser) {
+// currently unused
+export function getMessages(fromUser, toUser) {
     console.log("Loading messages from " + fromUser + " to " + toUser);
     //let messageDB = initDB(messagesObject.messages.length, messagesObject);
     if (messagesObject.messages.length < listSize) {
@@ -293,7 +294,6 @@ function getMessages(fromUser, toUser) {
         initMessages(messagesObject.messages, listSize, fromUser);
     }
 }
-*/
 
 /* Loads user lists and creates event listeners for them to load the conversations */
 export async function getUsers() {
