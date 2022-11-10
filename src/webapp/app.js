@@ -35,7 +35,8 @@ const closeMessagesBox = qS('close-messages-button');
 const closeThread = qS('close-thread-button');
 const messagesBackgroundOverlay = qS('overlay');
 
-let postsObject = await getJSON('/src/server/getPostsHandler');
+//let postsObject = await getJSON('/src/server/getPostsHandler');
+let postsObject = await getJSON('/static/postsData.json');
 let threadObject = await getJSON('/static/threadData.json');
 //let usersObject = await getJSON('/static/usersData.json');
 let messagesObject = await getJSON('/static/messagesData.json');
@@ -354,7 +355,7 @@ buttons.forEach((button) => {
             case 'sendMessage':
                 if (message.value === "") {
                     alert("fill out user nad message")
-                    return False
+                    return false
                 } else {
                     sendMessage()
                 }
