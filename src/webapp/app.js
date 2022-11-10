@@ -1,8 +1,8 @@
-import { createDiv } from "./DOM_helpers.js";
+import { createDiv, $, qS, horizontalDivider } from "./DOM_helpers.js";
 import { startHeaderClock } from "./header_clock.js";
 import { getJSON } from "./read_JSON.js";
-import { populatePosts } from "./populate_posts.js";
-import { populateMessages } from "./populate_messages.js";
+import { initPosts, createCommentNode } from "./populate_posts.js";
+import { initMessages } from "./populate_messages.js";
 import { populateUsers } from "./populate_users.js";
 import { Forum } from './ws.js';
 import { sendMessage } from "./ws.js";
@@ -11,66 +11,207 @@ import { signUpValidation } from "./validate.js";
 import { badValidation } from "./validate.js";
 
 
-export const postsWrapper = document.querySelector('.posts-wrapper');
-export const threadWrapper = document.querySelector('.thread-wrapper');
-export const messagesWrapper = document.querySelector('.messages-wrapper');
+export const postsWrapper = qS('posts-wrapper');
+export const threadWrapper = qS('thread-wrapper');
+export const messagesWrapper = qS('messages-wrapper');
 
-const profile = document.querySelector('.user-profile-container');
-const logout = document.getElementById('logout');
-const adsArea = document.querySelector('.ads-area');
-const loginArea = document.querySelector('.login-area');
-const registerArea = document.querySelector('.register-area');
-const userArea = document.querySelector('.user-list');
+function hide(x) {return x.classList.add('hidden');}
+function show(x) {return x.classList.remove('hidden');}
+
+const profile = qS('user-profile-container');
+const logout = $('logout');
+const adsArea = qS('ads-area');
+const loginArea = qS('login-area');
+const registerArea = qS('register-area');
+const userArea = qS('user-list');
+const spinner = qS('lds-ellipsis');
 
 const buttons = document.querySelectorAll('button');
 
-const threadHeader = document.querySelector('.thread-header-text');
-const messageBoxHeader = document.querySelector('.messages-header-text');
-const closeMessagesBox = document.querySelector('.close-messages-button');
-const closeThread = document.querySelector('.close-thread-button');
-const messagesBackgroundOverlay = document.querySelector('.overlay');
+const threadHeader = qS('thread-header-text');
+const messageBoxHeader = qS('messages-header-text');
+const closeMessagesBox = qS('close-messages-button');
+const closeThread = qS('close-thread-button');
+const messagesBackgroundOverlay = qS('overlay');
 
-let postsObject = await getJSON('/static/postsData.json');
-let threadObject = await getJSON('/static/threadData.json');
+let postsObject = await getJSON('/src/static/postsData.json');
+let threadObject = await getJSON('/src/static/threadData.json');
+let usersObject = await getJSON('/src/static/usersData.json');
+let messagesObject = await getJSON('/src/static/messagesData.json');
+let currentUser = 'Petra Marsh';
+let otherUser;
 
-let messagesObject = await getJSON('/static/messagesData.json');
-export let currentUser = document.getElementById("username-register");
-export let otherUser;
+let topSentinelPreviousY = 0;
+let topSentinelPreviousRatio = 0;
+let bottomSentinelPreviousY = 0;
+let bottomSentinelPreviousRatio = 0;
 
+const listSize = 20;
+const loadTime = 1500;
+let DBSize = postsObject.posts.length;
+let DB = postsObject.posts;
+let trackable = 'post';
+let isThread = false;
 
+let currentIndex = 0;
 
-const forum = new Forum()
-/* Creates "Load more" button for posts and messages */
-export const createLoadMore = (type) => {
-    let wrapper, remaining
-    switch (type) {
-        case 'posts':
-            wrapper = postsWrapper;
-            remaining = postsObject.remainingPosts;
-            break;
-        case 'comments':
-            wrapper = threadWrapper;
-            remaining = threadObject.remainingComments;
-            break;
-        case 'messages':
-            wrapper = messagesWrapper;
-            remaining = messagesObject.remainingMessages;
-            break;
-    }
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-    let moreContent = createDiv(`more-${type}`, `There are ${remaining} older ${type} to read`);
-    let loadMore = createDiv([`load-more`, `${type}`], `load more ...`);
-    moreContent.appendChild(loadMore);
-
-    if (type === 'comments') {
-        let userCommentForm = threadWrapper.lastElementChild;
-        wrapper.insertBefore(moreContent, userCommentForm);
+const getSlidingWindow = isScrollDown => {
+	const increment = Math.floor(listSize / 2);
+	let firstIndex;
+  
+    if (isScrollDown) {
+        firstIndex = currentIndex + increment;
     } else {
-        wrapper.appendChild(moreContent);
+        firstIndex = currentIndex - increment;
+    }
+  
+    if (firstIndex < 0) {
+        firstIndex = 0;
+    }
+  
+    return firstIndex;
+}
+
+const recycleDOM = firstIndex => {
+    for (let i = 0; i < listSize; i++) {
+        const tile = $(`${trackable}-` + i);
+        if (trackable !== 'message') {
+            tile.childNodes[0].firstChild.innerHTML = `real time of posting: ${DB[firstIndex + i].timestamp}`;
+            tile.childNodes[0].lastChild.innerHTML = `real posting by: <b>${DB[firstIndex + i].user}</b>`;
+            tile.childNodes[2].firstChild.innerHTML = `${DB[firstIndex + i].title}`;
+            tile.childNodes[2].firstChild.setAttribute('id', `${DB[firstIndex + i].postID}`);
+            tile.childNodes[2].lastChild.innerHTML = `${DB[firstIndex + i].content}`;
+        } else {
+            tile.childNodes[0].innerHTML = `${DB[firstIndex + i].from}`;
+            tile.childNodes[1].innerHTML = `${DB[firstIndex + i].content}`;
+            tile.childNodes[2].innerHTML = `${DB[firstIndex + i].timestamp}`;
+        }
+        
+        if (trackable === 'post') {
+            let commentCount = createCommentNode(DB[firstIndex + i]);
+            tile.childNodes[4].firstChild.innerHTML = commentCount;
+            tile.childNodes[4].firstChild.setAttribute('id', `${DB[firstIndex + i].postID}`);
+            if (DB[firstIndex + i].unread) 
+                tile.childNodes[4].firstChild.classList.add('unread');
+            else
+                tile.childNodes[4].firstChild.classList.remove('unread');
+        }
+        
+    }
+}
+
+const keepPostInFocus = (postNr, position) => {
+    console.log(`focus on: ${trackable}-` + postNr)
+    const scrollPointItem = $(`${trackable}-` + postNr);
+    scrollPointItem.scrollIntoView({behavior: 'auto', block: position});
+}
+
+const topSentCallback = async entry => {
+    const currentY = entry.boundingClientRect.top;
+    const currentRatio = entry.intersectionRatio;
+    const isIntersecting = entry.isIntersecting;
+    // calculate shift in case last scroll is less than listSize
+    let shift = 0
+    if (currentIndex < listSize/2 && trackable !== 'message') {
+        shift = currentIndex - listSize/2;
+    }
+    // conditional check for Scrolling up
+    if (currentIndex === 0 && trackable !== 'message') {
+        hide(spinner);
+    } else if (
+        currentY > topSentinelPreviousY &&
+        isIntersecting &&
+        currentRatio >= topSentinelPreviousRatio
+    ) {
+        // set spinner
+        let x = entry.target.getBoundingClientRect().left + entry.target.getBoundingClientRect().width / 2;
+        let y = entry.target.parentElement.getBoundingClientRect().top;
+        spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
+        show(spinner);
+        await sleep(loadTime);
+        hide(spinner);
+
+        // load new data
+        if (trackable === 'message') {
+            // to do
+        } else {
+            const firstIndex = getSlidingWindow(false);
+            console.log('firstIndex', firstIndex);
+            keepPostInFocus(listSize / 2 + shift, 'start');
+            recycleDOM(firstIndex);
+            currentIndex = firstIndex;
+        }
     }
 
-    addLoadMoreEvent(loadMore, type);
-};
+    topSentinelPreviousY = currentY;
+    topSentinelPreviousRatio = currentRatio;
+}
+
+const bottomSentCallback = async entry => {
+	if (currentIndex === DBSize - listSize) {
+        // if we are at the end of the DB, do nothing
+        return;
+    }
+    const currentY = entry.boundingClientRect.top;
+    const currentRatio = entry.intersectionRatio;
+    const isIntersecting = entry.isIntersecting;
+    // calculate shift in case last scroll is less than listSize
+    let shift = 0
+    if (DBSize - currentIndex - listSize/2 < listSize)
+        shift = DBSize - currentIndex - listSize - listSize/2;
+    // conditional check for Scrolling down
+    if (currentIndex === 0 && trackable === 'message') {
+        hide(spinner);
+    } else if (
+        currentY < bottomSentinelPreviousY &&
+        currentRatio > bottomSentinelPreviousRatio &&
+        isIntersecting
+    ) {
+        // set spinner
+        let x = entry.target.getBoundingClientRect().left + entry.target.getBoundingClientRect().width / 2;
+        let y = entry.target.parentElement.getBoundingClientRect().bottom - 100;
+        spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
+        if (entry.target.getBoundingClientRect().top < window.innerHeight) {
+            show(spinner);
+            await sleep(loadTime);
+            hide(spinner);
+        }
+
+        // load new data
+        if (trackable === 'message') {
+            // to do
+        } else {
+            const firstIndex = getSlidingWindow(true);
+            console.log('firstIndex', firstIndex);
+            keepPostInFocus(listSize / 2 - 1 - shift, 'end');
+            recycleDOM(firstIndex + shift);
+            currentIndex = firstIndex + shift;
+        }
+    }
+
+    bottomSentinelPreviousY = currentY;
+    bottomSentinelPreviousRatio = currentRatio;
+}
+
+const initIntersectionObserver = () => {
+    
+    const callback = entries => {
+      entries.forEach(entry => {
+        //console.log("Trackable: ", trackable);
+        if (entry.target.id === `${trackable}-0`) {
+            topSentCallback(entry);
+        } else if (entry.target.id === `${trackable}-${listSize - 1}`) {
+            bottomSentCallback(entry);
+        }
+      });
+    }
+  
+    var observer = new IntersectionObserver(callback);
+    observer.observe($(`${trackable}-0`));
+    observer.observe($(`${trackable}-${listSize - 1}`));
+}
 
 function signUp() {
     var data = new FormData(document.getElementById('register-area'));
@@ -101,65 +242,58 @@ function signUp() {
         });
 }
 
-function addLoadMoreEvent(element, type) {
-    element.addEventListener('click', () => {
-        element.parentElement.remove();
-        console.log(`loading more ${type}`);
-        switch (type) {
-            case 'posts':
-                getPosts();
-                break;
-            case 'comments':
-                getThread();
-                break;
-            case 'messages':
-                getMessages(currentUser, otherUser);
-                break;
-        }
-    });
-}
+const start = () => {
 
-
-/* Loads next batch of posts and adds event listener for threads*/
-const getPosts = () => {
-    populatePosts(postsObject.posts, false);
-    if (postsObject.remainingPosts > 0)
-        createLoadMore("posts");
+    //DB = initDB(DBSize, postsObject);
+	initPosts(DB, listSize, false);
+    keepPostInFocus(0, 'start');
 
     const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
-
     threadOpeningElements.forEach((threadLink) => {
         threadLink.addEventListener('click', () => {
             toggleThreadVisibility(true);
-            let commentBox = threadWrapper.querySelector('.user-input-area')
-            threadWrapper.innerHTML = commentBox.outerHTML; // clear thread box contents
-            let selectedPost = postsObject.posts.filter(post => post.postID === threadLink.id)
-            threadHeader.innerHTML = selectedPost[0].title;
-            getThread();
+            threadWrapper.innerHTML = ""; // clear thread box contents
+            let selectedPost = postsObject.posts.filter(post => post.postID === threadLink.id)[0]
+            threadHeader.innerHTML = selectedPost.title;
+            //let threadDB = initDB(selectedPost.comments, threadObject);
+            trackable = 'thread';
+            DB = threadObject.posts;
+            DBSize = selectedPost.comments + 1;
+            isThread = true;
+            if (selectedPost.comments < listSize) {
+                initPosts(DB, DBSize, true);
+            } else { 
+                initPosts(DB, listSize, true);
+                initIntersectionObserver();
+            }
         });
     });
 
     closeThread.addEventListener('click', () => {
         toggleThreadVisibility(false);
+        trackable = 'post';
+        DB = postsObject.posts;
+        DBSize = postsObject.posts.length;
+        isThread = false;
     });
-}
 
-/* Loads a thread */
-const getThread = () => {
-    console.log("Opening thread");
-    populatePosts(threadObject.posts, true);
-    if (threadObject.remainingComments > 0)
-        createLoadMore("comments");
+    if (listSize < DBSize) {
+        initIntersectionObserver();
+    }
 }
 
 /* Loads next batch of messages in a conversation */
-export async function getMessages(fromUser, toUser) {
+/* currently unused
+function getMessages(fromUser, toUser) {
     console.log("Loading messages from " + fromUser + " to " + toUser);
-    messagesWrapper.innerHTML = '';
-    await populateMessages(fromUser)
-    if (messagesObject.remainingMessages > 0)
-        createLoadMore('messages');
+    //let messageDB = initDB(messagesObject.messages.length, messagesObject);
+    if (messagesObject.messages.length < listSize) {
+        initMessages(messagesObject.messages, messagesObject.messages.length, fromUser);
+    } else {
+        initMessages(messagesObject.messages, listSize, fromUser);
+    }
 }
+*/
 
 /* Loads user lists and creates event listeners for them to load the conversations */
 export async function getUsers() {
@@ -170,7 +304,17 @@ export async function getUsers() {
             toggleMessageBoxVisibility(true);
             messagesWrapper.innerHTML = ''; // clear messages box contents
             otherUser = user.id;
-            getMessages(currentUser, otherUser);
+            console.log(otherUser)
+            //DB = getMessages(currentUser, otherUser);
+            trackable = 'message';
+            DB = messagesObject.messages;
+            DBSize = messagesObject.messages.length;
+            if (DBSize < listSize) {
+                initMessages(DB, DBSize, currentUser);
+            } else {
+                initMessages(DB, listSize, currentUser);
+                initIntersectionObserver();
+            }
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
         });
@@ -178,11 +322,18 @@ export async function getUsers() {
 
     closeMessagesBox.addEventListener('click', () => {
         toggleMessageBoxVisibility(false);
+        trackable = 'post';
+        if (isThread) {
+            DB = threadObject.posts;
+            DBSize = threadObject.posts.length;
+        } else {
+            DB = postsObject.posts;
+            DBSize = postsObject.posts.length;
+        }
     });
 };
 
 startHeaderClock;
-getPosts();
 getUsers();
 
 buttons.forEach((button) => {
@@ -190,6 +341,7 @@ buttons.forEach((button) => {
         switch (button.id) {
             case 'login':
                 toggleLoginVisibility(false);
+                start();
                 break;
             case 'register':
                 toggleRegisterVisibility(true);
@@ -246,30 +398,33 @@ function toggleMessageBoxVisibility(makeVisible) {
 
 function toggleThreadVisibility(makeVisible) {
     if (makeVisible) {
-        postsWrapper.parentElement.classList.add('hidden'); // make posts hidden
-        threadWrapper.parentElement.classList.remove('hidden'); // make thread visible
+        hide(postsWrapper.parentElement); // make posts hidden
+        show(threadWrapper.parentElement); // make thread visible
     } else {
-        postsWrapper.parentElement.classList.remove('hidden');
-        threadWrapper.parentElement.classList.add('hidden');
+        show(postsWrapper.parentElement);
+        hide(threadWrapper.parentElement);
     }
 }
 
 function toggleLoginVisibility(makeVisible) {
     if (makeVisible) {
-        adsArea.classList.add('hidden');
-        postsWrapper.parentElement.classList.add('hidden');
-        userArea.classList.add('hidden');
-        profile.classList.add('hidden');
-        registerArea.classList.add('hidden');
+        hide(adsArea);
+        hide(postsWrapper.parentElement);
+        hide(userArea);
+        hide(profile);
+        hide(registerArea);
+
         logout.innerHTML = 'Login';
-        loginArea.classList.remove('hidden');
+        show(loginArea);
+
     } else {
-        adsArea.classList.remove('hidden');
-        postsWrapper.parentElement.classList.remove('hidden');
-        userArea.classList.remove('hidden');
-        profile.classList.remove('hidden');
+        show(adsArea);
+        show(postsWrapper.parentElement);
+        show(userArea);
+        show(profile);
+
         logout.innerHTML = 'Logout';
-        loginArea.classList.add('hidden');
+        hide(loginArea);
     }
 }
 
@@ -279,14 +434,16 @@ function toggleRegisterVisibility(makeVisible) {
         postsWrapper.parentElement.classList.add('hidden');
         userArea.classList.add('hidden');
         profile.classList.add('hidden');
-        logout.innerHTML = 'Login';
         loginArea.classList.add('hidden');
+        
+        logout.innerHTML = 'Login';
         registerArea.classList.remove('hidden');
     } else {
         adsArea.classList.remove('hidden');
         postsWrapper.parentElement.classList.remove('hidden');
         userArea.classList.remove('hidden');
         profile.classList.remove('hidden');
+        
         logout.innerHTML = 'Logout';
         registerArea.classList.add('hidden');
     }

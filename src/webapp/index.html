@@ -48,66 +48,66 @@
         <div class="user-profile-container hidden">
           <div class="user-profile">
             <div class="avatar">
-              <img src="/images/userAvatars/001.jpg" class="clipped" alt="" />
+              <img src="./static/images/userAvatars/001.jpg" class="clipped" alt="" />
             </div>
             <div class="current-user">User3</div>
           </div>
           <div class="horizontal-spacer">|</div>
         </div>
-        <button id="logout" class="logout-button" type="button">Login</button>
       </div>
-      <div class="logo">
-        <a href="/src/webapp">
-          <div class="clock-wrapper">
-            <div class="clock-background">
-              <div class="hour"></div>
-              <div class="minute"></div>
-              <div class="second"></div>
+        <div class="logo">
+            <a href="./src/webapp">
+                <div class="clock-wrapper">
+                    <div class="clock-background">
+                        <div class="hour"></div>
+                        <div class="minute"></div>
+                        <div class="second"></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="ads-area">
+            <div class="ad">
+                <a href="https://kood.tech/" target="_blank"><img class="ad-image" src="./static/images/ad.png" alt=""></a>
             </div>
-          </div>
-        </a>
-      </div>
-      <div class="ads-area hidden">
-        <div class="ad">
-          <a href="https://kood.tech/" target="_blank"
-            ><img class="ad-image" src="/images/ad.png" alt=""
-          /></a>
+            <div class="ad-text">ads by kood/Ads</div>
         </div>
-        <div class="ad-text">ads by kood/Ads</div>
-      </div>
-      <div class="overlay"></div>
-      <div class="posts-area hidden">
-        <div class="user-input-area">
-          <div class="new-post-header">
-            What's the time? Looks like it's New Post o'clock!
-          </div>
-          <input type="text" name="title" placeholder="Title" />
-          <textarea name="content" placeholder="Content"></textarea>
-          <div class="button-wrapper">
-            <button id="post" type="submit">Share Your Thoughts</button>
-          </div>
-        </div>
-        <div class="posts-wrapper"></div>
-      </div>
-      <div class="thread-area hidden">
-        <div class="thread-header">
-          <div class="thread-header-text"></div>
-          <div class="close-thread-button">
-            <i class="fas fa-x"></i>
-          </div>
-        </div>
-        <div class="thread-wrapper">
-          <div class="user-input-area">
-            <div class="new-post-header">
-              Is this the real life? Is this just fantasy?
+        <div class="lds-ellipsis hidden"><div></div><div></div><div></div><div></div></div>
+        <div class="overlay"></div>
+        <div class="posts-area hidden">
+            <div class="user-input-area">
+                <div class="new-post-header">
+                    What's the time? Looks like it's New Post o'clock!
+                </div>
+                    <input type="text" name="title" placeholder="Title">
+                    <textarea name="content" placeholder="Content"></textarea>
+                    <div class="button-wrapper">
+                        <button id="post" type="submit">Share Your Thoughts</button>
+                    </div>
             </div>
-            <textarea name="content" placeholder="Comment"></textarea>
-            <div class="button-wrapper">
-              <button id="comment" type="submit">Post Your Comment</button>
+            <div class="posts-wrapper">
             </div>
-          </div>
         </div>
-      </div>
+        <div class="thread-area hidden">
+            <div class="thread-header">
+                <div class="thread-header-text"></div>
+                <div class="close-thread-button">
+                    <i class="fas fa-x"></i>
+                </div>
+            </div>
+            <div class="thread-wrapper"></div>
+            <div class="thread-footer">
+                <div class="user-input-area">
+                    <div class="new-post-header">
+                        Is this the real life? Is this just fantasy?
+                    </div>
+                        <textarea name="content" placeholder="Comment"></textarea>
+                        <div class="button-wrapper">
+                            <button id="comment" type="submit">Post Your Comment</button>
+                        </div>
+                </div>
+            </div>    
+        </div>
       <div class="messages-area hidden">
         <div class="messages-header">
           <div class="messages-header-text"></div>
@@ -270,5 +270,6 @@
     <!-- <script src="./ws.js" type="module"></script>
     <script src="./app.js" type="module"></script> -->
     <script src="./app.js" type="module"></script>
-  </body>
+</body>
+
 </html>
