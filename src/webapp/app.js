@@ -7,7 +7,7 @@ import { populateUsers } from "./populate_users.js";
 import { Forum } from './ws.js';
 import { sendMessage } from "./ws.js";
 import { socket } from "./ws.js";
-import { signUpValidation } from "./validate.js";
+import { newPostValidation, signUpValidation } from "./validate.js";
 import { badValidation } from "./validate.js";
 
 
@@ -87,6 +87,35 @@ function signUp() {
         .then((res) => {
             if (res.status == 200) {
                 toggleRegisterVisibility(false)
+            } else {
+                return res.json()
+            }
+        })
+
+        .then((result) => {
+            if (result !== undefined) {
+                badValidation(result.message, result.requirement)
+            }
+        })
+
+        .catch((err) => {
+            console.log(err);
+        });
+}
+
+function makeNewPost() {
+    var data = new FormData(document.getElementById('new-post'));
+    var dataToSend = Object.fromEntries(data)
+
+    fetch('/src/server/addPostHandler', {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSend)
+    })
+
+        .then((res) => {
+            if (res.status == 200) {
+                getPosts()
             } else {
                 return res.json()
             }
@@ -220,7 +249,15 @@ document.getElementById('register-area').addEventListener('submit', (e) => {
         signUp();
         //toggleRegisterVisibility(false)
     }
-    console.log("register-area eventlistener");
+    e.preventDefault();
+});
+
+document.getElementById('new-post').addEventListener('submit', (e) => {
+    if (newPostValidation()) {
+        makeNewPost();
+        //toggleRegisterVisibility(false)
+    }
+    console.log("new Post area eventlistener");
     e.preventDefault();
 });
 
