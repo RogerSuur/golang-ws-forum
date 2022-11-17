@@ -7,7 +7,7 @@ import { populateUsers } from "./populate_users.js";
 import { Forum } from './ws.js';
 import { sendMessage } from "./ws.js";
 import { socket } from "./ws.js";
-import { signUpValidation } from "./validate.js";
+import { newPostValidation, signUpValidation } from "./validate.js";
 import { badValidation } from "./validate.js";
 
 const forum = new Forum()
@@ -216,6 +216,7 @@ const initIntersectionObserver = () => {
 }
 
 function signUp() {
+    debugger
     var data = new FormData(document.getElementById('register-area'));
     var dataToSend = Object.fromEntries(data)
 
@@ -239,6 +240,24 @@ function signUp() {
             }
         })
 
+        // .then((result) => {
+        //     //if (result.status != 200) { throw new Error("Bad sservu Response"); }
+        //     console.log(result.status);
+        //     if (result.status == 200) {
+        //         toggleRegisterVisibility(false)
+        //     } else {
+        //         return result.json();
+
+        //     }
+        //     // console.log(result.message);
+        //     //console.log(result.status)
+        // })
+
+        // // (D) SERVER RESPONSE
+        // .then((response) => {
+        //     console.log(response.message);
+        //     badValidation(response.message)
+        // })
         .catch((err) => {
             console.log(err);
         });
@@ -300,22 +319,17 @@ export function getMessages(fromUser, toUser) {
 export async function getUsers() {
     await populateUsers()
     const userElements = document.querySelectorAll('.user-name');
+    // console.log("getUsers")
+    // console.log("currentUser:", currentUser)
+    // console.log("otherUser: ", otherUser)
     userElements.forEach((user) => {
         user.addEventListener('click', () => {
             toggleMessageBoxVisibility(true);
             messagesWrapper.innerHTML = ''; // clear messages box contents
             otherUser = user.id;
-            console.log(otherUser)
-            //DB = getMessages(currentUser, otherUser);
-            trackable = 'message';
-            DB = messagesObject.messages;
-            DBSize = messagesObject.messages.length;
-            if (DBSize < listSize) {
-                initMessages(DB, DBSize, currentUser);
-            } else {
-                initMessages(DB, listSize, currentUser);
-                initIntersectionObserver();
-            }
+            // console.log("currentUser:", currentUser)
+            // console.log("otherUser: ", otherUser)
+            getMessages(currentUser, otherUser);
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
         });
@@ -371,7 +385,15 @@ document.getElementById('register-area').addEventListener('submit', (e) => {
         signUp();
         //toggleRegisterVisibility(false)
     }
-    console.log("register-area eventlistener");
+    e.preventDefault();
+});
+
+document.getElementById('new-post').addEventListener('submit', (e) => {
+    if (newPostValidation()) {
+        makeNewPost();
+        //toggleRegisterVisibility(false)
+    }
+    console.log("new Post area eventlistener");
     e.preventDefault();
 });
 

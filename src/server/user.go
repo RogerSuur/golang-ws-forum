@@ -20,6 +20,44 @@ type signupData struct {
 	Gender    string `json:"gender-register"`
 }
 
+type Online struct {
+	Username string `json:"name"`
+	Unread   bool   `json:"unread"`
+}
+
+type Offline struct {
+	Username string `json:"name"`
+	Unread   bool   `json:"unread"`
+}
+
+type Post struct {
+	User       string `json:"user"`
+	PostID     string `json:"postID"`
+	Title      string `json:"title"`
+	Content    string `json:"content"`
+	Timestamp  string `json:"timestamp"`
+	Comments   int    `json:"comments"`
+	Categories string `json:"categories"`
+}
+
+type Message struct {
+	Sender    string `json:"from"`
+	Receiver  string `json:"to"`
+	Content   string `json:"content"`
+	Timestamp string `json:"timestamp"`
+}
+
+type Status struct {
+	Post    []Post    `json:"posts"`
+	Online  []Online  `json:"online"`
+	Offline []Offline `json:"offline"`
+	Message []Message `json:"messages"`
+}
+
+type Data struct {
+	Status Status `json:"data"`
+}
+
 func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	// some good error handling, dont know what it does really
 	// w.Header().Set("Content-Type", "application/json")
@@ -74,4 +112,34 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Printf("Added %s to the database", data.Username)
 	}
+}
+
+func getUsersHandler(w http.ResponseWriter, r *http.Request) {
+	rows, err := database.Statements["getUsers"].Query()
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+
+	var users Data
+	for rows.Next() {
+		var username Offline
+
+		err = rows.Scan(&username.Username)
+		users.Status.Offline = append(users.Status.Offline, Offline{
+			Username: username.Username,
+			Unread:   false,
+		})
+		if err != nil {
+			log.Println(err.Error())
+			w.WriteHeader(400)
+			return
+		}
+		// fmt.Printf("%s\n", name)
+		// users = append(users, name)
+	}
+	users.Status.Online = []Online{} // Needed to keep JSon going stupid
+
+	b, _ := json.Marshal(users)
+	w.Write(b)
 }

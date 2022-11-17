@@ -6,6 +6,35 @@ const patterns = {
     "password-register": /^[\w]{1,15}$/,
 }
 
+export const newPostValidation = () => {
+
+    var data = new FormData(document.getElementById('new-post'));
+    var dataToSend = Object.fromEntries(data)
+
+    var errors = document.getElementsByClassName('error-message');
+    while (errors[0]) {
+        errors[0].parentNode.removeChild(errors[0]);
+    }
+
+    if (dataToSend.title == "") {
+        badValidation("title", "Please add a title")
+        return false
+    } else {
+        var input_area = document.getElementById("titleID")
+        input_area.style.borderColor = "";
+    }
+
+    if (dataToSend.content == "") {
+        badValidation("content", "We are not mind-readers")
+        return false
+    } else {
+        var input_area = document.getElementById("contentID")
+        input_area.style.borderColor = "";
+    }
+
+    return true
+}
+
 export const signUpValidation = () => {
 
     var data = new FormData(document.getElementById('register-area'));

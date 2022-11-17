@@ -112,7 +112,11 @@ func createTable() {
 
 	// sampledata(db)
 	for key, query := range map[string]string{
-		"addUser": `INSERT INTO users (username, email, password, first_name, last_name, age, gender) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+		"addUser":  `INSERT INTO users (username, email, password, first_name, last_name, age, gender) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+		"addPost":  `INSERT INTO posts (post_author, title, content, timestamp, categories, comments) VALUES (?, ?, ?, ?, ?, ?);`,
+		"getUsers": `SELECT username from users`,
+		"getPosts": `SELECT post_id, username,title,timestamp, comments, content, categories FROM posts LEFT JOIN users AS u2 ON posts.post_author = u2.user_id ORDER BY posts.post_id DESC`,
+		"getID":    `SELECT user_id FROM users WHERE username = ?`,
 	} {
 		Statements[key], _ = db.Prepare(query)
 		if err != nil {

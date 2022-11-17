@@ -75,19 +75,23 @@
         <div class="lds-ellipsis hidden"><div></div><div></div><div></div><div></div></div>
         <div class="overlay"></div>
         <div class="posts-area hidden">
-            <div class="user-input-area">
+            <form class="user-input-area" id="new-post">
                 <div class="new-post-header">
                     What's the time? Looks like it's New Post o'clock!
                 </div>
-                    <input type="text" name="title" placeholder="Title">
-                    <textarea name="content" placeholder="Content"></textarea>
+                    <input type="text" id="titleID" name="title" placeholder="Title">
+                    <textarea
+            name="content"
+            id="contentID"
+            placeholder="Content"
+          ></textarea>
                     <div class="button-wrapper">
                         <button id="post" type="submit">Share Your Thoughts</button>
                     </div>
             </div>
             <div class="posts-wrapper">
             </div>
-        </div>
+        </form>
         <div class="thread-area hidden">
             <div class="thread-header">
                 <div class="thread-header-text"></div>
