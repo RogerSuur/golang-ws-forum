@@ -16,8 +16,8 @@ export const postsWrapper = qS('posts-wrapper');
 export const threadWrapper = qS('thread-wrapper');
 export const messagesWrapper = qS('messages-wrapper');
 
-function hide(x) {return x.classList.add('hidden');}
-function show(x) {return x.classList.remove('hidden');}
+function hide(x) { return x.classList.add('hidden'); }
+function show(x) { return x.classList.remove('hidden'); }
 
 const profile = qS('user-profile-container');
 const logout = $('logout');
@@ -35,8 +35,8 @@ const closeMessagesBox = qS('close-messages-button');
 const closeThread = qS('close-thread-button');
 const messagesBackgroundOverlay = qS('overlay');
 
-//let postsObject = await getJSON('/src/server/getPostsHandler');
-let postsObject = await getJSON('/static/postsData.json');
+let postsObject = await getJSON('/src/server/getPostsHandler');
+//let postsObject = await getJSON('/static/postsData.json');
 let threadObject = await getJSON('/static/threadData.json');
 //let usersObject = await getJSON('/static/usersData.json');
 let messagesObject = await getJSON('/static/messagesData.json');
@@ -60,19 +60,19 @@ let currentIndex = 0;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const getSlidingWindow = isScrollDown => {
-	const increment = Math.floor(listSize / 2);
-	let firstIndex;
-  
+    const increment = Math.floor(listSize / 2);
+    let firstIndex;
+
     if (isScrollDown) {
         firstIndex = currentIndex + increment;
     } else {
         firstIndex = currentIndex - increment;
     }
-  
+
     if (firstIndex < 0) {
         firstIndex = 0;
     }
-  
+
     return firstIndex;
 }
 
@@ -90,24 +90,24 @@ const recycleDOM = firstIndex => {
             tile.childNodes[1].innerHTML = `${DB[firstIndex + i].content}`;
             tile.childNodes[2].innerHTML = `${DB[firstIndex + i].timestamp}`;
         }
-        
+
         if (trackable === 'post') {
             let commentCount = createCommentNode(DB[firstIndex + i]);
             tile.childNodes[4].firstChild.innerHTML = commentCount;
             tile.childNodes[4].firstChild.setAttribute('id', `${DB[firstIndex + i].postID}`);
-            if (DB[firstIndex + i].unread) 
+            if (DB[firstIndex + i].unread)
                 tile.childNodes[4].firstChild.classList.add('unread');
             else
                 tile.childNodes[4].firstChild.classList.remove('unread');
         }
-        
+
     }
 }
 
 const keepPostInFocus = (postNr, position) => {
     console.log(`focus on: ${trackable}-` + postNr)
     const scrollPointItem = $(`${trackable}-` + postNr);
-    scrollPointItem.scrollIntoView({behavior: 'auto', block: position});
+    scrollPointItem.scrollIntoView({ behavior: 'auto', block: position });
 }
 
 const topSentCallback = async entry => {
@@ -116,8 +116,8 @@ const topSentCallback = async entry => {
     const isIntersecting = entry.isIntersecting;
     // calculate shift in case last scroll is less than listSize
     let shift = 0
-    if (currentIndex < listSize/2 && trackable !== 'message') {
-        shift = currentIndex - listSize/2;
+    if (currentIndex < listSize / 2 && trackable !== 'message') {
+        shift = currentIndex - listSize / 2;
     }
     // conditional check for Scrolling up
     if (currentIndex === 0 && trackable !== 'message') {
@@ -152,7 +152,7 @@ const topSentCallback = async entry => {
 }
 
 const bottomSentCallback = async entry => {
-	if (currentIndex === DBSize - listSize) {
+    if (currentIndex === DBSize - listSize) {
         // if we are at the end of the DB, do nothing
         return;
     }
@@ -161,8 +161,8 @@ const bottomSentCallback = async entry => {
     const isIntersecting = entry.isIntersecting;
     // calculate shift in case last scroll is less than listSize
     let shift = 0
-    if (DBSize - currentIndex - listSize/2 < listSize)
-        shift = DBSize - currentIndex - listSize - listSize/2;
+    if (DBSize - currentIndex - listSize / 2 < listSize)
+        shift = DBSize - currentIndex - listSize - listSize / 2;
     // conditional check for Scrolling down
     if (currentIndex === 0 && trackable === 'message') {
         hide(spinner);
@@ -198,18 +198,18 @@ const bottomSentCallback = async entry => {
 }
 
 const initIntersectionObserver = () => {
-    
+
     const callback = entries => {
-      entries.forEach(entry => {
-        //console.log("Trackable: ", trackable);
-        if (entry.target.id === `${trackable}-0`) {
-            topSentCallback(entry);
-        } else if (entry.target.id === `${trackable}-${listSize - 1}`) {
-            bottomSentCallback(entry);
-        }
-      });
+        entries.forEach(entry => {
+            //console.log("Trackable: ", trackable);
+            if (entry.target.id === `${trackable}-0`) {
+                topSentCallback(entry);
+            } else if (entry.target.id === `${trackable}-${listSize - 1}`) {
+                bottomSentCallback(entry);
+            }
+        });
     }
-  
+
     var observer = new IntersectionObserver(callback);
     observer.observe($(`${trackable}-0`));
     observer.observe($(`${trackable}-${listSize - 1}`));
@@ -266,7 +266,7 @@ function signUp() {
 const start = () => {
 
     //DB = initDB(DBSize, postsObject);
-	initPosts(DB, listSize, false);
+    initPosts(DB, listSize, false);
     keepPostInFocus(0, 'start');
 
     const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
@@ -283,7 +283,7 @@ const start = () => {
             isThread = true;
             if (selectedPost.comments < listSize) {
                 initPosts(DB, DBSize, true);
-            } else { 
+            } else {
                 initPosts(DB, listSize, true);
                 initIntersectionObserver();
             }
@@ -397,6 +397,36 @@ document.getElementById('new-post').addEventListener('submit', (e) => {
     e.preventDefault();
 });
 
+async function makeNewPost() {
+    var data = new FormData(document.getElementById('new-post'));
+    var dataToSend = Object.fromEntries(data)
+
+    console.log(dataToSend);
+
+    const res = await fetch('/src/server/addPostHandler', {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSend)
+    })
+
+    console.log(postsObject);
+
+    if (res.status == 200) {
+        console.log(res.status)
+        //DO NOTHING? init Posts?
+
+        postsObject = await getJSON('/src/server/getPostsHandler');
+        console.log(postsObject);
+        postsWrapper.innerHTML = '';
+        //uuesti start()?
+        start()
+    } else {
+        console.log(res.status)
+        return res.json()
+    }
+
+}
+
 document.getElementById("message").addEventListener("keydown", function (event) {
     if (event.code === "Enter") {
         if (!socket) {
@@ -458,7 +488,7 @@ function toggleRegisterVisibility(makeVisible) {
         userArea.classList.add('hidden');
         profile.classList.add('hidden');
         loginArea.classList.add('hidden');
-        
+
         logout.innerHTML = 'Login';
         registerArea.classList.remove('hidden');
     } else {
@@ -466,7 +496,7 @@ function toggleRegisterVisibility(makeVisible) {
         postsWrapper.parentElement.classList.remove('hidden');
         userArea.classList.remove('hidden');
         profile.classList.remove('hidden');
-        
+
         logout.innerHTML = 'Logout';
         registerArea.classList.add('hidden');
     }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -50,11 +51,16 @@ func addPostHandler(w http.ResponseWriter, r *http.Request) {
 	post.Categories = "Lorem"
 	post.Comments = 0
 
+	fmt.Println(post)
+
 	_, err = database.Statements["addPost"].Exec(post.User, post.Title, post.Content, post.Timestamp, post.Categories, post.Comments)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
+
+	b, _ := json.Marshal("ok")
+	w.Write(b)
 }
 
 func getID(name string) (string, error) {
