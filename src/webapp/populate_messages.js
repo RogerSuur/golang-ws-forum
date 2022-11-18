@@ -4,6 +4,8 @@ import { createDiv, $ } from "./DOM_helpers.js";
 
 export const initMessages = (DB, from, num, currentUser) => {
 
+    console.log("initMessages", from, num);
+
     let interSection = $('message-intersection-observer');
     if (from === 0) {
         messagesWrapper.innerHTML = '';

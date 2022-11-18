@@ -3,6 +3,8 @@ import { createDiv, horizontalDivider, $ } from './DOM_helpers.js';
 
 export const initPosts = (DB, from, num, isThread) => {
 
+    console.log("initPosts", from, num);
+
     let interSection = $('intersection-observer');
     if (interSection.nextElementSibling !== null) {
         let temp = interSection.nextElementSibling;
