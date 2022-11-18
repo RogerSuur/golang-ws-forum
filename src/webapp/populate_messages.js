@@ -1,17 +1,28 @@
 import { messagesWrapper } from "./app.js";
-import { createDiv } from "./DOM_helpers.js";
-import { getJSON } from "./read_JSON.js";
+import { createDiv, $ } from "./DOM_helpers.js";
+//import { getJSON } from "./read_JSON.js";
 
-export const initMessages = (DB, num, currentUser) => {
+export const initMessages = (DB, from, num, currentUser) => {
 
-    let previousUser;
+    let interSection = $('message-intersection-observer');
+    if (from === 0) {
+        messagesWrapper.innerHTML = '';
+        messagesWrapper.appendChild(interSection);    
+    }
+
+    if (interSection.nextElementSibling !== null) {
+        let temp = interSection.nextElementSibling;
+        interSection.nextElementSibling.remove();
+        messagesWrapper.insertBefore(temp, interSection);
+    }
+    
+    //let previousUser;
     // let messagesObject = await getJSON('/static/messagesData.json');
 
-
-    for (let i = 0; i < num; i++) {
+    for (let i = from; i < from + num; i++) {
         let singleMessage = createDiv('single-message');
 
-        singleMessage.setAttribute('id', `message-${num - i - 1}`);
+        singleMessage.setAttribute('id', `message-${i}`);
 
         let messageContent = createDiv('message-content', DB[i].content);
         
@@ -35,7 +46,7 @@ export const initMessages = (DB, num, currentUser) => {
             messageContent.classList.add('me');
         }
         */
-        previousUser = DB[i].from;
+        //previousUser = DB[i].from;
 
         singleMessage.appendChild(messageContent);
 
@@ -44,5 +55,13 @@ export const initMessages = (DB, num, currentUser) => {
         singleMessage.appendChild(messageDate);
 
         messagesWrapper.appendChild(singleMessage);
+        
+        
+        if (i == from + num - 1) {
+            messagesWrapper.appendChild(singleMessage);
+        } else {
+            messagesWrapper.insertBefore(singleMessage, interSection);
+        }
+        
     }
 }

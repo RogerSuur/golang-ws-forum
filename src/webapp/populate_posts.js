@@ -1,9 +1,16 @@
 import { postsWrapper, threadWrapper } from './app.js';
-import { createDiv, horizontalDivider } from './DOM_helpers.js';
+import { createDiv, horizontalDivider, $ } from './DOM_helpers.js';
 
-export const initPosts = (DB, num, isThread) => {
+export const initPosts = (DB, from, num, isThread) => {
+
+    let interSection = $('intersection-observer');
+    if (interSection.nextElementSibling !== null) {
+        let temp = interSection.nextElementSibling;
+        interSection.nextElementSibling.remove();
+        postsWrapper.insertBefore(temp, interSection);
+    }
   
-    for (let i = 0; i < num; i++) {
+    for (let i = from; i < from + num; i++) {
         const singlePost = createDiv('single-post');
         if (isThread) {
             singlePost.setAttribute('id', `thread-${i}`);
@@ -62,7 +69,11 @@ export const initPosts = (DB, num, isThread) => {
             postFooter.appendChild(postComments);
             singlePost.appendChild(postFooter);
 
-            postsWrapper.appendChild(singlePost);
+            if (i == from + num - 1) {
+                postsWrapper.appendChild(singlePost);
+            } else {
+                postsWrapper.insertBefore(singlePost, interSection);
+            }            
         }
   }
 }
