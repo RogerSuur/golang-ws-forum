@@ -419,7 +419,7 @@ async function makeNewPost() {
         console.log(postsObject);
         postsWrapper.innerHTML = '';
         //uuesti start()?
-        start()
+        //start()
     } else {
         console.log(res.status)
         return res.json()
