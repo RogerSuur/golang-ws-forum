@@ -20,6 +20,12 @@ type signupData struct {
 	Gender    string `json:"gender-register"`
 }
 
+type signin struct {
+	Username string `json:"username-login"`
+	Email    string `json:"email-login"`
+	Password string `json:"password-login"`
+}
+
 type Online struct {
 	Username string `json:"name"`
 	Unread   bool   `json:"unread"`
@@ -111,6 +117,52 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 		fmt.Printf("Added %s to the database", data.Username)
+	}
+}
+
+func login(w http.ResponseWriter, r *http.Request) {
+	// some good error handling, dont know what it does really
+	// w.Header().Set("Content-Type", "application/json")
+	// defer func() {
+	// 	if err := recover(); err != nil {
+	// 		log.Println(err)
+	// 		w.WriteHeader(500)
+	// 		jsonResponse, _ := json.Marshal(map[string]string{
+	// 			"message": "internal server error",
+	// 		})
+	// 		w.Write(jsonResponse)
+	// 	}
+	// }()
+
+	var data signin
+	decoder := json.NewDecoder(r.Body)
+	// decoder.DisallowUnknownFields()
+	err := decoder.Decode(&data)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(400)
+		return
+	}
+
+	rows, err := database.Statements["getUser"].Query(data.Username, data.Email)
+	if err != nil {
+		log.Println(err.Error())
+		jsonResponse, _ := json.Marshal(map[string]string{
+			"message": "Invalid credentials",
+		})
+		w.Write(jsonResponse)
+		return
+	}
+	defer rows.Close()
+
+	isCorrect := database.CheckPasswordHash(data.Password, "")
+	if !isCorrect {
+		w.WriteHeader(409)
+		jsonResponse, _ := json.Marshal(map[string]string{
+			"message": "Invalid credentials",
+		})
+		w.Write(jsonResponse)
+		return
 	}
 }
 
