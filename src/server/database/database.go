@@ -117,7 +117,7 @@ func createTable() {
 		"getUsers": `SELECT username from users`,
 		"getPosts": `SELECT post_id, username,title,timestamp, comments, content, categories FROM posts LEFT JOIN users AS u2 ON posts.post_author = u2.user_id ORDER BY posts.post_id DESC`,
 		"getID":    `SELECT user_id FROM users WHERE username = ?`,
-		"getUser":  `SELECT user_id, username, password FROM users WHERE username = ? OR email = ?`,
+		"getUser":  `SELECT user_id, username, password FROM users WHERE username = ? OR email = ? LIMIT 1`,
 	} {
 		Statements[key], _ = db.Prepare(query)
 		if err != nil {

@@ -1,5 +1,4 @@
 export const userRegister = document.getElementById("username-register")
-export const userNameLogin = document.getElementById("username-login")
 export let socket = null;
 import { currentUser, getUsers } from './app.js'
 import { otherUser } from './app.js';

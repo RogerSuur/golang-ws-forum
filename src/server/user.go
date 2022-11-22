@@ -21,9 +21,9 @@ type signupData struct {
 }
 
 type signin struct {
-	Username string `json:"username-login"`
-	Email    string `json:"email-login"`
-	Password string `json:"password-login"`
+	Username string `json:"username_login"`
+	Email    string `json:"email_login"`
+	Password string `json:"password_login"`
 }
 
 type Online struct {
@@ -121,19 +121,6 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	// some good error handling, dont know what it does really
-	// w.Header().Set("Content-Type", "application/json")
-	// defer func() {
-	// 	if err := recover(); err != nil {
-	// 		log.Println(err)
-	// 		w.WriteHeader(500)
-	// 		jsonResponse, _ := json.Marshal(map[string]string{
-	// 			"message": "internal server error",
-	// 		})
-	// 		w.Write(jsonResponse)
-	// 	}
-	// }()
-
 	var data signin
 	decoder := json.NewDecoder(r.Body)
 	// decoder.DisallowUnknownFields()
@@ -144,6 +131,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var hashpass signin
+
 	rows, err := database.Statements["getUser"].Query(data.Username, data.Email)
 	if err != nil {
 		log.Println(err.Error())
@@ -153,9 +142,18 @@ func login(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonResponse)
 		return
 	}
-	defer rows.Close()
 
-	isCorrect := database.CheckPasswordHash(data.Password, "")
+	for rows.Next() {
+		err = rows.Scan(&hashpass.Username, &hashpass.Email, &hashpass.Password)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	defer rows.Close()
+	fmt.Println(data.Password, hashpass.Password)
+	fmt.Println("logindata:", data)
+
+	isCorrect := database.CheckPasswordHash(data.Password, hashpass.Password)
 	if !isCorrect {
 		w.WriteHeader(409)
 		jsonResponse, _ := json.Marshal(map[string]string{
@@ -164,6 +162,9 @@ func login(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonResponse)
 		return
 	}
+
+	fmt.Println("User logged in", hashpass.Username)
+	// What to do if user logs in
 }
 
 func getUsersHandler(w http.ResponseWriter, r *http.Request) {

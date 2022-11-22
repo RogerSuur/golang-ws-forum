@@ -7,7 +7,7 @@ import { populateUsers } from "./populate_users.js";
 import { Forum } from './ws.js';
 import { sendMessage } from "./ws.js";
 import { socket } from "./ws.js";
-import { newPostValidation, signUpValidation } from "./validate.js";
+import { newPostValidation, signUpValidation, loginValidation } from "./validate.js";
 import { badValidation } from "./validate.js";
 
 const forum = new Forum()
@@ -35,8 +35,8 @@ const closeMessagesBox = qS('close-messages-button');
 const closeThread = qS('close-thread-button');
 const messagesBackgroundOverlay = qS('overlay');
 
-let postsObject = await getJSON('/src/server/getPostsHandler');
-//let postsObject = await getJSON('/static/postsData.json');
+//let postsObject = await getJSON('/src/server/getPostsHandler');
+let postsObject = await getJSON('/static/postsData.json');
 let threadObject = await getJSON('/static/threadData.json');
 //let usersObject = await getJSON('/static/usersData.json');
 let messagesObject = await getJSON('/static/messagesData.json');
@@ -240,24 +240,36 @@ function signUp() {
             }
         })
 
-        // .then((result) => {
-        //     //if (result.status != 200) { throw new Error("Bad sservu Response"); }
-        //     console.log(result.status);
-        //     if (result.status == 200) {
-        //         toggleRegisterVisibility(false)
-        //     } else {
-        //         return result.json();
+        .catch((err) => {
+            console.log(err);
+        });
+}
 
-        //     }
-        //     // console.log(result.message);
-        //     //console.log(result.status)
-        // })
+function login() {
+    var data = new FormData(document.getElementById('login-area'));
+    var dataToSend = Object.fromEntries(data)
 
-        // // (D) SERVER RESPONSE
-        // .then((response) => {
-        //     console.log(response.message);
-        //     badValidation(response.message)
-        // })
+    fetch('/src/server/login', {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSend)
+    })
+
+        .then((res) => {
+            if (res.status == 200) {
+                toggleLoginVisibility(false)
+                start()
+            } else {
+                return res.json()
+            }
+        })
+
+        .then((result) => {
+            if (result !== undefined) {
+                badValidation(result.message, result.requirement)
+            }
+        })
+
         .catch((err) => {
             console.log(err);
         });
@@ -355,8 +367,8 @@ buttons.forEach((button) => {
     button.addEventListener('click', function (event) {
         switch (button.id) {
             case 'login':
-                toggleLoginVisibility(false);
-                start();
+                //toggleLoginVisibility(false);
+                //start();
                 break;
             case 'register':
                 toggleRegisterVisibility(true);
@@ -384,6 +396,15 @@ document.getElementById('register-area').addEventListener('submit', (e) => {
     if (signUpValidation()) {
         signUp();
         //toggleRegisterVisibility(false)
+    }
+    e.preventDefault();
+});
+
+document.getElementById('login-area').addEventListener('submit', (e) => {
+    if (loginValidation()) {
+        //console.log(e.target);
+        login();
+        toggleLoginVisibility(false);
     }
     e.preventDefault();
 });

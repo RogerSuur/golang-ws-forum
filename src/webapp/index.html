@@ -161,23 +161,24 @@
       </div>
       <div class="login-area">
         <div class="login-wrapper">
-          <div class="user-input-area">
+          <form class="user-input-area" id="login-area">
             <div class="login-header">Enter Your Account Credentials</div>
             <input
               type="text"
-              id="username-login"
-              name="username-login"
+              id="username_loginID"
+              name="username_login"
               placeholder="Username or email"
             />
             <input
               type="password"
-              name="password-login"
+              id="password_loginID"
+              name="password_login"
               placeholder="Password"
             />
             <div class="button-wrapper">
               <button id="login" type="submit">Login</button>
             </div>
-          </div>
+          </form>
           <div class="login-footer">
             Don't have a Real Time&#8482; account?<button
               id="register"
