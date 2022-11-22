@@ -136,6 +136,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.Statements["getUser"].Query(data.Username, data.Email)
 	if err != nil {
 		log.Println(err.Error())
+		w.WriteHeader(408)
 		jsonResponse, _ := json.Marshal(map[string]string{
 			"message":     "username_login",
 			"requirement": "invalid credentials",
@@ -161,7 +162,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(409)
 		jsonResponse, _ := json.Marshal(map[string]string{
 			"message":     "password_login",
-			"requirement": "Wrong password",
+			"requirement": "Wrong credentials",
 		})
 		w.Write(jsonResponse)
 		return

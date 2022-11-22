@@ -267,6 +267,10 @@ function login() {
         .then((result) => {
             if (result !== undefined) {
                 badValidation(result.message, result.requirement)
+                var input_area = document.getElementById(field + "ID")
+                input_area.style.borderColor = 'red'
+                let errorMessage = createDiv('error-message', requirement, 'error-message');
+                input_area.parentNode.insertBefore(errorMessage, input_area)
             }
         })
 
