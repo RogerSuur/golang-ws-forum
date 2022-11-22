@@ -20,7 +20,7 @@ type signupData struct {
 	Gender    string `json:"gender-register"`
 }
 
-type signin struct {
+type signinData struct {
 	Username string `json:"username_login"`
 	Email    string `json:"email_login"`
 	Password string `json:"password_login"`
@@ -121,7 +121,7 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	var data signin
+	var data signinData
 	decoder := json.NewDecoder(r.Body)
 	// decoder.DisallowUnknownFields()
 	err := decoder.Decode(&data)
@@ -131,20 +131,21 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var hashpass signin
+	var hashpass signinData
 
 	rows, err := database.Statements["getUser"].Query(data.Username, data.Email)
 	if err != nil {
 		log.Println(err.Error())
 		jsonResponse, _ := json.Marshal(map[string]string{
-			"message": "Invalid credentials",
+			"message":     "username_login",
+			"requirement": "invalid credentials",
 		})
 		w.Write(jsonResponse)
 		return
 	}
 
 	for rows.Next() {
-		err = rows.Scan(&hashpass.Username, &hashpass.Email, &hashpass.Password)
+		err = rows.Scan(&hashpass.Username, &hashpass.Password)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -152,16 +153,23 @@ func login(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 	fmt.Println(data.Password, hashpass.Password)
 	fmt.Println("logindata:", data)
+	fmt.Println("hashpass:", hashpass)
 
 	isCorrect := database.CheckPasswordHash(data.Password, hashpass.Password)
+	fmt.Println("Password:", isCorrect)
 	if !isCorrect {
 		w.WriteHeader(409)
 		jsonResponse, _ := json.Marshal(map[string]string{
-			"message": "Invalid credentials",
+			"message":     "password_login",
+			"requirement": "Wrong password",
 		})
 		w.Write(jsonResponse)
 		return
 	}
+
+	//*
+	// Create user sessions
+	//*
 
 	fmt.Println("User logged in", hashpass.Username)
 	// What to do if user logs in

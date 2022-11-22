@@ -404,7 +404,6 @@ document.getElementById('login-area').addEventListener('submit', (e) => {
     if (loginValidation()) {
         //console.log(e.target);
         login();
-        toggleLoginVisibility(false);
     }
     e.preventDefault();
 });
