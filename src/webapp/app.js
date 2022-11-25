@@ -259,19 +259,25 @@ function login() {
             if (res.status == 200) {
                 toggleLoginVisibility(false)
                 start()
-            } else {
-                return res.json()
             }
+            return res.json()
         })
 
         .then((result) => {
             if (result !== undefined) {
-                badValidation(result.message, result.requirement)
-                var input_area = document.getElementById(field + "ID")
+                //badValidation(result.message, result.requirement)
+                var input_area = document.getElementById("username_loginID")
+                var input_area2 = document.getElementById("password_loginID")
                 input_area.style.borderColor = 'red'
-                let errorMessage = createDiv('error-message', requirement, 'error-message');
+                input_area2.style.borderColor = 'red'
+                let errorMessage = createDiv('error-message', result.requirement, 'error-message');
                 input_area.parentNode.insertBefore(errorMessage, input_area)
             }
+
+            //Attach the UUID to the document somehow, also need to add times to document
+            console.log(result.UUID);
+            console.log(result.username);
+            localStorage.setItem(username, UUID)
         })
 
         .catch((err) => {

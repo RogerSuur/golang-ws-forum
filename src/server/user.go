@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"01.kood.tech/git/jrms/real-time-forum/src/server/database"
+	uuid "github.com/satori/go.uuid"
 )
 
 type signupData struct {
@@ -21,6 +22,7 @@ type signupData struct {
 }
 
 type signinData struct {
+	UserID   string `json:"user_id"`
 	Username string `json:"username_login"`
 	Email    string `json:"email_login"`
 	Password string `json:"password_login"`
@@ -133,7 +135,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	var hashpass signinData
 
-	rows, err := database.Statements["getUser"].Query(data.Username, data.Email)
+	err = database.Statements["getUser"].QueryRow(data.Username, data.Email).Scan(&hashpass.UserID, &hashpass.Username, &hashpass.Password)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(408)
@@ -145,13 +147,6 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for rows.Next() {
-		err = rows.Scan(&hashpass.Username, &hashpass.Password)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	defer rows.Close()
 	fmt.Println(data.Password, hashpass.Password)
 	fmt.Println("logindata:", data)
 	fmt.Println("hashpass:", hashpass)
@@ -174,6 +169,33 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("User logged in", hashpass.Username)
 	// What to do if user logs in
+	// create a sessiondata for that user
+	UUID, err := createSession(hashpass.UserID)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(500)
+		return
+	}
+
+	// write tht session to clientside
+	w.WriteHeader(200)
+	jsonResponse, _ := json.Marshal(map[string]string{
+		"UUID":     UUID,
+		"username": hashpass.Username,
+	})
+	w.Write(jsonResponse)
+}
+
+func createSession(user_ID string) (UUID string, err error) {
+	UUID = uuid.NewV4().String()
+
+	fmt.Println("UUID:", UUID)
+	// insert that session to database
+	_, err = database.Statements["addSession"].Exec(UUID, user_ID)
+	if err != nil {
+		return "", err
+	}
+	return UUID, nil
 }
 
 func getUsersHandler(w http.ResponseWriter, r *http.Request) {
