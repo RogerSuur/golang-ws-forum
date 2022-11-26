@@ -35,12 +35,14 @@ const closeMessagesBox = qS('close-messages-button');
 const closeThread = qS('close-thread-button');
 const messagesBackgroundOverlay = qS('overlay');
 
+
 //let postsObject = await getJSON('/src/server/getPostsHandler');
 let postsObject = await getJSON('/static/postsData.json');
 let threadObject = await getJSON('/static/threadData.json');
 //let usersObject = await getJSON('/static/usersData.json');
 let messagesObject = await getJSON('/static/messagesData.json');
-export let currentUser = 'Petra Marsh';
+// export let currentUser = 'Petra Marsh';
+export let currentUser = document.getElementById("current-userID");
 export let otherUser;
 
 let topSentinelPreviousY = 0;
@@ -274,10 +276,12 @@ function login() {
                 input_area.parentNode.insertBefore(errorMessage, input_area)
             }
 
-            //Attach the UUID to the document somehow, also need to add times to document
-            console.log(result.UUID);
-            console.log(result.username);
-            localStorage.setItem(username, UUID)
+            //Attach the UUID to the document
+            const d = new Date();
+            d.setTime(d.getTime() + (2 * 65 * 60 * 1000));
+            let expires = "expires=" + d.toUTCString();
+            document.cookie = "username=" + result.UUID + ";" + expires + ";path=/;"
+            currentUser.innerHTML = result.username
         })
 
         .catch((err) => {
@@ -341,16 +345,11 @@ export function getMessages(fromUser, toUser) {
 export async function getUsers() {
     await populateUsers()
     const userElements = document.querySelectorAll('.user-name');
-    // console.log("getUsers")
-    // console.log("currentUser:", currentUser)
-    // console.log("otherUser: ", otherUser)
     userElements.forEach((user) => {
         user.addEventListener('click', () => {
             toggleMessageBoxVisibility(true);
             messagesWrapper.innerHTML = ''; // clear messages box contents
             otherUser = user.id;
-            // console.log("currentUser:", currentUser)
-            // console.log("otherUser: ", otherUser)
             getMessages(currentUser, otherUser);
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
@@ -373,6 +372,7 @@ export async function getUsers() {
 startHeaderClock;
 getUsers();
 
+//Maybe can be refactored without needing this function
 buttons.forEach((button) => {
     button.addEventListener('click', function (event) {
         switch (button.id) {
@@ -426,6 +426,18 @@ document.getElementById('new-post').addEventListener('submit', (e) => {
     console.log("new Post area eventlistener");
     e.preventDefault();
 });
+
+document.getElementById('logout_User').addEventListener('click', () => {
+
+    document.cookie = "username" + "=" + ";" + "Max-Age=-99999999" + ";path=/;"
+    var input_area = document.getElementById("username_loginID")
+    var input_area2 = document.getElementById("password_loginID")
+    input_area.style.borderColor = ''
+    input_area2.style.borderColor = ''
+    document.getElementById("login-area").reset()
+    toggleLoginVisibility(true);
+})
+
 
 async function makeNewPost() {
     var data = new FormData(document.getElementById('new-post'));

@@ -13,6 +13,8 @@ export function Forum() {
         socket.send(JSON.stringify(jsonData))
     }
 
+    // window.onload = checkCookie()
+
     // document.addEventListener("DOMContentLoaded", function () {
     socket = new WebSocket("ws://localhost:8080/ws");
 
@@ -55,3 +57,16 @@ export function sendMessage() {
     socket.send(JSON.stringify(jsonData))
     document.getElementById("message").value = "";
 }
+
+// function checkCookie() {
+//     var user = getCookie("username");
+//     if (user != "") {
+//         document.getElementById("display").innerHTML = "Welcome back " + user
+//     } else {
+//         document.getElementById("display").innerHTML = "Please enter your name in The prompt at the top of your screen!";
+//         user = prompt("Please enter your name:", "");
+//         if (user != "" && user != null) {
+//             setCookie("username", user, 30);
+//         }
+//     }
+// }
