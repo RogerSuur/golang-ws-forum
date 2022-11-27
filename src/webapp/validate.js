@@ -36,7 +36,6 @@ export const newPostValidation = () => {
 }
 
 export const loginValidation = () => {
-    debugger
     var data = new FormData(document.getElementById('login-area'));
     var dataToSend = Object.fromEntries(data)
 

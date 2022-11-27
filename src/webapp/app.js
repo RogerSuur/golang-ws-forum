@@ -218,7 +218,6 @@ const initIntersectionObserver = () => {
 }
 
 function signUp() {
-    debugger
     var data = new FormData(document.getElementById('register-area'));
     var dataToSend = Object.fromEntries(data)
 
@@ -280,7 +279,7 @@ function login() {
             const d = new Date();
             d.setTime(d.getTime() + (2 * 65 * 60 * 1000));
             let expires = "expires=" + d.toUTCString();
-            document.cookie = "username=" + result.UUID + ";" + expires + ";path=/;"
+            document.cookie = "username=" + result.username + ";" + expires + ";path=/;"
             currentUser.innerHTML = result.username
         })
 
@@ -501,7 +500,7 @@ function toggleThreadVisibility(makeVisible) {
     }
 }
 
-function toggleLoginVisibility(makeVisible) {
+export function toggleLoginVisibility(makeVisible) {
     if (makeVisible) {
         hide(adsArea);
         hide(postsWrapper.parentElement);
@@ -543,3 +542,21 @@ function toggleRegisterVisibility(makeVisible) {
         registerArea.classList.add('hidden');
     }
 }
+
+function checkCookie() {
+    if (document.cookie == "") {
+        toggleLoginVisibility(true)
+    } else {
+        currentUser.innerHTML = getCookie();
+        start()
+        toggleLoginVisibility(false)
+    }
+}
+
+function getCookie() {
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split('=');
+    return ca[1]
+}
+
+window.load = checkCookie()

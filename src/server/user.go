@@ -147,12 +147,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(data.Password, hashpass.Password)
-	fmt.Println("logindata:", data)
-	fmt.Println("hashpass:", hashpass)
-
 	isCorrect := database.CheckPasswordHash(data.Password, hashpass.Password)
-	fmt.Println("Password:", isCorrect)
 	if !isCorrect {
 		w.WriteHeader(409)
 		jsonResponse, _ := json.Marshal(map[string]string{
@@ -163,13 +158,13 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//*
-	// Create user sessions
-	//*
-
-	fmt.Println("User logged in", hashpass.Username)
-	// What to do if user logs in
-	// create a sessiondata for that user
+	//
+	//**CODE REFACTOR**
+	//
+	//
+	//IS creating uuid and storing it to database necessary?
+	//Is sending UUID to clientside necessary?
+	//
 	UUID, err := createSession(hashpass.UserID)
 	if err != nil {
 		log.Println(err.Error())
@@ -189,12 +184,12 @@ func login(w http.ResponseWriter, r *http.Request) {
 func createSession(user_ID string) (UUID string, err error) {
 	UUID = uuid.NewV4().String()
 
-	fmt.Println("UUID:", UUID)
-	// insert that session to database
-	_, err = database.Statements["addSession"].Exec(UUID, user_ID)
-	if err != nil {
-		return "", err
-	}
+	// fmt.Println("UUID:", UUID)
+	// // insert that session to database
+	// _, err = database.Statements["addSession"].Exec(UUID, user_ID)
+	// if err != nil {
+	// 	return "", err
+	// }
 	return UUID, nil
 }
 
@@ -219,8 +214,6 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(400)
 			return
 		}
-		// fmt.Printf("%s\n", name)
-		// users = append(users, name)
 	}
 	users.Status.Online = []Online{} // Needed to keep JSon going stupid
 
