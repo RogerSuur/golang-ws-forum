@@ -3,7 +3,6 @@ export let socket = null;
 import { currentUser, getUsers } from './app.js'
 import { otherUser } from './app.js';
 import { getMessages } from './app.js';
-import { toggleLoginVisibility } from './app.js';
 
 export function Forum() {
 
