@@ -103,8 +103,12 @@ func createTable() {
 		user_id INTEGER NOT NULL REFERENCES users (id),
 		post_id INTEGER NOT NULL REFERENCES posts
 	)
-	;
 	`)
+	// ;
+	// CREATE TABLE IF NOT EXISTS sessions (
+	// 	uuid VARCHAR NOT NULL,
+	// 	user_id INTEGER NOT NULL REFERENCES users (id)
+	// )
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -117,6 +121,7 @@ func createTable() {
 		"getUsers": `SELECT username from users`,
 		"getPosts": `SELECT post_id, username,title,timestamp, comments, content, categories FROM posts LEFT JOIN users AS u2 ON posts.post_author = u2.user_id ORDER BY posts.post_id DESC`,
 		"getID":    `SELECT user_id FROM users WHERE username = ?`,
+		"getUser":  `SELECT user_id, username, password FROM users WHERE username = ? OR email = ? LIMIT 1`,
 	} {
 		Statements[key], _ = db.Prepare(query)
 		if err != nil {
@@ -130,10 +135,10 @@ func HashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-// func CheckPasswordHash(password, hash string) bool {
-// 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-// 	return err == nil
-// }
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
 
 // remove or add users to jsonfile
 func UpdateOnlineUsers(usersList []string) {

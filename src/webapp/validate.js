@@ -35,6 +35,34 @@ export const newPostValidation = () => {
     return true
 }
 
+export const loginValidation = () => {
+    var data = new FormData(document.getElementById('login-area'));
+    var dataToSend = Object.fromEntries(data)
+
+    var errors = document.getElementsByClassName('error-message');
+    while (errors[0]) {
+        errors[0].parentNode.removeChild(errors[0]);
+    }
+
+    if (dataToSend.username_login == "") {
+        badValidation("username_login", "Please add a username")
+        return false
+    } else {
+        var input_area = document.getElementById("username_loginID")
+        input_area.style.borderColor = "";
+    }
+
+    if (dataToSend.password_login == "") {
+        badValidation("password_login", "Please enter password")
+        return false
+    } else {
+        var input_area = document.getElementById("password_loginID")
+        input_area.style.borderColor = "";
+    }
+
+    return true
+}
+
 export const signUpValidation = () => {
 
     var data = new FormData(document.getElementById('register-area'));

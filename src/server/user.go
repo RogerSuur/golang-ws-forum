@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"01.kood.tech/git/jrms/real-time-forum/src/server/database"
+	uuid "github.com/satori/go.uuid"
 )
 
 type signupData struct {
@@ -18,6 +19,13 @@ type signupData struct {
 	LastName  string `json:"last-name-register"`
 	Age       string `json:"age-register"`
 	Gender    string `json:"gender-register"`
+}
+
+type signinData struct {
+	UserID   string `json:"user_id"`
+	Username string `json:"username_login"`
+	Email    string `json:"email_login"`
+	Password string `json:"password_login"`
 }
 
 type Online struct {
@@ -114,6 +122,77 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func login(w http.ResponseWriter, r *http.Request) {
+	var data signinData
+	decoder := json.NewDecoder(r.Body)
+	// decoder.DisallowUnknownFields()
+	err := decoder.Decode(&data)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(400)
+		return
+	}
+
+	var hashpass signinData
+
+	err = database.Statements["getUser"].QueryRow(data.Username, data.Email).Scan(&hashpass.UserID, &hashpass.Username, &hashpass.Password)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(408)
+		jsonResponse, _ := json.Marshal(map[string]string{
+			"message":     "username_login",
+			"requirement": "invalid credentials",
+		})
+		w.Write(jsonResponse)
+		return
+	}
+
+	isCorrect := database.CheckPasswordHash(data.Password, hashpass.Password)
+	if !isCorrect {
+		w.WriteHeader(409)
+		jsonResponse, _ := json.Marshal(map[string]string{
+			"message":     "password_login",
+			"requirement": "Wrong credentials",
+		})
+		w.Write(jsonResponse)
+		return
+	}
+
+	//
+	//**CODE REFACTOR**
+	//
+	//
+	//IS creating uuid and storing it to database necessary?
+	//Is sending UUID to clientside necessary?
+	//
+	UUID, err := createSession(hashpass.UserID)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(500)
+		return
+	}
+
+	// write tht session to clientside
+	w.WriteHeader(200)
+	jsonResponse, _ := json.Marshal(map[string]string{
+		"UUID":     UUID,
+		"username": hashpass.Username,
+	})
+	w.Write(jsonResponse)
+}
+
+func createSession(user_ID string) (UUID string, err error) {
+	UUID = uuid.NewV4().String()
+
+	// fmt.Println("UUID:", UUID)
+	// // insert that session to database
+	// _, err = database.Statements["addSession"].Exec(UUID, user_ID)
+	// if err != nil {
+	// 	return "", err
+	// }
+	return UUID, nil
+}
+
 func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.Statements["getUsers"].Query()
 	if err != nil {
@@ -135,8 +214,6 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(400)
 			return
 		}
-		// fmt.Printf("%s\n", name)
-		// users = append(users, name)
 	}
 	users.Status.Online = []Online{} // Needed to keep JSon going stupid
 

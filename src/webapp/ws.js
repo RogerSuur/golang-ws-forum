@@ -1,10 +1,8 @@
 export const userRegister = document.getElementById("username-register")
-export const userNameLogin = document.getElementById("username-login")
 export let socket = null;
 import { currentUser, getUsers } from './app.js'
 import { otherUser } from './app.js';
 import { getMessages } from './app.js';
-
 
 export function Forum() {
 
@@ -13,6 +11,8 @@ export function Forum() {
         jsonData["action"] = "left";
         socket.send(JSON.stringify(jsonData))
     }
+
+    //window.load = checkCookie()
 
     // document.addEventListener("DOMContentLoaded", function () {
     socket = new WebSocket("ws://localhost:8080/ws");

@@ -7,7 +7,7 @@ import { populateUsers } from "./populate_users.js";
 import { Forum } from './ws.js';
 import { sendMessage } from "./ws.js";
 import { socket } from "./ws.js";
-import { newPostValidation, signUpValidation } from "./validate.js";
+import { newPostValidation, signUpValidation, loginValidation } from "./validate.js";
 import { badValidation } from "./validate.js";
 
 const forum = new Forum()
@@ -35,12 +35,14 @@ const closeMessagesBox = qS('close-messages-button');
 const closeThread = qS('close-thread-button');
 const messagesBackgroundOverlay = qS('overlay');
 
-let postsObject = await getJSON('/src/server/getPostsHandler');
-//let postsObject = await getJSON('/static/postsData.json');
+
+//let postsObject = await getJSON('/src/server/getPostsHandler');
+let postsObject = await getJSON('/static/postsData.json');
 let threadObject = await getJSON('/static/threadData.json');
 //let usersObject = await getJSON('/static/usersData.json');
 let messagesObject = await getJSON('/static/messagesData.json');
-export let currentUser = 'Petra Marsh';
+// export let currentUser = 'Petra Marsh';
+export let currentUser = document.getElementById("current-userID");
 export let otherUser;
 
 let topSentinelPreviousY = 0;
@@ -156,7 +158,6 @@ const initIntersectionObserver = () => {
 }
 
 function signUp() {
-    debugger
     var data = new FormData(document.getElementById('register-area'));
     var dataToSend = Object.fromEntries(data)
 
@@ -180,24 +181,48 @@ function signUp() {
             }
         })
 
-        // .then((result) => {
-        //     //if (result.status != 200) { throw new Error("Bad sservu Response"); }
-        //     console.log(result.status);
-        //     if (result.status == 200) {
-        //         toggleRegisterVisibility(false)
-        //     } else {
-        //         return result.json();
+        .catch((err) => {
+            console.log(err);
+        });
+}
 
-        //     }
-        //     // console.log(result.message);
-        //     //console.log(result.status)
-        // })
+function login() {
+    var data = new FormData(document.getElementById('login-area'));
+    var dataToSend = Object.fromEntries(data)
 
-        // // (D) SERVER RESPONSE
-        // .then((response) => {
-        //     console.log(response.message);
-        //     badValidation(response.message)
-        // })
+    fetch('/src/server/login', {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSend)
+    })
+
+        .then((res) => {
+            if (res.status == 200) {
+                toggleLoginVisibility(false)
+                start()
+            }
+            return res.json()
+        })
+
+        .then((result) => {
+            if (result !== undefined) {
+                //badValidation(result.message, result.requirement)
+                var input_area = document.getElementById("username_loginID")
+                var input_area2 = document.getElementById("password_loginID")
+                input_area.style.borderColor = 'red'
+                input_area2.style.borderColor = 'red'
+                let errorMessage = createDiv('error-message', result.requirement, 'error-message');
+                input_area.parentNode.insertBefore(errorMessage, input_area)
+            }
+
+            //Attach the UUID to the document
+            const d = new Date();
+            d.setTime(d.getTime() + (2 * 65 * 60 * 1000));
+            let expires = "expires=" + d.toUTCString();
+            document.cookie = "username=" + result.username + ";" + expires + ";path=/;"
+            currentUser.innerHTML = result.username
+        })
+
         .catch((err) => {
             console.log(err);
         });
@@ -264,9 +289,6 @@ export function getMessages(fromUser, toUser) {
 export async function getUsers() {
     await populateUsers()
     const userElements = document.querySelectorAll('.user-name');
-    // console.log("getUsers")
-    // console.log("currentUser:", currentUser)
-    // console.log("otherUser: ", otherUser)
     userElements.forEach((user) => {
         user.addEventListener('click', () => {
             toggleMessageBoxVisibility(true);
@@ -309,12 +331,13 @@ export async function getUsers() {
 startHeaderClock;
 getUsers();
 
+//Maybe can be refactored without needing this function
 buttons.forEach((button) => {
     button.addEventListener('click', function (event) {
         switch (button.id) {
             case 'login':
-                toggleLoginVisibility(false);
-                start();
+                //toggleLoginVisibility(false);
+                //start();
                 break;
             case 'register':
                 toggleRegisterVisibility(true);
@@ -346,6 +369,14 @@ document.getElementById('register-area').addEventListener('submit', (e) => {
     e.preventDefault();
 });
 
+document.getElementById('login-area').addEventListener('submit', (e) => {
+    if (loginValidation()) {
+        //console.log(e.target);
+        login();
+    }
+    e.preventDefault();
+});
+
 document.getElementById('new-post').addEventListener('submit', (e) => {
     if (newPostValidation()) {
         makeNewPost();
@@ -354,6 +385,18 @@ document.getElementById('new-post').addEventListener('submit', (e) => {
     console.log("new Post area eventlistener");
     e.preventDefault();
 });
+
+document.getElementById('logout_User').addEventListener('click', () => {
+
+    document.cookie = "username" + "=" + ";" + "Max-Age=-99999999" + ";path=/;"
+    var input_area = document.getElementById("username_loginID")
+    var input_area2 = document.getElementById("password_loginID")
+    input_area.style.borderColor = ''
+    input_area2.style.borderColor = ''
+    document.getElementById("login-area").reset()
+    toggleLoginVisibility(true);
+})
+
 
 async function makeNewPost() {
     var data = new FormData(document.getElementById('new-post'));
@@ -417,7 +460,7 @@ function toggleThreadVisibility(makeVisible) {
     }
 }
 
-function toggleLoginVisibility(makeVisible) {
+export function toggleLoginVisibility(makeVisible) {
     if (makeVisible) {
         hide(adsArea);
         hide(postsWrapper.parentElement);
@@ -459,3 +502,21 @@ function toggleRegisterVisibility(makeVisible) {
         registerArea.classList.add('hidden');
     }
 }
+
+function checkCookie() {
+    if (document.cookie == "") {
+        toggleLoginVisibility(true)
+    } else {
+        currentUser.innerHTML = getCookie();
+        start()
+        toggleLoginVisibility(false)
+    }
+}
+
+function getCookie() {
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split('=');
+    return ca[1]
+}
+
+window.load = checkCookie()
