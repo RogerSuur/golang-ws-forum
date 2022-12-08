@@ -279,7 +279,7 @@ function login() {
             const d = new Date();
             d.setTime(d.getTime() + (2 * 65 * 60 * 1000));
             let expires = "expires=" + d.toUTCString();
-            document.cookie = "username=" + result.username + ";" + expires + ";path=/;"
+            document.cookie = "username=" + result.UUID + ";" + expires + ";path=:8080/;"
             currentUser.innerHTML = result.username
         })
 
@@ -544,6 +544,10 @@ function toggleRegisterVisibility(makeVisible) {
 }
 
 function checkCookie() {
+    console.log(document.cookie);
+    console.log(decodeURIComponent(document.cookie))
+    const d = new Date();
+    console.log(d.getTime());
     if (document.cookie == "") {
         toggleLoginVisibility(true)
     } else {
