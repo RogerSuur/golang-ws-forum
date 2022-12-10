@@ -277,9 +277,10 @@ function login() {
 
             //Attach the UUID to the document
             const d = new Date();
-            d.setTime(d.getTime() + (2 * 65 * 60 * 1000));
+            d.setTime(d.getTime() + (1 * 7 * 60 * 1000));
+            //d.setTime(d.getTime() + (2 * 65 * 60 * 1000));
             let expires = "expires=" + d.toUTCString();
-            document.cookie = "username=" + result.UUID + ";" + expires + ";path=:8080/;"
+            document.cookie = "username=" + encodeURI(result.UUID) + "; Path=/; " + expires + ";";
             currentUser.innerHTML = result.username
         })
 
@@ -544,16 +545,36 @@ function toggleRegisterVisibility(makeVisible) {
 }
 
 function checkCookie() {
-    console.log(document.cookie);
-    console.log(decodeURIComponent(document.cookie))
-    const d = new Date();
-    console.log(d.getTime());
     if (document.cookie == "") {
         toggleLoginVisibility(true)
     } else {
-        currentUser.innerHTML = getCookie();
-        start()
-        toggleLoginVisibility(false)
+        var user_uuid = getCookie();
+
+        fetch('/src/server/checkCookieHandler', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: user_uuid
+        })
+
+            .then((res) => {
+                if (res.ok) {
+                    toggleLoginVisibility(false)
+                    start()
+                    //set username to result.user
+                    return res.json()
+                } else {
+                    throw res.statusText
+                }
+            })
+
+            .then((result) => {
+                //set username to result.user
+                currentUser.innerHTML = result.user;
+            })
+
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     }
 }
 

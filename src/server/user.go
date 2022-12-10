@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -213,4 +214,32 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 	b, _ := json.Marshal(users)
 	w.Write(b)
+}
+
+func checkCookieHandler(w http.ResponseWriter, r *http.Request) {
+	userUUID, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(400)
+		return
+	}
+	r.Body.Close()
+
+	var username string
+	// Put this to separate function
+	err = database.Statements["getUserByUUID"].QueryRow(string(userUUID)).Scan(&username)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(500)
+		jsonResponse, _ := json.Marshal(map[string]string{
+			"message": "can't find session UUID",
+		})
+		w.Write(jsonResponse)
+		return
+	}
+
+	jsonResponse, _ := json.Marshal(map[string]string{
+		"user": username,
+	})
+	w.Write(jsonResponse)
 }
