@@ -236,7 +236,9 @@ function signUp() {
                 badValidation(result.message, result.requirement)
             } else {
                 currentUser.innerHTML = result.username
+                createNewCookie(result.UUID)
                 toggleRegisterVisibility(false)
+                start()
             }
         })
 
@@ -419,8 +421,6 @@ document.getElementById('new-post').addEventListener('submit', (e) => {
     console.log("new Post area eventlistener");
     e.preventDefault();
 });
-
-
 
 async function makeNewPost() {
     var data = new FormData(document.getElementById('new-post'));
