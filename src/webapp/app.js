@@ -159,7 +159,7 @@ const initIntersectionObserver = () => {
 
 function signUp() {
     var data = new FormData(document.getElementById('register-area'));
-    var dataToSend = Object.fromEntries(data)
+    var dataToSend = Object.fromEntries(data);
 
     fetch('/src/server/signup', {
         method: "POST",
@@ -168,16 +168,15 @@ function signUp() {
     })
 
         .then((res) => {
-            if (res.status == 200) {
-                toggleRegisterVisibility(false)
-            } else {
-                return res.json()
-            }
+            return res.json()
         })
 
         .then((result) => {
-            if (result !== undefined) {
+            if (result.hasOwnProperty("message")) {
                 badValidation(result.message, result.requirement)
+            } else {
+                currentUser.innerHTML = result.username
+                toggleRegisterVisibility(false)
             }
         })
 
@@ -197,15 +196,11 @@ function login() {
     })
 
         .then((res) => {
-            if (res.status == 200) {
-                toggleLoginVisibility(false)
-                start()
-            }
-            return res.json()
+            return res.json();
         })
 
         .then((result) => {
-            if (result !== undefined) {
+            if (result.hasOwnProperty('message')) {
                 //badValidation(result.message, result.requirement)
                 var input_area = document.getElementById("username_loginID")
                 var input_area2 = document.getElementById("password_loginID")
@@ -213,14 +208,13 @@ function login() {
                 input_area2.style.borderColor = 'red'
                 let errorMessage = createDiv('error-message', result.requirement, 'error-message');
                 input_area.parentNode.insertBefore(errorMessage, input_area)
+            } else {
+                //Attach the UUID to the document
+                createNewCookie(result.UUID)
+                toggleLoginVisibility(false)
+                start()
+                currentUser.innerHTML = result.username
             }
-
-            //Attach the UUID to the document
-            const d = new Date();
-            d.setTime(d.getTime() + (2 * 65 * 60 * 1000));
-            let expires = "expires=" + d.toUTCString();
-            document.cookie = "username=" + result.username + ";" + expires + ";path=/;"
-            currentUser.innerHTML = result.username
         })
 
         .catch((err) => {
@@ -386,16 +380,6 @@ document.getElementById('new-post').addEventListener('submit', (e) => {
     e.preventDefault();
 });
 
-document.getElementById('logout_User').addEventListener('click', () => {
-
-    document.cookie = "username" + "=" + ";" + "Max-Age=-99999999" + ";path=/;"
-    var input_area = document.getElementById("username_loginID")
-    var input_area2 = document.getElementById("password_loginID")
-    input_area.style.borderColor = ''
-    input_area2.style.borderColor = ''
-    document.getElementById("login-area").reset()
-    toggleLoginVisibility(true);
-})
 
 
 async function makeNewPost() {
@@ -504,13 +488,44 @@ function toggleRegisterVisibility(makeVisible) {
 }
 
 function checkCookie() {
+    //console.log(document.cookie);
     if (document.cookie == "") {
         toggleLoginVisibility(true)
     } else {
-        currentUser.innerHTML = getCookie();
-        start()
-        toggleLoginVisibility(false)
+        var user_uuid = getCookie();
+
+        fetch('/src/server/checkCookieHandler', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: user_uuid
+        })
+
+            .then((res) => {
+                if (res.ok) {
+                    toggleLoginVisibility(false)
+                    start()
+                    return res.json()
+                } else {
+                    throw res.statusText
+                }
+            })
+
+            .then((result) => {
+                //set username to result.user
+                currentUser.innerHTML = result.user;
+            })
+
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     }
+}
+
+function createNewCookie(uuid) {
+    const d = new Date();
+    d.setTime(d.getTime() + (1 * 7 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = "username=" + encodeURI(uuid) + "; Path=/; " + expires + ";";
 }
 
 function getCookie() {
@@ -520,3 +535,38 @@ function getCookie() {
 }
 
 window.load = checkCookie()
+
+
+document.getElementById('logout_User').addEventListener('click', () => {
+    var user_uuid = getCookie();
+
+    //fetch to send db request deleting cookie
+    fetch('/src/server/deleteCookieHandler', {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: user_uuid
+    })
+        .then((res) => {
+            if (res.ok) {
+                toggleLoginVisibility(true)
+                currentUser.innerHTML = ""
+            } else {
+                throw res.statusText
+            }
+        })
+
+
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+
+    document.cookie = "username" + "=" + ";" + "Max-Age=-99999999" + ";path=/;"
+    var input_area = document.getElementById("username_loginID")
+    var input_area2 = document.getElementById("password_loginID")
+    input_area.style.borderColor = ''
+    input_area2.style.borderColor = ''
+    document.getElementById("login-area").reset()
+
+
+    toggleLoginVisibility(true);
+})
