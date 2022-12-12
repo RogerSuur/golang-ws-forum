@@ -420,40 +420,6 @@ document.getElementById('new-post').addEventListener('submit', (e) => {
     e.preventDefault();
 });
 
-document.getElementById('logout_User').addEventListener('click', () => {
-
-    var user_uuid = getCookie();
-
-    //fetch to send db request deleting cookie
-    fetch('/src/server/deleteCookieHandler', {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: user_uuid
-    })
-        .then((res) => {
-            if (res.ok) {
-                toggleLoginVisibility(true)
-                currentUser.innerHTML = ""
-            } else {
-                throw res.statusText
-            }
-        })
-
-
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-
-    document.cookie = "username" + "=" + ";" + "Max-Age=-99999999" + ";path=/;"
-    var input_area = document.getElementById("username_loginID")
-    var input_area2 = document.getElementById("password_loginID")
-    input_area.style.borderColor = ''
-    input_area2.style.borderColor = ''
-    document.getElementById("login-area").reset()
-
-
-    toggleLoginVisibility(true);
-})
 
 
 async function makeNewPost() {
@@ -609,3 +575,38 @@ function getCookie() {
 }
 
 window.load = checkCookie()
+
+
+document.getElementById('logout_User').addEventListener('click', () => {
+    var user_uuid = getCookie();
+
+    //fetch to send db request deleting cookie
+    fetch('/src/server/deleteCookieHandler', {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: user_uuid
+    })
+        .then((res) => {
+            if (res.ok) {
+                toggleLoginVisibility(true)
+                currentUser.innerHTML = ""
+            } else {
+                throw res.statusText
+            }
+        })
+
+
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+
+    document.cookie = "username" + "=" + ";" + "Max-Age=-99999999" + ";path=/;"
+    var input_area = document.getElementById("username_loginID")
+    var input_area2 = document.getElementById("password_loginID")
+    input_area.style.borderColor = ''
+    input_area2.style.borderColor = ''
+    document.getElementById("login-area").reset()
+
+
+    toggleLoginVisibility(true);
+})
