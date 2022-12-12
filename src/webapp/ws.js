@@ -37,6 +37,8 @@ export function Forum() {
                 console.log("currentUser:", currentUser.value)
                 console.log("otherUser: ", otherUser)
                 getMessages(currentUser.value, otherUser)
+            case "login":
+                console.log("login in socket")
         }
     };
 

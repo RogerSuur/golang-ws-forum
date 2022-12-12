@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"01.kood.tech/git/jrms/real-time-forum/src/server/database"
@@ -117,9 +118,28 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		b, _ := json.Marshal(jsonResponse)
 		w.Write(b)
 		return
-
 	} else {
-		fmt.Printf("Added %s to the database", data.Username)
+		user_ID, err := getIDbyUsername(data.Username)
+		if err != nil {
+			log.Println(err.Error())
+			w.WriteHeader(500)
+			return
+		}
+		UUID, err := createSession(strconv.FormatInt(int64(user_ID), 10))
+		if err != nil {
+			log.Println(err.Error())
+			w.WriteHeader(500)
+			return
+		}
+
+		// write tht session to clientside
+		w.WriteHeader(200)
+		jsonResponse, _ := json.Marshal(map[string]string{
+			"UUID":     UUID,
+			"username": data.Username,
+		})
+		w.Write(jsonResponse)
+		fmt.Println("Added ", data.Username, " to the database")
 	}
 }
 
@@ -188,6 +208,18 @@ func createSession(user_ID string) (UUID string, err error) {
 	return UUID, nil
 }
 
+func getIDbyUsername(username string) (ID int, err error) {
+	rows, err := database.Statements["getID"].Query(username)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+	rows.Next()
+	rows.Scan(&ID)
+	rows.Close()
+	return ID, nil
+}
+
 func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.Statements["getUsers"].Query()
 	if err != nil {
@@ -226,7 +258,6 @@ func checkCookieHandler(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 
 	var username string
-	// Put this to separate function
 	err = database.Statements["getUserByUUID"].QueryRow(string(userUUID)).Scan(&username)
 	if err != nil {
 		log.Println(err.Error())
@@ -240,6 +271,35 @@ func checkCookieHandler(w http.ResponseWriter, r *http.Request) {
 
 	jsonResponse, _ := json.Marshal(map[string]string{
 		"user": username,
+	})
+	w.Write(jsonResponse)
+}
+
+func deleteCookieHandler(w http.ResponseWriter, r *http.Request) {
+	userUUID, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(400)
+		return
+	}
+	r.Body.Close()
+
+	fmt.Println("Deleteing user with uuid:", string(userUUID))
+
+	_, err = database.Statements["deleteSession"].Exec(string(userUUID))
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(500)
+		jsonResponse, _ := json.Marshal(map[string]string{
+			"message": "can't find session UUID",
+		})
+		w.Write(jsonResponse)
+		return
+	}
+
+	w.WriteHeader(200)
+	jsonResponse, _ := json.Marshal(map[string]string{
+		"message": "Session deleted",
 	})
 	w.Write(jsonResponse)
 }
