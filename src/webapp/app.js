@@ -275,6 +275,7 @@ function login() {
                 createNewCookie(result.UUID)
                 toggleLoginVisibility(false)
                 start()
+                userFieldConnection(result.username)
                 currentUser.innerHTML = result.username
             }
         })
@@ -610,3 +611,12 @@ document.getElementById('logout_User').addEventListener('click', () => {
 
     toggleLoginVisibility(true);
 })
+
+//gives connection a username
+function userFieldConnection(username) {
+    let jsonData = {};
+    console.log("userfield connection");
+    jsonData["action"] = "username";
+    jsonData["username"] = username;
+    socket.send(JSON.stringify(jsonData));
+}

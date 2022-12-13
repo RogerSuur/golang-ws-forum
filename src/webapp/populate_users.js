@@ -1,5 +1,6 @@
 import { createDiv } from './DOM_helpers.js';
 import { getJSON } from "./read_JSON.js";
+import { webSocketUsers } from './ws.js';
 
 
 let onlineUsersWrapper = document.querySelector(".online");
@@ -8,6 +9,14 @@ let offlineUsersWrapper = document.querySelector(".offline");
 export async function populateUsers() {
     //loads fresh set of user
     const usersObject = await getJSON('/src/server/getUsersHandler');
+
+    //*
+    //Update usersObject with ws given list of users
+    //
+    //*
+    console.log(usersObject);
+    console.log(webSocketUsers);
+
     onlineUsersWrapper.innerHTML = '';
     offlineUsersWrapper.innerHTML = '';
     //console.log("usersObject.online", usersObject.online)

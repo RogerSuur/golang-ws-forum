@@ -4,6 +4,8 @@ import { currentUser, getUsers } from './app.js'
 import { otherUser } from './app.js';
 import { getMessages } from './app.js';
 
+export let webSocketUsers = new Object();
+
 export function Forum() {
 
     window.onbeforeunload = function () {
@@ -30,8 +32,13 @@ export function Forum() {
         console.log("Action is", data.action);
         switch (data.action) {
             case "list_users":
+                //console.log("list_users data:", data);
+                //console.log("data.connected_users:", data.connected_users);
                 getUsers()
-                console.log("currentUser:", currentUser.value)
+                // console.log(typeof data.connected_users) == object
+                webSocketUsers = data.connected_users
+                // alert("list_users")
+                //console.log("currentUser:", currentUser.value)
                 break;
             case "broadcast":
                 console.log("currentUser:", currentUser.value)
