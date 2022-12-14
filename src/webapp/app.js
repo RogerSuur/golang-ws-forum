@@ -553,6 +553,7 @@ function checkCookie() {
 
             .then((result) => {
                 //set username to result.user
+                userFieldConnection(result.user)
                 currentUser.innerHTML = result.user;
             })
 

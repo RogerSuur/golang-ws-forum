@@ -4,7 +4,7 @@ import { currentUser, getUsers } from './app.js'
 import { otherUser } from './app.js';
 import { getMessages } from './app.js';
 
-export let webSocketUsers = new Object();
+export let webSocketUsers;
 
 export function Forum() {
 
@@ -34,9 +34,9 @@ export function Forum() {
             case "list_users":
                 //console.log("list_users data:", data);
                 //console.log("data.connected_users:", data.connected_users);
-                getUsers()
                 // console.log(typeof data.connected_users) == object
                 webSocketUsers = data.connected_users
+                getUsers()
                 // alert("list_users")
                 //console.log("currentUser:", currentUser.value)
                 break;
