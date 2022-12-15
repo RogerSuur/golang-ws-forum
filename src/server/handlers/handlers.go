@@ -113,7 +113,7 @@ func ListenToWsChannel() {
 			case "left":
 				response.Action = "list_users"
 				delete(clients, e.Conn)
-				fmt.Println("clients", clients)
+				fmt.Println("case left", clients)
 				users := getUserList()
 				// database.UpdateOnlineUsers(users)
 				response.ConnectedUsers = users

@@ -11,19 +11,16 @@ export async function populateUsers() {
     //loads fresh set of user
     let usersObject = await getJSON('/src/server/getUsersHandler');
 
-    //*
-    //Update usersObject with ws given list of users
-    //
-    //*
     onlineUsersWrapper.innerHTML = '';
     offlineUsersWrapper.innerHTML = '';
     if (webSocketUsers !== undefined) {
-        console.log(webSocketUsers.data.online);
+        //Update usersObject with ws given list of users
+        //console.log(webSocketUsers.data.online);
         usersObject.online = webSocketUsers.data.online
         usersObject.offline = createOnlineUsers(usersObject.online, usersObject.offline)
     }
-    console.log("usersObject.online", usersObject.online)
-    console.log("usersObject.offline", usersObject.offline)
+    //console.log("usersObject.online", usersObject.online)
+    //console.log("usersObject.offline", usersObject.offline)
     constructUserLists(usersObject.online, onlineUsersWrapper, 'online');
     constructUserLists(usersObject.offline, offlineUsersWrapper, 'offline');
 };
@@ -31,13 +28,13 @@ export async function populateUsers() {
 const createOnlineUsers = function (onlineUsers, offlineUsers) {
     offlineUsers.forEach(function (user) {
         if (onlineUsers.find(e => e.name === user.name)) {
-            console.log(user);
-            console.log(offlineUsers);
+            //console.log(user);
+            // console.log(offlineUsers);
             offlineUsers = offlineUsers.filter(item => item !== user)
-            console.log(offlineUsers);
+            // console.log(offlineUsers);
         }
     })
-    console.log(offlineUsers);
+    // console.log(offlineUsers);
     return offlineUsers
 }
 

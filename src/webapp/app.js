@@ -239,6 +239,7 @@ function signUp() {
                 createNewCookie(result.UUID)
                 toggleRegisterVisibility(false)
                 start()
+                userFieldConnection(result.username)
             }
         })
 
@@ -528,8 +529,8 @@ function toggleRegisterVisibility(makeVisible) {
     }
 }
 
-function checkCookie() {
-    //console.log(document.cookie);
+export function checkCookie() {
+    //var currentUser
     if (document.cookie == "") {
         toggleLoginVisibility(true)
     } else {
@@ -576,8 +577,6 @@ function getCookie() {
     return ca[1]
 }
 
-window.load = checkCookie()
-
 
 document.getElementById('logout_User').addEventListener('click', () => {
     var user_uuid = getCookie();
@@ -591,6 +590,7 @@ document.getElementById('logout_User').addEventListener('click', () => {
         .then((res) => {
             if (res.ok) {
                 toggleLoginVisibility(true)
+                userLogoutConnection()
                 currentUser.innerHTML = ""
             } else {
                 throw res.statusText
@@ -609,15 +609,22 @@ document.getElementById('logout_User').addEventListener('click', () => {
     input_area2.style.borderColor = ''
     document.getElementById("login-area").reset()
 
-
     toggleLoginVisibility(true);
 })
 
-//gives connection a username
+//gives loginwsconnection a username
 function userFieldConnection(username) {
     let jsonData = {};
     console.log("userfield connection");
     jsonData["action"] = "username";
     jsonData["username"] = username;
+    socket.send(JSON.stringify(jsonData));
+}
+
+//removes wsconnections
+function userLogoutConnection() {
+    let jsonData = {};
+    console.log("userlogoutconnection");
+    jsonData["action"] = "left";
     socket.send(JSON.stringify(jsonData));
 }
