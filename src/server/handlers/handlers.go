@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"sort"
 	"text/template"
 
 	"01.kood.tech/git/jrms/real-time-forum/src/server/database"
@@ -37,10 +36,10 @@ var upgradeConnection = websocket.Upgrader{
 
 // response type that send back from the websocket
 type WsJsonResponse struct {
-	Action         string   `json:"action"`
-	Message        string   `json:"message"`
-	MessageType    string   `json:"message_type"`
-	ConnectedUsers []string `json:"connected_users"`
+	Action         string        `json:"action"`
+	Message        string        `json:"message"`
+	MessageType    string        `json:"message_type"`
+	ConnectedUsers database.Data `json:"connected_users"`
 }
 
 type WebSocketConnection struct {
@@ -103,10 +102,10 @@ func ListenToWsChannel() {
 
 			case "username":
 				// get a list of all users and send it back via broadcast
-				clients[e.Conn] = e.Username
+				clients[e.Conn] = e.Username // gives username to the connection
 				users := getUserList()
-				database.UpdateOnlineUsers(users)
-				fmt.Println("users", users)
+				// database.UpdateOnlineUsers(users)
+				fmt.Println("clients", clients)
 				response.Action = "list_users"
 				response.ConnectedUsers = users
 				BroadcastToAll(response)
@@ -114,8 +113,9 @@ func ListenToWsChannel() {
 			case "left":
 				response.Action = "list_users"
 				delete(clients, e.Conn)
+				fmt.Println("case left", clients)
 				users := getUserList()
-				database.UpdateOnlineUsers(users)
+				// database.UpdateOnlineUsers(users)
 				response.ConnectedUsers = users
 				BroadcastToAll(response)
 
@@ -130,15 +130,17 @@ func ListenToWsChannel() {
 	}
 }
 
-func getUserList() []string {
-	var userList []string
+func getUserList() database.Data {
+	var users database.Data
 	for _, x := range clients {
 		if x != "" {
-			userList = append(userList, x)
+			users.Status.Online = append(users.Status.Online, database.Online{
+				Username: x,
+				Unread:   false,
+			})
 		}
 	}
-	sort.Strings(userList)
-	return userList
+	return users
 }
 
 func BroadcastToAll(response WsJsonResponse) {
@@ -166,4 +168,3 @@ func BroadcastToClient(sender string, receiver string, response WsJsonResponse) 
 		}
 	}
 }
-

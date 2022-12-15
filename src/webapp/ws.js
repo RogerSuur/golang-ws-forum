@@ -3,6 +3,9 @@ export let socket = null;
 import { currentUser, getUsers } from './app.js'
 import { otherUser } from './app.js';
 import { getMessages } from './app.js';
+import { checkCookie } from './app.js';
+
+export let webSocketUsers;
 
 export function Forum() {
 
@@ -14,38 +17,44 @@ export function Forum() {
 
     //window.load = checkCookie()
 
-    // document.addEventListener("DOMContentLoaded", function () {
-    socket = new WebSocket("ws://localhost:8080/ws");
+    document.addEventListener("DOMContentLoaded", function () {
+        socket = new WebSocket("ws://localhost:8080/ws");
 
-    socket.onopen = () => {
-        console.log("Successfully connected");
-    };
+        socket.onopen = () => {
+            console.log("Successfully connected");
+            checkCookie()
+        };
 
-    socket.onclose = () => {
-        console.log("Connection closed");
-    };
+        socket.onclose = () => {
+            console.log("Connection closed");
+        };
 
-    socket.onmessage = (msg) => {
-        let data = JSON.parse(msg.data);
-        console.log("Action is", data.action);
-        switch (data.action) {
-            case "list_users":
-                getUsers()
-                console.log("currentUser:", currentUser.value)
-                break;
-            case "broadcast":
-                console.log("currentUser:", currentUser.value)
-                console.log("otherUser: ", otherUser)
-                getMessages(currentUser.value, otherUser)
-            case "login":
-                console.log("login in socket")
-        }
-    };
+        socket.onmessage = (msg) => {
+            let data = JSON.parse(msg.data);
+            console.log("Action is", data.action);
+            switch (data.action) {
+                case "list_users":
+                    //console.log("list_users data:", data);
+                    //console.log("data.connected_users:", data.connected_users);
+                    // console.log(typeof data.connected_users) == object
+                    webSocketUsers = data.connected_users
+                    getUsers()
+                    // alert("list_users")
+                    //console.log("currentUser:", currentUser.value)
+                    break;
+                case "broadcast":
+                    console.log("currentUser:", currentUser.value)
+                    console.log("otherUser: ", otherUser)
+                    getMessages(currentUser.value, otherUser)
+                case "login":
+                    console.log("login in socket")
+            }
+        };
 
-    socket.onerror = (error) => {
-        console.log("there was an error");
-    };
-
+        socket.onerror = (error) => {
+            console.log("there was an error");
+        };
+    })
 }
 
 //send messages to server

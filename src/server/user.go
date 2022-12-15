@@ -242,6 +242,12 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	//*
+	//
+	//FIND ONLINE USERS FROM WEBSOCKETCONNECTION POOL
+	//
+	//
+	//*
 	users.Status.Online = []Online{} // Needed to keep JSon going stupid
 
 	b, _ := json.Marshal(users)

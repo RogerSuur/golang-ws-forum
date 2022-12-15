@@ -44,6 +44,7 @@ func addPostHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
+	fmt.Println(post)
 
 	post.User, _ = getID("Jack")
 	dt := time.Now()
