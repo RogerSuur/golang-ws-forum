@@ -1,4 +1,4 @@
-import { createDiv, $, qS, horizontalDivider } from "./DOM_helpers.js";
+import { createDiv, $, qS } from "./DOM_helpers.js";
 import { startHeaderClock } from "./header_clock.js";
 import { getJSON } from "./read_JSON.js";
 import { initPosts, createCommentNode } from "./populate_posts.js";
@@ -66,11 +66,13 @@ let currentIndex = 0,
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+/*
 const keepPostInFocus = (postNr, position) => {
     console.log(`focus on: ${trackable}-` + postNr)
     const scrollPointItem = $(`${trackable}-` + postNr);
     scrollPointItem.scrollIntoView({ behavior: 'auto', block: position });
 }
+*/
 
 const topSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
@@ -94,14 +96,6 @@ const topSentCallback = async entry => {
         hide(spinner);
         // load new data
         getMessages(messagesIndex, otherUser)
-        /*
-        if (DBSize - currentIndex < nrOfMessagesToLoad) {
-            initMessages(DB, currentIndex, DBSize - currentIndex, currentUser.innerHTML);
-        } else {
-            initMessages(DB, currentIndex, nrOfMessagesToLoad, currentUser.innerHTML);
-        }
-        currentIndex = currentIndex + nrOfMessagesToLoad;
-        */
     }
 
     topSentinelPreviousY = currentY;
@@ -276,7 +270,6 @@ const start = () => {
 }
 
 /* Loads next batch of messages in a conversation */
-// currently unused
 export function getMessages(fromIndex, toUser) {
     console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser, "from message nr", fromIndex);
         
@@ -302,15 +295,6 @@ export async function getUsers() {
             // console.log("otherUser: ", otherUser)
             trackable = 'message';
             getMessages(messagesIndex, user.textContent)
-            /*
-            if (mDB.length < nrOfMessagesToLoad) {
-                initMessages(mDB, 0, mDB.length, currentUser.innerHTML);
-            } else {
-                initMessages(mDB, 0, nrOfMessagesToLoad, currentUser.innerHTML);
-                currentIndex = currentIndex + nrOfMessagesToLoad;
-            
-            }
-            */
             initIntersectionObserver();
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
@@ -350,7 +334,7 @@ buttons.forEach((button) => {
                 break;
             case 'sendMessage':
                 if (message.value === "") {
-                    alert("fill out user nad message")
+                    alert("fill out user and message")
                     return false
                 } else {
                     sendMessage()
@@ -451,12 +435,12 @@ function toggleThreadVisibility(makeVisible) {
 
 export function toggleLoginVisibility(makeVisible) {
     if (makeVisible) {
+        toggleMessageBoxVisibility(false);
         hide(adsArea);
         hide(postsWrapper.parentElement);
         hide(userArea);
         hide(profile);
         hide(registerArea);
-
         logout.innerHTML = 'Login';
         show(loginArea);
 
