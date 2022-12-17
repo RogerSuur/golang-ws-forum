@@ -42,7 +42,7 @@ let threadObject = await getJSON('/static/threadData.json');
 //let usersObject = await getJSON('/static/usersData.json');
 let messagesObject = await getJSON('/static/messagesData.json');
 // export let currentUser = 'Petra Marsh';
-export let currentUser = document.getElementById("current-userID");
+export let currentUser = $("current-userID");
 export let otherUser;
 
 let topSentinelPreviousY = 0;
@@ -52,37 +52,37 @@ let bottomSentinelPreviousRatio = 0;
 
 const nrOfItemsToLoad = 10;
 const loadTime = 1500;
-//let pDBSize = postsObject.posts.length;
 let pDB = postsObject.posts;
 export let mDB = messagesObject.messages;
-// mDBSize = messagesObject.messages.length;
 let trackable = 'post';
 let isThread = false;
 
-let currentIndex = 0,
-    postsIndex = 0,
-    threadIndex = 0,
+let currentIndex = pDB.length,
+    postsIndex,
+    threadIndex,
     messagesIndex = mDB.length;
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-/*
 const keepPostInFocus = (postNr, position) => {
     console.log(`focus on: ${trackable}-` + postNr)
     const scrollPointItem = $(`${trackable}-` + postNr);
     scrollPointItem.scrollIntoView({ behavior: 'auto', block: position });
 }
-*/
 
 const topSentCallback = async entry => {
+    if (messagesIndex <= 0) {
+        // if we are at the end of the DB, do nothing
+        console.log("No more messages to load");
+        return;
+    }
+    
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
     
     // conditional check for Scrolling up
-    if (messagesIndex <= 0) {
-        console.log("No more messages to load");
-    } else if (
+    if (
         currentY > topSentinelPreviousY &&
         isIntersecting &&
         currentRatio >= topSentinelPreviousRatio
@@ -103,7 +103,7 @@ const topSentCallback = async entry => {
 }
 
 const bottomSentCallback = async entry => {
-    if (currentIndex === pDB.length - nrOfItemsToLoad) {
+    if (currentIndex <= 0) {
         // if we are at the end of the DB, do nothing
         console.log('end of DB');
         return;
@@ -111,11 +111,7 @@ const bottomSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-    // calculate shift in case last scroll is less than nrOfPostsToLoad
-    let shift = 0
-    if (pDB.length - currentIndex - nrOfItemsToLoad / 2 < nrOfItemsToLoad)
-        shift = pDB.length - currentIndex - nrOfItemsToLoad - nrOfItemsToLoad / 2;
-    // conditional check for Scrolling down
+ 
     if (
         currentY < bottomSentinelPreviousY &&
         currentRatio > bottomSentinelPreviousRatio &&
@@ -132,9 +128,9 @@ const bottomSentCallback = async entry => {
         }
 
         // load new data
-        initPosts(pDB, currentIndex, nrOfItemsToLoad, isThread);
-        currentIndex = currentIndex + nrOfItemsToLoad + shift;
-    
+        getPosts(currentIndex);
+        keepPostInFocus(currentIndex + nrOfItemsToLoad, 'end');
+     
     }
 
     bottomSentinelPreviousY = currentY;
@@ -159,7 +155,7 @@ const initIntersectionObserver = () => {
 }
 
 function signUp() {
-    var data = new FormData(document.getElementById('register-area'));
+    var data = new FormData($('register-area'));
     var dataToSend = Object.fromEntries(data);
 
     fetch('/src/server/signup', {
@@ -190,7 +186,7 @@ function signUp() {
 }
 
 function login() {
-    var data = new FormData(document.getElementById('login-area'));
+    var data = new FormData($('login-area'));
     var dataToSend = Object.fromEntries(data)
 
     fetch('/src/server/login', {
@@ -206,8 +202,8 @@ function login() {
         .then((result) => {
             if (result.hasOwnProperty('message')) {
                 //badValidation(result.message, result.requirement)
-                var input_area = document.getElementById("username_loginID")
-                var input_area2 = document.getElementById("password_loginID")
+                var input_area = $("username_loginID")
+                var input_area2 = $("password_loginID")
                 input_area.style.borderColor = 'red'
                 input_area2.style.borderColor = 'red'
                 let errorMessage = createDiv('error-message', result.requirement, 'error-message');
@@ -230,9 +226,7 @@ function login() {
 const start = () => {
 
     //DB = initDB(DBSize, postsObject);
-	initPosts(pDB, 0, nrOfItemsToLoad, false);
-    currentIndex = currentIndex + nrOfItemsToLoad;
-    //keepPostInFocus(0, 'start');
+    getPosts(pDB.length);
 
     const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
     threadOpeningElements.forEach((threadLink) => {
@@ -243,15 +237,11 @@ const start = () => {
             threadHeader.innerHTML = selectedPost.title;
             //let threadDB = initDB(selectedPost.comments, threadObject);
             trackable = 'thread';
-            currentIndex = threadIndex;
+            currentIndex = threadObject.posts.length;
             pDB = threadObject.posts;
             isThread = true;
-            if (selectedPost.comments < nrOfItemsToLoad) {
-                initPosts(pDB, 0, pDB.length + 1, true);
-            } else { 
-                initPosts(pDB, 0, nrOfItemsToLoad, true);
-                initIntersectionObserver();
-            }
+            getPosts(currentIndex);
+            initIntersectionObserver();
         });
     });
 
@@ -267,6 +257,18 @@ const start = () => {
     if (nrOfItemsToLoad < pDB.length) {
         initIntersectionObserver();
     }
+}
+
+/* Loads next batch of posts */
+export function getPosts(fromIndex) {
+    console.log("Loading posts from index", fromIndex);
+
+    if (fromIndex - nrOfItemsToLoad < 0) {
+        initPosts(pDB, fromIndex, 0, isThread);
+    } else {
+        initPosts(pDB, fromIndex, currentIndex - nrOfItemsToLoad, isThread);
+    }
+    currentIndex = currentIndex - nrOfItemsToLoad;
 }
 
 /* Loads next batch of messages in a conversation */
@@ -346,7 +348,7 @@ buttons.forEach((button) => {
     });
 });
 
-document.getElementById('register-area').addEventListener('submit', (e) => {
+$('register-area').addEventListener('submit', (e) => {
     if (signUpValidation()) {
         signUp();
         //toggleRegisterVisibility(false)
@@ -354,7 +356,7 @@ document.getElementById('register-area').addEventListener('submit', (e) => {
     e.preventDefault();
 });
 
-document.getElementById('login-area').addEventListener('submit', (e) => {
+$('login-area').addEventListener('submit', (e) => {
     if (loginValidation()) {
         //console.log(e.target);
         login();
@@ -362,7 +364,7 @@ document.getElementById('login-area').addEventListener('submit', (e) => {
     e.preventDefault();
 });
 
-document.getElementById('new-post').addEventListener('submit', (e) => {
+$('new-post').addEventListener('submit', (e) => {
     if (newPostValidation()) {
         makeNewPost();
         //toggleRegisterVisibility(false)
@@ -372,7 +374,7 @@ document.getElementById('new-post').addEventListener('submit', (e) => {
 });
 
 async function makeNewPost() {
-    var data = new FormData(document.getElementById('new-post'));
+    var data = new FormData($('new-post'));
     var dataToSend = Object.fromEntries(data)
 
     console.log(dataToSend);
@@ -401,7 +403,7 @@ async function makeNewPost() {
 
 }
 
-document.getElementById("message").addEventListener("keydown", function (event) {
+$("message").addEventListener("keydown", function (event) {
     if (event.code === "Enter") {
         if (!socket) {
             console.log("no connection");
@@ -525,7 +527,7 @@ function getCookie() {
 }
 
 
-document.getElementById('logout_User').addEventListener('click', () => {
+$('logout_User').addEventListener('click', () => {
     var user_uuid = getCookie();
 
     //fetch to send db request deleting cookie
@@ -550,11 +552,11 @@ document.getElementById('logout_User').addEventListener('click', () => {
         });
 
     document.cookie = "username" + "=" + ";" + "Max-Age=-99999999" + ";path=/;"
-    var input_area = document.getElementById("username_loginID")
-    var input_area2 = document.getElementById("password_loginID")
+    var input_area = $("username_loginID")
+    var input_area2 = $("password_loginID")
     input_area.style.borderColor = ''
     input_area2.style.borderColor = ''
-    document.getElementById("login-area").reset()
+    $("login-area").reset()
 
     toggleLoginVisibility(true);
 })

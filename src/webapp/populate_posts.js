@@ -3,16 +3,17 @@ import { createDiv, horizontalDivider, $ } from './DOM_helpers.js';
 
 export const initPosts = (DB, from, num, isThread) => {
 
-    console.log("initPosts", from, num);
+    //console.log("initPosts", from, num);
 
     let interSection = $('intersection-observer');
-    if (interSection.nextElementSibling !== null) {
-        let temp = interSection.nextElementSibling;
-        interSection.nextElementSibling.remove();
-        postsWrapper.insertBefore(temp, interSection);
+
+    if (from === DB.length) {
+        postsWrapper.appendChild(interSection);
     }
-  
-    for (let i = from; i < from + num; i++) {
+    
+    let i = from - 1;
+    while (i >= num) {
+
         const singlePost = createDiv('single-post');
         if (isThread) {
             singlePost.setAttribute('id', `thread-${i}`);
@@ -45,6 +46,15 @@ export const initPosts = (DB, from, num, isThread) => {
         postBody.appendChild(postContent);
 
         singlePost.appendChild(postBody);
+        
+        if (i === num) {
+            interSection.remove();
+            if (isThread) {
+                threadWrapper.appendChild(interSection);
+            } else {
+                postsWrapper.appendChild(interSection);
+            }
+        } 
 
         if (isThread) {
             threadWrapper.appendChild(singlePost);
@@ -71,13 +81,10 @@ export const initPosts = (DB, from, num, isThread) => {
             postFooter.appendChild(postComments);
             singlePost.appendChild(postFooter);
 
-            if (i == from + num - 1) {
-                postsWrapper.appendChild(singlePost);
-            } else {
-                postsWrapper.insertBefore(singlePost, interSection);
-            }            
+            postsWrapper.appendChild(singlePost);           
         }
-  }
+        i--;
+    }
 }
 
 export function createCommentNode(post) {

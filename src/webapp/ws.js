@@ -57,7 +57,7 @@ export function Forum() {
         };
 
         socket.onerror = (error) => {
-            console.log("there was an error");
+            console.log("there was an error", error);
         };
     })
 }
