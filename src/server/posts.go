@@ -14,6 +14,7 @@ func getPostsHandler(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.Statements["getPosts"].Query()
 	if err != nil {
 		log.Println(err.Error())
+		w.WriteHeader(500)
 		return
 	}
 	var posts Data
@@ -26,6 +27,7 @@ func getPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			log.Println(err.Error())
+			w.WriteHeader(500)
 			return
 		}
 	}
@@ -35,9 +37,9 @@ func getPostsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func addPostHandler(w http.ResponseWriter, r *http.Request) {
+	var user string = r.Header.Get("X-Username")
 	var post Post
 	decoder := json.NewDecoder(r.Body)
-	// decoder.DisallowUnknownFields()
 	err := decoder.Decode(&post)
 	if err != nil {
 		log.Println(err.Error())
@@ -46,17 +48,16 @@ func addPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(post)
 
-	post.User, _ = getID("Jack")
+	post.User, _ = getID(user)
 	dt := time.Now()
 	post.Timestamp = dt.Format("01/02/2006 15:04")
 	post.Categories = "Lorem"
 	post.Comments = 0
 
-	fmt.Println(post)
-
 	_, err = database.Statements["addPost"].Exec(post.User, post.Title, post.Content, post.Timestamp, post.Categories, post.Comments)
 	if err != nil {
 		log.Println(err.Error())
+		w.WriteHeader(500)
 		return
 	}
 
@@ -75,6 +76,5 @@ func getID(name string) (string, error) {
 	rows.Next()
 	rows.Scan(&ID)
 	rows.Close()
-	// fmt.Println(ID)
 	return ID, nil
 }

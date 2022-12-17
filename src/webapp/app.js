@@ -381,7 +381,10 @@ async function makeNewPost() {
 
     const res = await fetch('/src/server/addPostHandler', {
         method: "POST",
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Username': currentUser.innerHTML
+        },
         body: JSON.stringify(dataToSend)
     })
 
@@ -391,9 +394,9 @@ async function makeNewPost() {
         console.log(res.status)
         //DO NOTHING? init Posts?
 
+        postsWrapper.innerHTML = '';
         postsObject = await getJSON('/src/server/getPostsHandler');
         console.log(postsObject);
-        postsWrapper.innerHTML = '';
         //uuesti start()?
         //start()
     } else {
@@ -411,6 +414,7 @@ $("message").addEventListener("keydown", function (event) {
         }
         event.preventDefault();//dont send the form
         event.stopPropagation();
+        console.log(event);
         sendMessage()
     }
 })

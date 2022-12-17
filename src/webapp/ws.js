@@ -31,7 +31,7 @@ export function Forum() {
 
         socket.onmessage = (msg) => {
             let data = JSON.parse(msg.data);
-            let lastMessage = $(`message-${mDB.length-1}`)
+            let lastMessage = $(`message-${mDB.length - 1}`)
             let newMessage;
             console.log("Action is", data.action);
             switch (data.action) {
@@ -65,6 +65,7 @@ export function Forum() {
 //send messages to server
 export function sendMessage() {
     let jsonData = {};
+    let message = document.getElementById("message")
     jsonData["action"] = "broadcast";
     jsonData["other_user"] = otherUser;
     jsonData["username"] = currentUser.innerHTML;

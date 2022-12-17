@@ -107,7 +107,6 @@ func ListenToWsChannel() {
 				clients[e.Conn] = e.Username // gives username to the connection
 				users := getUserList()
 				// database.UpdateOnlineUsers(users)
-				fmt.Println("clients", clients)
 				response.Action = "list_users"
 				response.ConnectedUsers = users
 				BroadcastToAll(response)
@@ -149,7 +148,6 @@ func getUserList() database.Data {
 
 func BroadcastToAll(response WsJsonResponse) {
 	for client := range clients {
-		fmt.Println("client:", clients[client])
 		err := client.WriteJSON(response)
 		if err != nil {
 			log.Println("websocket error")
