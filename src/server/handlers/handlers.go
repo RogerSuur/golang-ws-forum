@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"text/template"
+	"time"
 
 	"01.kood.tech/git/jrms/real-time-forum/src/server/database"
 
@@ -53,6 +54,14 @@ type WsPayload struct {
 	MessageReceiver string              `json:"other_user"`
 	Message         string              `json:"message"`
 	Conn            WebSocketConnection `json:"-"`
+}
+
+type Message struct {
+	Action       string    `json:action`
+	UsernameFrom string    `json:"usernameFrom"`
+	UsernameTo   string    `json:"usernameTo"`
+	Text         string    `json:"text"`
+	Time         time.Time `json:"time"`
 }
 
 // takes a regular connection and upgrades it to websocket connection
@@ -105,7 +114,7 @@ func ListenToWsChannel() {
 				clients[e.Conn] = e.Username // gives username to the connection
 				users := getUserList()
 				// database.UpdateOnlineUsers(users)
-				fmt.Println("clients", clients)
+				// fmt.Println("clients", clients)
 				response.Action = "list_users"
 				response.ConnectedUsers = users
 				BroadcastToAll(response)
@@ -121,6 +130,9 @@ func ListenToWsChannel() {
 
 			case "broadcast":
 				response.Action = "broadcast"
+				response.Message = e.Message
+				response.User = e.Username
+				fmt.Println(e.MessageReceiver)
 				response.Message = e.Message
 				// write message to database
 				database.UpdateMessagesData(e.Username, e.MessageReceiver, e.Message)
@@ -145,7 +157,7 @@ func getUserList() database.Data {
 
 func BroadcastToAll(response WsJsonResponse) {
 	for client := range clients {
-		fmt.Println("client:", clients[client])
+		// fmt.Println("client:", clients[client])
 		err := client.WriteJSON(response)
 		if err != nil {
 			log.Println("websocket error")

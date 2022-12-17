@@ -43,8 +43,9 @@ export function Forum() {
                     //console.log("currentUser:", currentUser.value)
                     break;
                 case "broadcast":
-                    console.log("currentUser:", currentUser.value)
-                    console.log("otherUser: ", otherUser)
+                    // console.log("currentUser:", currentUser.value)
+                    // console.log("otherUser: ", otherUser)
+                    console.log("received data:", data);
                     getMessages(currentUser.value, otherUser)
                 case "login":
                     console.log("login in socket")
@@ -60,10 +61,12 @@ export function Forum() {
 //send messages to server
 export function sendMessage() {
     let jsonData = {};
+    let message = document.getElementById("message")
     jsonData["action"] = "broadcast";
     jsonData["other_user"] = otherUser;
-    jsonData["username"] = document.getElementById("username-register").value;
-    jsonData["message"] = document.getElementById("message").value;
+    jsonData["username"] = currentUser.innerHTML
+    jsonData["message"] = message.value
+    console.log(jsonData);
     socket.send(JSON.stringify(jsonData))
-    document.getElementById("message").value = "";
+    message.value = "";
 }
