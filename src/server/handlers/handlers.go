@@ -38,6 +38,8 @@ var upgradeConnection = websocket.Upgrader{
 type WsJsonResponse struct {
 	Action         string        `json:"action"`
 	Message        string        `json:"message"`
+	FromUser       string        `json:"fromUser"`
+	ToUser         string        `json:"toUser"`
 	MessageType    string        `json:"message_type"`
 	ConnectedUsers database.Data `json:"connected_users"`
 }
@@ -122,6 +124,8 @@ func ListenToWsChannel() {
 			case "broadcast":
 				response.Action = "broadcast"
 				response.Message = e.Message
+				response.FromUser = e.Username
+				response.ToUser = e.MessageReceiver
 				// write message to database
 				database.UpdateMessagesData(e.Username, e.MessageReceiver, e.Message)
 				BroadcastToClient(e.Username, e.MessageReceiver, response)

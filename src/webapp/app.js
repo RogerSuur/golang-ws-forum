@@ -50,17 +50,19 @@ let topSentinelPreviousRatio = 0;
 let bottomSentinelPreviousY = 0;
 let bottomSentinelPreviousRatio = 0;
 
-const listSize = 20;
+const nrOfItemsToLoad = 10;
 const loadTime = 1500;
-let DBSize = postsObject.posts.length;
-let DB = postsObject.posts;
+//let pDBSize = postsObject.posts.length;
+let pDB = postsObject.posts;
+export let mDB = messagesObject.messages;
+// mDBSize = messagesObject.messages.length;
 let trackable = 'post';
 let isThread = false;
 
-let currentIndex = 0;
-let postsIndex = 0,
+let currentIndex = 0,
+    postsIndex = 0,
     threadIndex = 0,
-    messagesIndex = 0;
+    messagesIndex = mDB.length;
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -74,12 +76,11 @@ const topSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-    // calculate shift in case last scroll is less than listSize
-    let shift = 0
-    // todo shift calculations
-
+    
     // conditional check for Scrolling up
-    if (
+    if (messagesIndex <= 0) {
+        console.log("No more messages to load");
+    } else if (
         currentY > topSentinelPreviousY &&
         isIntersecting &&
         currentRatio >= topSentinelPreviousRatio
@@ -91,10 +92,16 @@ const topSentCallback = async entry => {
         show(spinner);
         await sleep(loadTime);
         hide(spinner);
-
         // load new data
-        initMessages(DB, currentIndex, listSize, false);
-        currentIndex = currentIndex + listSize + shift;
+        getMessages(messagesIndex, otherUser)
+        /*
+        if (DBSize - currentIndex < nrOfMessagesToLoad) {
+            initMessages(DB, currentIndex, DBSize - currentIndex, currentUser.innerHTML);
+        } else {
+            initMessages(DB, currentIndex, nrOfMessagesToLoad, currentUser.innerHTML);
+        }
+        currentIndex = currentIndex + nrOfMessagesToLoad;
+        */
     }
 
     topSentinelPreviousY = currentY;
@@ -102,7 +109,7 @@ const topSentCallback = async entry => {
 }
 
 const bottomSentCallback = async entry => {
-    if (currentIndex === DBSize - listSize) {
+    if (currentIndex === pDB.length - nrOfItemsToLoad) {
         // if we are at the end of the DB, do nothing
         console.log('end of DB');
         return;
@@ -110,10 +117,10 @@ const bottomSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-    // calculate shift in case last scroll is less than listSize
+    // calculate shift in case last scroll is less than nrOfPostsToLoad
     let shift = 0
-    if (DBSize - currentIndex - listSize / 2 < listSize)
-        shift = DBSize - currentIndex - listSize - listSize / 2;
+    if (pDB.length - currentIndex - nrOfItemsToLoad / 2 < nrOfItemsToLoad)
+        shift = pDB.length - currentIndex - nrOfItemsToLoad - nrOfItemsToLoad / 2;
     // conditional check for Scrolling down
     if (
         currentY < bottomSentinelPreviousY &&
@@ -131,8 +138,8 @@ const bottomSentCallback = async entry => {
         }
 
         // load new data
-        initPosts(DB, currentIndex, listSize, false);
-        currentIndex = currentIndex + listSize + shift;
+        initPosts(pDB, currentIndex, nrOfItemsToLoad, isThread);
+        currentIndex = currentIndex + nrOfItemsToLoad + shift;
     
     }
 
@@ -144,7 +151,7 @@ const initIntersectionObserver = () => {
 
     const callback = entries => {
       entries.forEach(entry => {
-        console.log("Trackable: ", trackable);
+        //console.log("Trackable: ", trackable);
         if (trackable === 'message') {
             topSentCallback(entry);
         } else {
@@ -229,9 +236,9 @@ function login() {
 const start = () => {
 
     //DB = initDB(DBSize, postsObject);
-	initPosts(DB, 0, listSize, false);
-    currentIndex = currentIndex + listSize;
-    keepPostInFocus(0, 'start');
+	initPosts(pDB, 0, nrOfItemsToLoad, false);
+    currentIndex = currentIndex + nrOfItemsToLoad;
+    //keepPostInFocus(0, 'start');
 
     const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
     threadOpeningElements.forEach((threadLink) => {
@@ -243,13 +250,12 @@ const start = () => {
             //let threadDB = initDB(selectedPost.comments, threadObject);
             trackable = 'thread';
             currentIndex = threadIndex;
-            DB = threadObject.posts;
-            DBSize = selectedPost.comments + 1;
+            pDB = threadObject.posts;
             isThread = true;
-            if (selectedPost.comments < listSize) {
-                initPosts(DB, 0, DBSize, true);
+            if (selectedPost.comments < nrOfItemsToLoad) {
+                initPosts(pDB, 0, pDB.length + 1, true);
             } else { 
-                initPosts(DB, 0, listSize, true);
+                initPosts(pDB, 0, nrOfItemsToLoad, true);
                 initIntersectionObserver();
             }
         });
@@ -260,26 +266,26 @@ const start = () => {
         trackable = 'post';
         threadIndex = currentIndex;
         currentIndex = postsIndex;
-        DB = postsObject.posts;
-        DBSize = postsObject.posts.length;
+        pDB = postsObject.posts;
         isThread = false;
     });
 
-    if (listSize < DBSize) {
+    if (nrOfItemsToLoad < pDB.length) {
         initIntersectionObserver();
     }
 }
 
 /* Loads next batch of messages in a conversation */
 // currently unused
-export function getMessages(fromUser, toUser) {
-    console.log("Loading messages from " + fromUser + " to " + toUser);
-    //let messageDB = initDB(messagesObject.messages.length, messagesObject);
-    if (messagesObject.messages.length < listSize) {
-        initMessages(messagesObject.messages, 0, messagesObject.messages.length, fromUser);
+export function getMessages(fromIndex, toUser) {
+    console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser, "from message nr", fromIndex);
+        
+    if (fromIndex - nrOfItemsToLoad < 0) {
+        initMessages(mDB, fromIndex, 0, toUser);
     } else {
-        initMessages(messagesObject.messages, 0, listSize, fromUser);
+        initMessages(mDB, fromIndex, messagesIndex - nrOfItemsToLoad, toUser);
     }
+    messagesIndex = messagesIndex - nrOfItemsToLoad;
 }
 
 
@@ -295,16 +301,17 @@ export async function getUsers() {
             // console.log("currentUser:", currentUser)
             // console.log("otherUser: ", otherUser)
             trackable = 'message';
-            currentIndex = messagesIndex;
-            DB = messagesObject.messages;
-            DBSize = messagesObject.messages.length;
-            if (DBSize < listSize) {
-                initMessages(DB, 0, DBSize, currentUser);
+            getMessages(messagesIndex, user.textContent)
+            /*
+            if (mDB.length < nrOfMessagesToLoad) {
+                initMessages(mDB, 0, mDB.length, currentUser.innerHTML);
             } else {
-                initMessages(DB, 0, listSize, currentUser);
-                currentIndex = currentIndex + listSize;
-                initIntersectionObserver();
+                initMessages(mDB, 0, nrOfMessagesToLoad, currentUser.innerHTML);
+                currentIndex = currentIndex + nrOfMessagesToLoad;
+            
             }
+            */
+            initIntersectionObserver();
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
         });
@@ -313,15 +320,11 @@ export async function getUsers() {
     closeMessagesBox.addEventListener('click', () => {
         toggleMessageBoxVisibility(false);
         trackable = 'post';
-        messagesIndex = currentIndex;
+        messagesIndex = mDB.length;
         if (isThread) {
             currentIndex = threadIndex;
-            DB = threadObject.posts;
-            DBSize = threadObject.posts.length;
         } else {
             currentIndex = postsIndex;
-            DB = postsObject.posts;
-            DBSize = postsObject.posts.length;
         }
     });
 };

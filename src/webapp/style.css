@@ -264,6 +264,10 @@ body {
         opacity: 0.5;
     }
 
+    .gender-register {
+        display: flex;
+    }
+
     .login-wrapper > .user-input-area,
     .register-wrapper > .user-input-area {
         padding: 5%;

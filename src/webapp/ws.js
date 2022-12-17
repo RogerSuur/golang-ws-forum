@@ -1,9 +1,9 @@
 export const userRegister = document.getElementById("username-register")
 export let socket = null;
-import { currentUser, getUsers } from './app.js'
-import { otherUser } from './app.js';
-import { getMessages } from './app.js';
+import { currentUser, otherUser, getUsers, messagesWrapper, mDB } from './app.js'
 import { checkCookie } from './app.js';
+import { createSingleMessage } from './populate_messages.js'
+import { $ } from "./DOM_helpers.js";
 
 export let webSocketUsers;
 
@@ -31,6 +31,8 @@ export function Forum() {
 
         socket.onmessage = (msg) => {
             let data = JSON.parse(msg.data);
+            let lastMessage = $(`message-${mDB.length-1}`)
+            let newMessage;
             console.log("Action is", data.action);
             switch (data.action) {
                 case "list_users":
@@ -43,9 +45,12 @@ export function Forum() {
                     //console.log("currentUser:", currentUser.value)
                     break;
                 case "broadcast":
-                    console.log("currentUser:", currentUser.value)
+                    console.log("currentUser:", currentUser.innerHTML)
                     console.log("otherUser: ", otherUser)
-                    getMessages(currentUser.value, otherUser)
+                    newMessage = createSingleMessage(mDB.length, data.message, data.fromUser, Date.now())
+                    messagesWrapper.insertBefore(newMessage, lastMessage);
+                    //getMessages(currentUser.value, otherUser)
+                    break;
                 case "login":
                     console.log("login in socket")
             }
@@ -62,8 +67,10 @@ export function sendMessage() {
     let jsonData = {};
     jsonData["action"] = "broadcast";
     jsonData["other_user"] = otherUser;
-    jsonData["username"] = document.getElementById("username-register").value;
-    jsonData["message"] = document.getElementById("message").value;
-    socket.send(JSON.stringify(jsonData))
-    document.getElementById("message").value = "";
+    jsonData["username"] = currentUser.innerHTML;
+    jsonData["message"] = $('message').value;
+    jsonData["timestamp"] = Date.now();
+    socket.send(JSON.stringify(jsonData));
+    $('message').value = "";
+
 }
