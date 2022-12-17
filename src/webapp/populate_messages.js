@@ -14,50 +14,46 @@ export const initMessages = (DB, from, num) => {
     }
 
     let i = from - 1;
-
+    let nextUser;
     while (i >= num) {
 
         if (i === num) {
             interSection.remove();
             messagesWrapper.appendChild(interSection);    
         }
-
-        let singleMessage = createSingleMessage(i, DB[i].content, DB[i].from, DB[i].timestamp)
+        nextUser = DB[i-1].from;
+        let singleMessage = createSingleMessage(i, DB[i].content, DB[i].from, DB[i].timestamp, nextUser)
         
+
         messagesWrapper.appendChild(singleMessage);
 
         i--;
     }
 }
 
-export const createSingleMessage = (index, content, from, timestamp) => {
+export const createSingleMessage = (index, content, from, timestamp, previousUser) => {
+    
     let singleMessage = createDiv('single-message');
 
     singleMessage.setAttribute('id', `message-${index}`);
 
     let messageContent = createDiv('message-content', content);
     
-    //if (DB[i].from !== previousUser) {
+    if (from !== previousUser) {
         let messageAuthor = createDiv('message-user', from);
         if (from === currentUser.innerHTML) {
-            // messageAuthor.innerHTML = `Me`;
+            messageAuthor.innerHTML = `Me`;
             singleMessage.classList.add('me');
             messageAuthor.classList.add('me');
             messageContent.classList.add('me');
         }
-        /*
-        if (DB[i].from === previousUser) {
-            messageAuthor.classList.add('hidden');
-        }
-        */
         singleMessage.appendChild(messageAuthor);
-    /*
-    } else if (previousUser !== currentUser) {
+    
+    } else if (previousUser === currentUser.innerHTML) {
+
         singleMessage.classList.add('me');
         messageContent.classList.add('me');
     }
-    */
-    //previousUser = DB[i].from;
 
     singleMessage.appendChild(messageContent);
 
