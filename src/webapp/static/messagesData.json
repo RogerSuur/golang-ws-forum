@@ -293,250 +293,46 @@
         "timestamp": "2020-06-15T10:24:21.261Z"
       },
       {
-        "from": "jarmo",
-        "to": "Susan",
-        "content": "Hey",
-        "timestamp": "12/17/2022 09:13"
+        "from": "Jack",
+        "to": "John",
+        "content": "Send Message",
+        "timestamp": "12/15/2022 21:08"
       },
       {
-        "from": "jarmo",
-        "to": "Susan",
-        "content": "ola",
-        "timestamp": "12/17/2022 09:20"
+        "from": "Jack",
+        "to": "John",
+        "content": "",
+        "timestamp": "12/15/2022 21:09"
       },
       {
-        "from": "jarmo",
-        "to": "Mike",
-        "content": "test",
-        "timestamp": "12/17/2022 10:35"
-      },
-      {
-        "from": "jarmo",
-        "to": "Mike",
-        "content": "text",
-        "timestamp": "12/17/2022 10:38"
-      },
-      {
-        "from": "jarmo",
-        "to": "Mike",
-        "content": "yo",
-        "timestamp": "12/17/2022 10:40"
-      },
-      {
-        "from": "jarmo",
-        "to": "Mike",
-        "content": "nii",
-        "timestamp": "12/17/2022 10:56"
-      },
-      {
-        "from": "jarmo",
-        "to": "Mike",
-        "content": "hmm",
-        "timestamp": "12/17/2022 11:01"
-      },
-      {
-        "from": "jarmo",
-        "to": "Mike",
-        "content": "panen ühe pikema sõnumi, et ei hakkaks kohe scrollima. panen ühe pikema sõnumi, et ei hakkaks kohe scrollima. panen ühe pikema sõnumi, et ei hakkaks kohe scrollima. panen ühe pikema sõnumi, et ei hakkaks kohe scrollima. panen ühe pikema sõnumi, et ei hakkaks kohe scrollima. panen ühe pikema sõnumi, et ei hakkaks kohe scrollima. panen ühe pikema sõnumi, et ei hakkaks kohe scrollima. ",
-        "timestamp": "12/17/2022 11:07"
-      },
-      {
-        "from": "jarmo",
-        "to": "Mike",
-        "content": "ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ühe veel. ",
-        "timestamp": "12/17/2022 11:07"
-      },
-      {
-        "from": "jarmo",
-        "to": "Susan",
-        "content": "test",
-        "timestamp": "12/17/2022 11:13"
-      },
-      {
-        "from": "jarmo",
-        "to": "Mike",
-        "content": "yo",
-        "timestamp": "12/17/2022 11:15"
-      },
-      {
-        "from": "jarmo",
-        "to": "Mark",
-        "content": "test",
-        "timestamp": "12/17/2022 11:16"
-      },
-      {
-        "from": "jarmo",
-        "to": "Mark",
-        "content": "whoah",
-        "timestamp": "12/17/2022 11:16"
-      },
-      {
-        "from": "tester",
-        "to": "jarmo",
-        "content": "kuku",
-        "timestamp": "12/17/2022 11:17"
-      },
-      {
-        "from": "jarmo",
-        "to": "Mark",
-        "content": "nii",
-        "timestamp": "12/17/2022 11:17"
-      },
-      {
-        "from": "tester",
-        "to": "jarmo",
-        "content": "boing",
-        "timestamp": "12/17/2022 11:17"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "ei",
-        "timestamp": "12/17/2022 11:17"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "hey",
-        "timestamp": "12/17/2022 11:24"
-      },
-      {
-        "from": "tester",
-        "to": "jarmo",
-        "content": "haha",
-        "timestamp": "12/17/2022 11:24"
-      },
-      {
-        "from": "tester",
-        "to": "jarmo",
-        "content": "weird",
-        "timestamp": "12/17/2022 11:24"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "bee",
-        "timestamp": "12/17/2022 11:25"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "ads",
-        "timestamp": "12/17/2022 11:25"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "b",
-        "timestamp": "12/17/2022 11:25"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "b",
-        "timestamp": "12/17/2022 11:26"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "haha",
-        "timestamp": "12/17/2022 11:27"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "blaah",
-        "timestamp": "12/17/2022 11:27"
-      },
-      {
-        "from": "tester",
-        "to": "jarmo",
-        "content": "so",
-        "timestamp": "12/17/2022 11:27"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "eeh",
-        "timestamp": "12/17/2022 11:28"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "goo goo",
-        "timestamp": "12/17/2022 11:28"
-      },
-      {
-        "from": "tester",
-        "to": "jarmo",
-        "content": "gaa gaa",
-        "timestamp": "12/17/2022 11:28"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "blaah",
-        "timestamp": "12/17/2022 11:32"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "goo",
-        "timestamp": "12/17/2022 11:35"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "badaboom",
-        "timestamp": "12/17/2022 11:37"
-      },
-      {
-        "from": "tester",
-        "to": "jarmo",
-        "content": "heeya",
-        "timestamp": "12/17/2022 11:37"
-      },
-      {
-        "from": "tester",
-        "to": "jarmo",
-        "content": "ok, weird",
-        "timestamp": "12/17/2022 11:37"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "wrong order'",
-        "timestamp": "12/17/2022 11:38"
-      },
-      {
-        "from": "jarmo",
-        "to": "tester",
-        "content": "üks veel",
-        "timestamp": "12/17/2022 11:44"
-      },
-      {
-        "from": "jarmo",
+        "from": "John",
         "to": "Kate",
-        "content": "just checkin",
-        "timestamp": "12/17/2022 12:33"
+        "content": "",
+        "timestamp": "12/15/2022 21:13"
       },
       {
-        "from": "tester",
-        "to": "jarmo",
-        "content": "ayoo",
-        "timestamp": "12/17/2022 12:33"
+        "from": "Mark",
+        "to": "John",
+        "content": "testing",
+        "timestamp": "12/16/2022 17:18"
       },
       {
-        "from": "tester",
-        "to": "jarmo",
-        "content": "boah",
-        "timestamp": "12/17/2022 12:33"
+        "from": "John",
+        "to": "Jack",
+        "content": "testing4",
+        "timestamp": "12/16/2022 17:22"
       },
       {
-        "from": "jarmo",
-        "to": "Kate",
-        "content": "trolololoo",
-        "timestamp": "12/17/2022 12:34"
+        "from": "John",
+        "to": "Mark",
+        "content": "tervitus",
+        "timestamp": "12/16/2022 17:24"
+      },
+      {
+        "from": "Jack",
+        "to": "Mike",
+        "content": "tervitused",
+        "timestamp": "12/16/2022 17:29"
       }
     ]
   }
