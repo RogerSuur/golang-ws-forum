@@ -128,7 +128,6 @@ func ListenToWsChannel() {
 				response.ToUser = e.MessageReceiver
 				// response.User = e.Username
 				fmt.Println(e.MessageReceiver)
-				response.Message = e.Message
 				// write message to database
 				database.UpdateMessagesData(e.Username, e.MessageReceiver, e.Message)
 				BroadcastToClient(e.Username, e.MessageReceiver, response)
