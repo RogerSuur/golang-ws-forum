@@ -131,7 +131,7 @@ func ListenToWsChannel() {
 			case "broadcast":
 				response.Action = "broadcast"
 				response.Message = e.Message
-				response.User = e.Username
+				// response.User = e.Username
 				fmt.Println(e.MessageReceiver)
 				response.Message = e.Message
 				// write message to database
