@@ -36,6 +36,50 @@ func getPostsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResponse)
 }
 
+func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
+	// Get id-s or usernames from r.body
+	// then
+	messages, err := getMessagesQuery("1", "2")
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(500)
+		return
+	}
+	fmt.Println("messages:", string(messages))
+
+	jsonResponse, _ := json.Marshal(messages)
+	w.Write(jsonResponse)
+}
+
+func getMessagesQuery(ID1 string, ID2 string) ([]byte, error) {
+	rows, err := database.Statements["getMessages"].Query(ID1, ID2, ID2, ID1)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, err
+	}
+	var messages Data
+
+	for rows.Next() {
+		var message Message
+		err = rows.Scan(&message.MessageID, &message.Receiver, &message.Sender, &message.Content, &message.Timestamp)
+
+		messages.Status.Message = append(messages.Status.Message, message)
+
+		if err != nil {
+			log.Println(err.Error())
+			return nil, err
+		}
+	}
+	fmt.Println("messages:", messages)
+
+	jsonResponse, err := json.Marshal(messages)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, err
+	}
+	return jsonResponse, nil
+}
+
 func addPostHandler(w http.ResponseWriter, r *http.Request) {
 	var user string = r.Header.Get("X-Username")
 	var post Post

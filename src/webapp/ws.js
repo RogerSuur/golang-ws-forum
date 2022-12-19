@@ -6,6 +6,7 @@ import { createSingleMessage } from './populate_messages.js'
 import { $ } from "./DOM_helpers.js";
 
 export let webSocketUsers;
+let formattedDate
 
 export function Forum() {
 
@@ -36,9 +37,6 @@ export function Forum() {
             console.log("Action is", data.action);
             switch (data.action) {
                 case "list_users":
-                    //console.log("list_users data:", data);
-                    //console.log("data.connected_users:", data.connected_users);
-                    // console.log(typeof data.connected_users) == object
                     webSocketUsers = data.connected_users
                     getUsers()
                     // alert("list_users")
@@ -47,7 +45,7 @@ export function Forum() {
                 case "broadcast":
                     console.log("currentUser:", currentUser.innerHTML)
                     console.log("otherUser: ", otherUser)
-                    newMessage = createSingleMessage(mDB.length, data.message, data.fromUser, Date.now())
+                    newMessage = createSingleMessage(mDB.length, data.message, data.fromUser, formattedDate)
                     messagesWrapper.insertBefore(newMessage, lastMessage);
                     //getMessages(currentUser.value, otherUser)
                     break;
@@ -65,12 +63,20 @@ export function Forum() {
 //send messages to server
 export function sendMessage() {
     let jsonData = {};
-    let message = document.getElementById("message")
     jsonData["action"] = "broadcast";
     jsonData["other_user"] = otherUser;
     jsonData["username"] = currentUser.innerHTML;
     jsonData["message"] = $('message').value;
-    jsonData["timestamp"] = Date.now();
+    const currentDate = new Date();
+    const month = currentDate.getMonth() + 1; // months are 0-based, so we need to add 1
+    const day = currentDate.getDate();
+    const year = currentDate.getFullYear();
+    const hours = currentDate.getHours();
+    const minutes = currentDate.getMinutes();
+    const seconds = currentDate.getSeconds()
+    formattedDate = `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
+    jsonData["timestamp"] = formattedDate
+    console.log(jsonData["timestamp"]);
     socket.send(JSON.stringify(jsonData));
     $('message').value = "";
 
