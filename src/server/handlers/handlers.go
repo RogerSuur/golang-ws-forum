@@ -124,14 +124,11 @@ func ListenToWsChannel() {
 			case "broadcast":
 				response.Action = "broadcast"
 				response.Message = e.Message
-<<<<<<< HEAD
 				response.FromUser = e.Username
 				response.ToUser = e.MessageReceiver
-=======
 				// response.User = e.Username
 				fmt.Println(e.MessageReceiver)
 				response.Message = e.Message
->>>>>>> 4f00d12d684faf709b71111f81741b4d1eee0a66
 				// write message to database
 				database.UpdateMessagesData(e.Username, e.MessageReceiver, e.Message)
 				BroadcastToClient(e.Username, e.MessageReceiver, response)
@@ -155,10 +152,6 @@ func getUserList() database.Data {
 
 func BroadcastToAll(response WsJsonResponse) {
 	for client := range clients {
-<<<<<<< HEAD
-=======
-		// fmt.Println("client:", clients[client])
->>>>>>> 4f00d12d684faf709b71111f81741b4d1eee0a66
 		err := client.WriteJSON(response)
 		if err != nil {
 			log.Println("websocket error")
