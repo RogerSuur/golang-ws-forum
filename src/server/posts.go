@@ -38,17 +38,45 @@ func getPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	// Get id-s or usernames from r.body
-	// then
-	messages, err := getMessagesQuery("1", "2")
+	var d struct {
+		Sender   string `json:"sender"`
+		Receiver string `json:"receiver"`
+	}
+
+	// Use json.NewDecoder to read the request body and unmarshal it into the data struct
+	err := json.NewDecoder(r.Body).Decode(&d)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(400)
+		return
+	}
+
+	// Do something with the request body
+	fmt.Println("body:", d.Sender, d.Receiver)
+	// GET id-s
+	ID1, err := getID(d.Sender)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(500)
 		return
 	}
-	fmt.Println("messages:", string(messages))
 
-	jsonResponse, _ := json.Marshal(messages)
-	w.Write(jsonResponse)
+	ID2, err := getID(d.Receiver)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(500)
+		return
+	}
+
+	// then
+	messages, err := getMessagesQuery(ID1, ID2)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(500)
+		return
+	}
+
+	w.Write(messages)
 }
 
 func getMessagesQuery(ID1 string, ID2 string) ([]byte, error) {
@@ -70,7 +98,6 @@ func getMessagesQuery(ID1 string, ID2 string) ([]byte, error) {
 			return nil, err
 		}
 	}
-	fmt.Println("messages:", messages)
 
 	jsonResponse, err := json.Marshal(messages)
 	if err != nil {
