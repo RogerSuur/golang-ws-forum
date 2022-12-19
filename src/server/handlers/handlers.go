@@ -151,6 +151,7 @@ func getUserList() database.Data {
 
 func BroadcastToAll(response WsJsonResponse) {
 	for client := range clients {
+		fmt.Println("client:", clients[client])
 		err := client.WriteJSON(response)
 		if err != nil {
 			log.Println("websocket error")
