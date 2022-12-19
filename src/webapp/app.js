@@ -241,7 +241,6 @@ const start = () => {
             pDB = threadObject.posts;
             isThread = true;
             getPosts(currentIndex);
-            initIntersectionObserver();
         });
     });
 
@@ -297,7 +296,6 @@ export async function getUsers() {
             // console.log("otherUser: ", otherUser)
             trackable = 'message';
             getMessages(messagesIndex, user.textContent)
-            initIntersectionObserver();
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
         });
