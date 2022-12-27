@@ -79,21 +79,21 @@
       <div class="lds-ellipsis hidden"><div></div><div></div><div></div><div></div></div>
       <div class="overlay"></div>
       <div class="posts-area hidden">
+        <form class="user-input-area" id="new-post">
+          <div class="new-post-header">
+              What's the time? Looks like it's New Post o'clock!
+          </div>
+          <input type="text" id="titleID" name="title" placeholder="Title">
+          <textarea
+            name="content"
+            id="contentID"
+            placeholder="Content"
+          ></textarea>
+          <div class="button-wrapper">
+              <button id="post" type="submit">Share Your Thoughts</button>
+          </div>
+      </form>
         <div class="posts-wrapper">
-          <form class="user-input-area" id="new-post">
-              <div class="new-post-header">
-                  What's the time? Looks like it's New Post o'clock!
-              </div>
-              <input type="text" id="titleID" name="title" placeholder="Title">
-              <textarea
-                name="content"
-                id="contentID"
-                placeholder="Content"
-              ></textarea>
-              <div class="button-wrapper">
-                  <button id="post" type="submit">Share Your Thoughts</button>
-              </div>
-          </form>
           <div id="intersection-observer"></div>
         </div>
       </div>
@@ -104,7 +104,9 @@
             <i class="fas fa-x"></i>
           </div>
         </div>
-        <div class="thread-wrapper"></div>
+        <div class="thread-wrapper">
+          <div id="thread-intersection-observer"></div>
+        </div>
         <div class="thread-footer">
           <div class="user-input-area">
             <div class="new-post-header">

@@ -631,6 +631,7 @@ input {
             align-self: flex-end;
             font-family: inherit;
             font-size: inherit;
+            white-space: nowrap;
         }
 
         button[type="submit"] {

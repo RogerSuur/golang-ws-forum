@@ -1,24 +1,36 @@
 import { postsWrapper, threadWrapper } from './app.js';
 import { createDiv, horizontalDivider, $ } from './DOM_helpers.js';
 
-export const initPosts = (DB, from, num, isThread) => {
+export const initPosts = (DB, from, to, isThread) => {
 
-    //console.log("initPosts", from, num);
+    console.log("initPosts", DB, from, to);
 
+    /*
     let interSection = $('intersection-observer');
+    console.log("interSection", interSection);
 
-    if (from === DB.length) {
-        postsWrapper.appendChild(interSection);
+    if (interSection === null) {
+        let interSection = createDiv('intersection-observer');
     }
-    
-    let i = from - 1;
-    while (i >= num) {
+
+    if (from === 0) {
+        if (isThread) {
+            threadWrapper.appendChild(interSection);
+        } else {
+            postsWrapper.appendChild(interSection);
+        }
+    }
+    */
+
+    let i = from;
+    while (i < to) {
 
         const singlePost = createDiv('single-post');
         if (isThread) {
-            singlePost.setAttribute('id', `thread-${i}`);
+            console.log("i", i, "to", to);
+            singlePost.setAttribute('id', `thread-${DB[i].postID}`);
         } else {
-            singlePost.setAttribute('id', `post-${i}`);
+            singlePost.setAttribute('id', `post-${DB[i].postID}`);
         }
 
         let postHeader = createDiv('post-header');
@@ -47,11 +59,15 @@ export const initPosts = (DB, from, num, isThread) => {
 
         singlePost.appendChild(postBody);
         
-        if (i === num) {
-            interSection.remove();
+        if (i === to-1) {
+            //interSection.remove();
             if (isThread) {
+                let interSection = $('thread-intersection-observer');
+                //interSection.remove();
                 threadWrapper.appendChild(interSection);
             } else {
+                let interSection = $('intersection-observer');
+                //interSection.remove();
                 postsWrapper.appendChild(interSection);
             }
         } 
@@ -83,7 +99,7 @@ export const initPosts = (DB, from, num, isThread) => {
 
             postsWrapper.appendChild(singlePost);           
         }
-        i--;
+        i++;
     }
 }
 
