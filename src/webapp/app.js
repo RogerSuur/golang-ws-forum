@@ -76,11 +76,11 @@ const topSentCallback = async entry => {
         console.log("No more messages to load");
         return;
     }
-    
+
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-    
+
     // conditional check for Scrolling up
     if (
         currentY > topSentinelPreviousY &&
@@ -111,7 +111,7 @@ const bottomSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
- 
+
     if (
         currentY < bottomSentinelPreviousY &&
         currentRatio > bottomSentinelPreviousRatio &&
@@ -130,7 +130,7 @@ const bottomSentCallback = async entry => {
         // load new data
         getPosts(currentIndex);
         keepPostInFocus(currentIndex + nrOfItemsToLoad, 'end');
-     
+
     }
 
     bottomSentinelPreviousY = currentY;
@@ -140,14 +140,14 @@ const bottomSentCallback = async entry => {
 const initIntersectionObserver = () => {
 
     const callback = entries => {
-      entries.forEach(entry => {
-        //console.log("Trackable: ", trackable);
-        if (trackable === 'message') {
-            topSentCallback(entry);
-        } else {
-            bottomSentCallback(entry);
-        }
-      });
+        entries.forEach(entry => {
+            //console.log("Trackable: ", trackable);
+            if (trackable === 'message') {
+                topSentCallback(entry);
+            } else {
+                bottomSentCallback(entry);
+            }
+        });
     }
     var observer = new IntersectionObserver(callback);
     observer.observe($(`intersection-observer`));
@@ -272,8 +272,10 @@ export function getPosts(fromIndex) {
 
 /* Loads next batch of messages in a conversation */
 export function getMessages(fromIndex, toUser) {
+    debugger
     console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser, "from message nr", fromIndex);
-        
+    updateMessages(currentUser.innerHTML, toUser);
+
     if (fromIndex - nrOfItemsToLoad < 0) {
         initMessages(mDB, fromIndex, 0, toUser);
     } else {
@@ -282,6 +284,23 @@ export function getMessages(fromIndex, toUser) {
     messagesIndex = messagesIndex - nrOfItemsToLoad;
 }
 
+function updateMessages(sender, receiver) {
+    const data = {
+        sender: sender,
+        receiver: receiver,
+    };
+
+    fetch('/src/server/getMessagesHandler', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error(error))
+}
 
 /* Loads user lists and creates event listeners for them to load the conversations */
 export async function getUsers() {
@@ -418,6 +437,7 @@ $("message").addEventListener("keydown", function (event) {
 })
 
 function toggleMessageBoxVisibility(makeVisible) {
+    console.log(makeVisible, "toggle messagebox");
     if (makeVisible) {
         messagesBackgroundOverlay.style.zIndex = '1'; // bring overlay in front of posts area
         messagesWrapper.parentElement.classList.remove('hidden'); // make messages box visible

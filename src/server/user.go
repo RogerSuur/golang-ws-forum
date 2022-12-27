@@ -51,6 +51,7 @@ type Post struct {
 }
 
 type Message struct {
+	MessageID string `json:"message_id"`
 	Sender    string `json:"from"`
 	Receiver  string `json:"to"`
 	Content   string `json:"content"`
