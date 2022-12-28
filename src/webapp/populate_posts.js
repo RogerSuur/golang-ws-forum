@@ -3,31 +3,13 @@ import { createDiv, horizontalDivider, $ } from './DOM_helpers.js';
 
 export const initPosts = (DB, from, to, isThread) => {
 
-    console.log("initPosts", DB, from, to);
-
-    /*
-    let interSection = $('intersection-observer');
-    console.log("interSection", interSection);
-
-    if (interSection === null) {
-        let interSection = createDiv('intersection-observer');
-    }
-
-    if (from === 0) {
-        if (isThread) {
-            threadWrapper.appendChild(interSection);
-        } else {
-            postsWrapper.appendChild(interSection);
-        }
-    }
-    */
+    //console.log("initPosts", DB, from, to);
 
     let i = from;
     while (i < to) {
 
         const singlePost = createDiv('single-post');
         if (isThread) {
-            console.log("i", i, "to", to);
             singlePost.setAttribute('id', `thread-${DB[i].postID}`);
         } else {
             singlePost.setAttribute('id', `post-${DB[i].postID}`);

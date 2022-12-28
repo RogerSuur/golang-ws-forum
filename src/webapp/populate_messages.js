@@ -15,12 +15,13 @@ export const initMessages = (DB, from, num) => {
 
     let i = from - 1;
     let nextUser;
-    while (i >= num) {
+    while (i > num) {
 
-        if (i === num) {
+        if (i === num - 1) {
             interSection.remove();
             messagesWrapper.appendChild(interSection);    
         }
+        //console.log("i", i, "num", num, "DB[i] current", DB[i].from, "DB[i-1] prev", DB[i-1].from)
         nextUser = DB[i-1].from;
         let singleMessage = createSingleMessage(i, DB[i].content, DB[i].from, DB[i].timestamp, nextUser)
         

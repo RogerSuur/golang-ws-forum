@@ -89,6 +89,7 @@ func getMessagesQuery(ID1 string, ID2 string) ([]byte, error) {
 
 	for rows.Next() {
 		var message Message
+		// TODO: ID needs to be replaced with username
 		err = rows.Scan(&message.MessageID, &message.Receiver, &message.Sender, &message.Content, &message.Timestamp)
 
 		messages.Status.Message = append(messages.Status.Message, message)

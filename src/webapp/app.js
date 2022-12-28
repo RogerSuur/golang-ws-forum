@@ -40,7 +40,13 @@ let postsObject = await getJSON('/src/server/getPostsHandler');
 //let postsObject = await getJSON('/static/postsData.json');
 let threadObject = await getJSON('/static/threadData.json');
 //let usersObject = await getJSON('/static/usersData.json');
-let messagesObject = await getJSON('/static/messagesData.json');
+//let messagesObject = await getJSON('/static/messagesData.json');
+let messagesObject = {
+		"posts": null,
+		"online": null,
+		"offline": null,
+		"messages": [],
+        };
 // export let currentUser = 'Petra Marsh';
 export let currentUser = $("current-userID");
 export let otherUser;
@@ -103,7 +109,7 @@ const topSentCallback = async entry => {
 }
 
 const bottomSentCallback = async entry => {
-    if (currentIndex <= 0) {
+    if (currentIndex >= pDB.length) {
         // if we are at the end of the DB, do nothing
         console.log('end of DB');
         return;
@@ -134,7 +140,6 @@ const bottomSentCallback = async entry => {
         } else {
             postInFocus = postsWrapper.lastChild.id;
         }
-        console.log("postInFocus: ", postInFocus);
         getPosts();
         keepPostInFocus(postInFocus, 'end');
 
@@ -269,7 +274,7 @@ const start = () => {
 
 /* Loads next batch of posts */
 export function getPosts() {
-    console.log("Total number of posts", pDB.length);
+    console.log("Total number of posts", pDB.length, ", current index", currentIndex);
 
     if (currentIndex + nrOfItemsToLoad > pDB.length) {
         initPosts(pDB, currentIndex, pDB.length, isThread);
@@ -282,8 +287,10 @@ export function getPosts() {
 /* Loads next batch of messages in a conversation */
 export function getMessages(fromIndex, toUser) {
     console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser, "from message nr", fromIndex);
+    console.log("Before", mDB);
     updateMessages(currentUser.innerHTML, toUser);
-
+    console.log("After", mDB);
+    console.log("Fromindex", fromIndex, "MessagesIndex", messagesIndex);
     if (fromIndex - nrOfItemsToLoad < 0) {
         initMessages(mDB, fromIndex, 0, toUser);
     } else {
@@ -297,7 +304,6 @@ function updateMessages(sender, receiver) {
         sender: sender,
         receiver: receiver,
     };
-
     fetch('/src/server/getMessagesHandler', {
         method: 'POST',
         headers: {
@@ -306,7 +312,7 @@ function updateMessages(sender, receiver) {
         body: JSON.stringify(data)
     })
         .then(response => response.json())
-        .then(data => console.log(data))
+        .then(data => {mDB = data.data.messages, messagesIndex = data.data.messages.length})
         .catch(error => console.error(error))
 }
 
@@ -368,7 +374,7 @@ buttons.forEach((button) => {
                 }
                 break;
             default:
-                console.log(button.id)
+                console.log("Button", button.id)
         }
     });
 });
@@ -402,7 +408,7 @@ async function makeNewPost() {
     var data = new FormData($('new-post'));
     var dataToSend = Object.fromEntries(data)
 
-    console.log(dataToSend);
+    console.log("dataToSend", dataToSend);
 
     const res = await fetch('/src/server/addPostHandler', {
         method: "POST",
@@ -413,10 +419,10 @@ async function makeNewPost() {
         body: JSON.stringify(dataToSend)
     })
 
-    console.log(postsObject);
+    console.log("postsObject", postsObject);
 
     if (res.status == 200) {
-        console.log(res.status)
+        console.log("Status 200", res.status)
         //DO NOTHING? init Posts?
         let interSection = $('intersection-observer');
         postsWrapper.innerHTML = '';
@@ -429,7 +435,7 @@ async function makeNewPost() {
         //uuesti start()?
         //start()
     } else {
-        console.log(res.status)
+        console.log("Status other", res.status)
         return res.json()
     }
 
@@ -449,7 +455,7 @@ $("message").addEventListener("keydown", function (event) {
 })
 
 function toggleMessageBoxVisibility(makeVisible) {
-    console.log(makeVisible, "toggle messagebox");
+    //console.log(makeVisible, "toggle messagebox");
     if (makeVisible) {
         messagesBackgroundOverlay.style.zIndex = '1'; // bring overlay in front of posts area
         show(messagesWrapper.parentElement); // make messages box visible
