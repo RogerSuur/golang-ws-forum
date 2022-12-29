@@ -50,11 +50,11 @@ type WebSocketConnection struct {
 
 // sending to the server
 type WsPayload struct {
-	Action          string              `json:"action"`
-	Username        string              `json:"username"`
-	MessageReceiver string              `json:"other_user"`
-	Message         string              `json:"message"`
-	Conn            WebSocketConnection `json:"-"`
+	Action   string              `json:"action"`
+	Username string              `json:"username"`
+	Receiver string              `json:"Receiver"`
+	Message  string              `json:"Content"`
+	Conn     WebSocketConnection `json:"-"`
 }
 
 // takes a regular connection and upgrades it to websocket connection
@@ -122,15 +122,14 @@ func ListenToWsChannel() {
 				BroadcastToAll(response)
 
 			case "broadcast":
-				response.Action = "broadcast"
+				response.Action = e.Action
 				response.Message = e.Message
 				response.FromUser = e.Username
-				response.ToUser = e.MessageReceiver
-				// response.User = e.Username
-				fmt.Println(e.MessageReceiver)
+				response.ToUser = e.Receiver
+				fmt.Println(e, response)
 				// write message to database
-				database.UpdateMessagesData(e.Username, e.MessageReceiver, e.Message)
-				BroadcastToClient(e.Username, e.MessageReceiver, response)
+				//database.UpdateMessagesData(e.Username, e.MessageReceiver, e.Message)
+				BroadcastToClient(e.Username, e.Receiver, response)
 			}
 		}
 	}

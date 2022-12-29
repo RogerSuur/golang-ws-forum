@@ -15,6 +15,7 @@ func routes() http.Handler {
 	mux.HandleFunc("/src/server/login", login)
 	mux.HandleFunc("/src/server/signup", SignUpHandler)
 	mux.HandleFunc("/src/server/addPostHandler", addPostHandler)
+	mux.HandleFunc("/src/server/addMessageHandler", addMessageHandler)
 	mux.HandleFunc("/src/server/getUsersHandler", getUsersHandler)
 	mux.HandleFunc("/src/server/getPostsHandler", getPostsHandler)
 	mux.HandleFunc("/src/server/getMessagesHandler", getMessagesHandler)

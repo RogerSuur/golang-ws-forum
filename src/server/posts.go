@@ -92,6 +92,9 @@ func getMessagesQuery(ID1 string, ID2 string) ([]byte, error) {
 		// TODO: ID needs to be replaced with username
 		err = rows.Scan(&message.MessageID, &message.Receiver, &message.Sender, &message.Content, &message.Timestamp)
 
+		message.Receiver, _ = getUsername(message.Receiver)
+		message.Sender, _ = getUsername(message.Sender)
+
 		messages.Status.Message = append(messages.Status.Message, message)
 
 		if err != nil {
@@ -114,11 +117,11 @@ func addPostHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&post)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Decoder error:", err.Error())
 		w.WriteHeader(400)
 		return
 	}
-	fmt.Println(post)
+	fmt.Println("Post", post)
 
 	post.User, _ = getID(user)
 	dt := time.Now()
@@ -127,6 +130,32 @@ func addPostHandler(w http.ResponseWriter, r *http.Request) {
 	post.Comments = 0
 
 	_, err = database.Statements["addPost"].Exec(post.User, post.Title, post.Content, post.Timestamp, post.Categories, post.Comments)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(500)
+		return
+	}
+
+	b, _ := json.Marshal("ok")
+	w.Write(b)
+}
+
+func addMessageHandler(w http.ResponseWriter, r *http.Request) {
+
+	var message Message
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&message)
+	if err != nil {
+		log.Println("Decoder error:", err.Error())
+		w.WriteHeader(400)
+		return
+	}
+	fmt.Println("Message", message)
+
+	message.Sender, _ = getID(message.Sender)
+	message.Receiver, _ = getID(message.Receiver)
+
+	_, err = database.Statements["addMessage"].Exec(message.Content, message.Timestamp, message.Sender, message.Receiver)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(500)
@@ -149,4 +178,18 @@ func getID(name string) (string, error) {
 	rows.Scan(&ID)
 	rows.Close()
 	return ID, nil
+}
+
+func getUsername(ID string) (string, error) {
+	rows, err := database.Statements["getUsername"].Query(ID)
+	if err != nil {
+		log.Println(err.Error())
+		return "0", err
+	}
+	defer rows.Close()
+	username := ""
+	rows.Next()
+	rows.Scan(&username)
+	rows.Close()
+	return username, nil
 }

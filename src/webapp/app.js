@@ -267,7 +267,7 @@ const start = () => {
         isThread = false;
     });
 
-    if (nrOfItemsToLoad < pDB.length) {
+    if (nrOfItemsToLoad < currentIndex) {
         initIntersectionObserver();
     }
 }
@@ -312,7 +312,7 @@ function updateMessages(sender, receiver) {
         body: JSON.stringify(data)
     })
         .then(response => response.json())
-        .then(data => {mDB = data.data.messages, messagesIndex = data.data.messages.length})
+        .then(data => {mDB = data.data.messages, messagesIndex = data.data.messages.length, console.log("Messages Updated")})
         .catch(error => console.error(error))
 }
 
@@ -369,9 +369,13 @@ buttons.forEach((button) => {
                 if (message.value === "") {
                     alert("fill out user and message")
                     return false
-                } else {
-                    sendMessage()
                 }
+                if (!socket) {
+                    console.log("no connection");
+                    return false
+                }
+                sendMessage()
+                updateMessages(currentUser.innerHTML, otherUser);
                 break;
             default:
                 console.log("Button", button.id)
@@ -423,17 +427,17 @@ async function makeNewPost() {
 
     if (res.status == 200) {
         console.log("Status 200", res.status)
-        //DO NOTHING? init Posts?
+        // clear the postsWrapper element
         let interSection = $('intersection-observer');
         postsWrapper.innerHTML = '';
         postsWrapper.appendChild(interSection);
+        // initialise postsObject
         postsObject = await getJSON('/src/server/getPostsHandler');
         console.log("Updated postsOpbject", postsObject);
         currentIndex = 0;
         pDB = postsObject.posts;
-        getPosts();
-        //uuesti start()?
-        //start()
+        // restart the posts area of forum
+        start()
     } else {
         console.log("Status other", res.status)
         return res.json()
@@ -451,6 +455,7 @@ $("message").addEventListener("keydown", function (event) {
         event.stopPropagation();
         console.log("Event", event);
         sendMessage();
+        updateMessages(currentUser.innerHTML, otherUser);
     }
 })
 

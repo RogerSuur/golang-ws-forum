@@ -103,12 +103,16 @@ func insertSampleMessages(db *sql.DB) {
 	}
 
 	for _, v := range posts.Status.Message {
-		ranInt := rand.Intn(7 - 1)
-		ranInt2 := rand.Intn(7 - 1)
+		ranInt := rand.Intn(7)
+		ranInt2 := rand.Intn(7)
 		if ranInt == ranInt2 {
-			statement.Exec(v.Content, v.Timestamp, ranInt, ranInt+1)
-		} else {
-			statement.Exec(v.Content, v.Timestamp, ranInt, ranInt2)
+			ranInt += 1
+			if ranInt > 6 {
+				ranInt = 0
+			}
 		}
+
+		statement.Exec(v.Content, v.Timestamp, ranInt+1, ranInt2+1)
+
 	}
 }
