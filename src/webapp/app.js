@@ -288,23 +288,39 @@ export function getPosts() {
 export function getMessages(fromIndex, toUser) {
     console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser, "from message nr", fromIndex);
     console.log("Before", mDB);
-    updateMessages(currentUser.innerHTML, toUser);
-    console.log("After", mDB);
-    console.log("Fromindex", fromIndex, "MessagesIndex", messagesIndex);
-    if (fromIndex - nrOfItemsToLoad < 0) {
-        initMessages(mDB, fromIndex, 0, toUser);
-    } else {
-        initMessages(mDB, fromIndex, messagesIndex - nrOfItemsToLoad, toUser);
-    }
-    messagesIndex = messagesIndex - nrOfItemsToLoad;
+    updateMessages(currentUser.innerHTML, toUser).then((updatedMessages) => {
+        if (updatedMessages) {
+            mDB = updatedMessages; 
+            messagesIndex = updatedMessages.length;
+        } else {
+            messagesObject.messages = [];
+            mDB = messagesObject.messages;
+            messagesIndex = 0;
+        }
+    })
+    .finally(() => {
+        console.log("After", mDB);
+        console.log("Fromindex", fromIndex, "MessagesIndex", messagesIndex);
+        if (fromIndex - nrOfItemsToLoad < 0) {
+            initMessages(mDB, fromIndex, 0, toUser);
+        } else {
+            initMessages(mDB, fromIndex, messagesIndex - nrOfItemsToLoad, toUser);
+            messagesIndex = messagesIndex - nrOfItemsToLoad;
+        }
+    })
+    .catch((err) => {
+        console.log(err)
+        });
+       
+   
 }
 
-function updateMessages(sender, receiver) {
+async function updateMessages(sender, receiver) {
     const data = {
         sender: sender,
         receiver: receiver,
     };
-    fetch('/src/server/getMessagesHandler', {
+    const response = fetch('/src/server/getMessagesHandler', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -312,19 +328,10 @@ function updateMessages(sender, receiver) {
         body: JSON.stringify(data)
     })
         .then(response => response.json())
-        .then(data => {
-            if (data.data.messages) {
-                mDB = data.data.messages; 
-                messagesIndex = data.data.messages.length;
-            } else {
-                messagesObject.messages = [];
-                mDB = messagesObject.messages;
-                messagesIndex = 0;
-            }
-            
-            console.log("Messages Updated");
-        })
+        .then(data => data.data.messages)
         .catch(error => console.error(error))
+
+    return response;
 }
 
 /* Loads user lists and creates event listeners for them to load the conversations */
