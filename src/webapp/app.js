@@ -312,7 +312,18 @@ function updateMessages(sender, receiver) {
         body: JSON.stringify(data)
     })
         .then(response => response.json())
-        .then(data => {mDB = data.data.messages, messagesIndex = data.data.messages.length, console.log("Messages Updated")})
+        .then(data => {
+            if (data.data.messages) {
+                mDB = data.data.messages; 
+                messagesIndex = data.data.messages.length;
+            } else {
+                messagesObject.messages = [];
+                mDB = messagesObject.messages;
+                messagesIndex = 0;
+            }
+            
+            console.log("Messages Updated");
+        })
         .catch(error => console.error(error))
 }
 
