@@ -21,12 +21,12 @@ export const initMessages = (DB, from, num) => {
             interSection.remove();
             messagesWrapper.appendChild(interSection);    
         }
-        //console.log("i", DB[i].content, "DB[i] current", DB[i].from, "DB[i-1] prev", DB[i-1].from)
         if (i === 0) {
             nextUser = '';
         } else {
             nextUser = DB[i-1].from;
         }
+        //console.log("i", DB[i].content, "DB[i] current", DB[i].from, "DB[i-1] next", nextUser)
         let singleMessage = createSingleMessage(i, DB[i].content, DB[i].from, DB[i].timestamp, nextUser)
         
         messagesWrapper.appendChild(singleMessage);
