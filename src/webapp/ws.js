@@ -6,7 +6,7 @@ import { createSingleMessage } from './populate_messages.js'
 import { $ } from "./DOM_helpers.js";
 
 export let webSocketUsers;
-let formattedDate
+let formattedDate = new Date().toLocaleString("en-US", { hour12: false }).replace(",", "");
 
 export function Forum() {
 
@@ -66,25 +66,16 @@ export async function sendMessage() {
     let jsonData = {};
     jsonData["message_ID"] = `${mDB.length}`;
     jsonData["action"] = "broadcast";
-    jsonData["username"] = otherUser;
-    jsonData["Sender"] = currentUser.innerHTML;
-    jsonData["Content"] = $('message').value;
-    const currentDate = new Date();
-    const month = currentDate.getMonth() + 1; // months are 0-based, so we need to add 1
-    const day = currentDate.getDate();
-    const year = currentDate.getFullYear();
-    const hours = currentDate.getHours();
-    const minutes = currentDate.getMinutes();
-    const seconds = currentDate.getSeconds()
-    formattedDate = `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
+    jsonData["from"] = currentUser.innerHTML;
+    jsonData["to"] = otherUser;
+    jsonData["content"] = $('message').value;
     jsonData["timestamp"] = formattedDate;
     socket.send(JSON.stringify(jsonData));
 
     const res = await fetch('/src/server/addMessageHandler', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-Username': currentUser.innerHTML
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(jsonData)
     })

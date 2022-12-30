@@ -90,7 +90,7 @@ func getMessagesQuery(ID1 string, ID2 string) ([]byte, error) {
 	for rows.Next() {
 		var message Message
 		// TODO: ID needs to be replaced with username
-		err = rows.Scan(&message.MessageID, &message.Receiver, &message.Sender, &message.Content, &message.Timestamp)
+		err = rows.Scan(&message.MessageID, &message.Sender, &message.Receiver, &message.Content, &message.Timestamp)
 
 		message.Receiver, _ = getUsername(message.Receiver)
 		message.Sender, _ = getUsername(message.Sender)

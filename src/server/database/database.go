@@ -115,7 +115,7 @@ func createTable() {
 	}
 	fmt.Println("Database created successfully!")
 
-	sampledata(db)
+	//sampledata(db)
 	for key, query := range map[string]string{
 		"addUser":       `INSERT INTO users (username, email, password, first_name, last_name, age, gender) VALUES (?, ?, ?, ?, ?, ?, ?);`,
 		"addPost":       `INSERT INTO posts (post_author, title, content, timestamp, categories, comments) VALUES (?, ?, ?, ?, ?, ?);`,
@@ -151,7 +151,7 @@ func CheckPasswordHash(password, hash string) bool {
 func UpdateOnlineUsers(usersList []string) {
 	jsonFile, err := os.Open("./src/webapp/static/usersData.json")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("File opening error", err)
 	}
 
 	defer jsonFile.Close()
@@ -197,7 +197,7 @@ func UpdateOnlineUsers(usersList []string) {
 	// Preparing the data to be marshalled and written.
 	result, e := json.MarshalIndent(users, "", "\t")
 	if e != nil {
-		fmt.Println("error", err)
+		fmt.Println("Marshalling error", err)
 	}
 
 	err = os.WriteFile("./src/webapp/static/usersData.json", result, 0o644)
@@ -209,7 +209,7 @@ func UpdateOnlineUsers(usersList []string) {
 func UpdateMessagesData(sender string, receiver string, message string) {
 	jsonFile, err := os.Open("./src/webapp/static/messagesData.json")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("File opening error", err)
 	}
 
 	defer jsonFile.Close()
@@ -232,7 +232,7 @@ func UpdateMessagesData(sender string, receiver string, message string) {
 	// Preparing the data to be marshalled and written.
 	result, e := json.MarshalIndent(users, "", "\t")
 	if e != nil {
-		fmt.Println("error", err)
+		fmt.Println("Marshalling error", err)
 	}
 
 	err = os.WriteFile("./src/webapp/static/messagesData.json", result, 0o644)
