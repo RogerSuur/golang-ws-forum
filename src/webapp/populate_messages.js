@@ -5,12 +5,12 @@ import { createDiv, $ } from "./DOM_helpers.js";
 export const initMessages = (DB, from, num) => {
 
     //console.log("initMessages", from, num);
-    
+
     let interSection = $('message-intersection-observer');
 
     if (from === DB.length) {
         messagesWrapper.innerHTML = '';
-        messagesWrapper.appendChild(interSection);    
+        messagesWrapper.appendChild(interSection);
     }
 
     let i = from - 1;
@@ -19,11 +19,16 @@ export const initMessages = (DB, from, num) => {
 
         if (i === num) {
             interSection.remove();
-            messagesWrapper.appendChild(interSection);    
+            messagesWrapper.appendChild(interSection);
         }
-        nextUser = DB[i-1].from;
+        if (i === 0) {
+            nextUser = '';
+        } else {
+            nextUser = DB[i - 1].from;
+        }
+        //console.log("i", DB[i].content, "DB[i] current", DB[i].from, "DB[i-1] next", nextUser)
         let singleMessage = createSingleMessage(i, DB[i].content, DB[i].from, DB[i].timestamp, nextUser)
-        
+
         messagesWrapper.appendChild(singleMessage);
 
         i--;
@@ -31,13 +36,13 @@ export const initMessages = (DB, from, num) => {
 }
 
 export const createSingleMessage = (index, content, from, timestamp, previousUser) => {
-    
+
     let singleMessage = createDiv('single-message');
 
     singleMessage.setAttribute('id', `message-${index}`);
 
     let messageContent = createDiv('message-content', content);
-    
+
     if (from !== previousUser) {
         let messageAuthor = createDiv('message-user', from);
         if (from === currentUser.innerHTML) {
@@ -47,7 +52,7 @@ export const createSingleMessage = (index, content, from, timestamp, previousUse
             messageContent.classList.add('me');
         }
         singleMessage.appendChild(messageAuthor);
-    
+
     } else if (previousUser === currentUser.innerHTML) {
 
         singleMessage.classList.add('me');
@@ -57,7 +62,7 @@ export const createSingleMessage = (index, content, from, timestamp, previousUse
     singleMessage.appendChild(messageContent);
 
     let messageDate = createDiv('message-date', timestamp);
-    
+
     singleMessage.appendChild(messageDate);
 
     return singleMessage

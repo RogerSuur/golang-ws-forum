@@ -1,24 +1,18 @@
 import { postsWrapper, threadWrapper } from './app.js';
 import { createDiv, horizontalDivider, $ } from './DOM_helpers.js';
 
-export const initPosts = (DB, from, num, isThread) => {
+export const initPosts = (DB, from, to, isThread) => {
 
-    //console.log("initPosts", from, num);
+    //console.log("initPosts", DB, from, to);
 
-    let interSection = $('intersection-observer');
-
-    if (from === DB.length) {
-        postsWrapper.appendChild(interSection);
-    }
-    
-    let i = from - 1;
-    while (i >= num) {
+    let i = from;
+    while (i < to) {
 
         const singlePost = createDiv('single-post');
         if (isThread) {
-            singlePost.setAttribute('id', `thread-${i}`);
+            singlePost.setAttribute('id', `thread-${DB[i].postID}`);
         } else {
-            singlePost.setAttribute('id', `post-${i}`);
+            singlePost.setAttribute('id', `post-${DB[i].postID}`);
         }
 
         let postHeader = createDiv('post-header');
@@ -46,44 +40,48 @@ export const initPosts = (DB, from, num, isThread) => {
         postBody.appendChild(postContent);
 
         singlePost.appendChild(postBody);
-        
-        if (i === num) {
-            interSection.remove();
+
+        if (i === to - 1) {
+            //interSection.remove();
             if (isThread) {
+                let interSection = $('thread-intersection-observer');
+                //interSection.remove();
                 threadWrapper.appendChild(interSection);
             } else {
+                let interSection = $('intersection-observer');
+                //interSection.remove();
                 postsWrapper.appendChild(interSection);
             }
-        } 
+        }
 
         if (isThread) {
             threadWrapper.appendChild(singlePost);
         } else {
-        
+
             // add footer with comments count
             hr = horizontalDivider('post-horizontal');
             singlePost.appendChild(hr);
-            
+
             let postFooter = createDiv('post-footer');
-            
+
             let commentIcon = document.createElement('i');
             commentIcon.classList.add('fa-regular', 'fa-message');
-            
+
             let commentCount = commentIcon.outerHTML + `&nbsp;${DB[i].comments} comment`;
-            if (DB[i].comments > 1 || DB[i].comments == 0) 
+            if (DB[i].comments > 1 || DB[i].comments == 0)
                 commentCount += 's';
 
             let postComments = createDiv('post-comments', commentCount, `${DB[i].postID}`);
-            
-            if (DB[i].unread) 
+
+            if (DB[i].unread)
                 postComments.classList.add('unread');
 
             postFooter.appendChild(postComments);
             singlePost.appendChild(postFooter);
 
-            postsWrapper.appendChild(singlePost);           
+            postsWrapper.appendChild(singlePost);
         }
-        i--;
+        i++;
     }
 }
 

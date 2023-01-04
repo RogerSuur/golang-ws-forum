@@ -36,11 +36,17 @@ const closeThread = qS('close-thread-button');
 const messagesBackgroundOverlay = qS('overlay');
 
 
-//let postsObject = await getJSON('/src/server/getPostsHandler');
-let postsObject = await getJSON('/static/postsData.json');
+let postsObject = await getJSON('/src/server/getPostsHandler');
+//let postsObject = await getJSON('/static/postsData.json');
 let threadObject = await getJSON('/static/threadData.json');
 //let usersObject = await getJSON('/static/usersData.json');
-let messagesObject = await getJSON('/static/messagesData.json');
+//let messagesObject = await getJSON('/static/messagesData.json');
+let messagesObject = {
+    "posts": null,
+    "online": null,
+    "offline": null,
+    "messages": [],
+};
 // export let currentUser = 'Petra Marsh';
 export let currentUser = $("current-userID");
 export let otherUser;
@@ -57,16 +63,16 @@ export let mDB = messagesObject.messages;
 let trackable = 'post';
 let isThread = false;
 
-let currentIndex = pDB.length,
+let currentIndex = 0,
     postsIndex,
     threadIndex,
     messagesIndex = mDB.length;
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-const keepPostInFocus = (postNr, position) => {
-    console.log(`focus on: ${trackable}-` + postNr)
-    const scrollPointItem = $(`${trackable}-` + postNr);
+const keepPostInFocus = (postInFocus, position) => {
+    console.log(`focus on: ` + postInFocus)
+    const scrollPointItem = $(postInFocus);
     scrollPointItem.scrollIntoView({ behavior: 'auto', block: position });
 }
 
@@ -103,7 +109,7 @@ const topSentCallback = async entry => {
 }
 
 const bottomSentCallback = async entry => {
-    if (currentIndex <= 0) {
+    if (currentIndex >= pDB.length) {
         // if we are at the end of the DB, do nothing
         console.log('end of DB');
         return;
@@ -128,8 +134,14 @@ const bottomSentCallback = async entry => {
         }
 
         // load new data
-        getPosts(currentIndex);
-        keepPostInFocus(currentIndex + nrOfItemsToLoad, 'end');
+        let postInFocus;
+        if (isThread) {
+            postInFocus = threadWrapper.lastChild.id;
+        } else {
+            postInFocus = postsWrapper.lastChild.id;
+        }
+        getPosts();
+        keepPostInFocus(postInFocus, 'end');
 
     }
 
@@ -151,6 +163,7 @@ const initIntersectionObserver = () => {
     }
     var observer = new IntersectionObserver(callback);
     observer.observe($(`intersection-observer`));
+    observer.observe($(`thread-intersection-observer`));
     observer.observe($(`message-intersection-observer`));
 }
 
@@ -226,74 +239,88 @@ function login() {
 const start = () => {
 
     //DB = initDB(DBSize, postsObject);
-    getPosts(pDB.length);
-
+    getPosts();
     const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
     threadOpeningElements.forEach((threadLink) => {
         threadLink.addEventListener('click', () => {
             toggleThreadVisibility(true);
-            threadWrapper.innerHTML = ""; // clear thread box contents
+            let interSection = $('thread-intersection-observer');
+            threadWrapper.innerHTML = ''; // clear thread box contents
+            threadWrapper.appendChild(interSection);
             let selectedPost = postsObject.posts.filter(post => post.postID === threadLink.id)[0]
             threadHeader.innerHTML = selectedPost.title;
             //let threadDB = initDB(selectedPost.comments, threadObject);
             trackable = 'thread';
-            currentIndex = threadObject.posts.length;
+            postsIndex = currentIndex;
+            currentIndex = 0;
             pDB = threadObject.posts;
             isThread = true;
-            getPosts(currentIndex);
-            initIntersectionObserver();
+            getPosts();
         });
     });
 
     closeThread.addEventListener('click', () => {
         toggleThreadVisibility(false);
         trackable = 'post';
-        threadIndex = currentIndex;
         currentIndex = postsIndex;
         pDB = postsObject.posts;
         isThread = false;
     });
 
-    if (nrOfItemsToLoad < pDB.length) {
+    if (nrOfItemsToLoad < currentIndex) {
         initIntersectionObserver();
     }
 }
 
 /* Loads next batch of posts */
-export function getPosts(fromIndex) {
-    console.log("Loading posts from index", fromIndex);
-
-    if (fromIndex - nrOfItemsToLoad < 0) {
-        initPosts(pDB, fromIndex, 0, isThread);
+export function getPosts() {
+    console.log("Total number of posts", pDB.length, ", current index", currentIndex);
+    if (currentIndex + nrOfItemsToLoad > pDB.length) {
+        initPosts(pDB, currentIndex, pDB.length, isThread);
     } else {
-        initPosts(pDB, fromIndex, currentIndex - nrOfItemsToLoad, isThread);
+        initPosts(pDB, currentIndex, currentIndex + nrOfItemsToLoad, isThread);
     }
-    currentIndex = currentIndex - nrOfItemsToLoad;
+    currentIndex = currentIndex + nrOfItemsToLoad;
 }
+
 
 /* Loads next batch of messages in a conversation */
 export function getMessages(fromIndex, toUser) {
-    debugger
     console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser, "from message nr", fromIndex);
-    console.log(mDB)
-    loadMessages(currentUser.innerHTML, toUser);
-    console.log(mDB)
+    console.log("Before", mDB);
+    updateMessages(currentUser.innerHTML, toUser).then((updatedMessages) => {
+        if (updatedMessages) {
+            mDB = updatedMessages;
+            messagesIndex = updatedMessages.length;
+        } else {
+            messagesObject.messages = [];
+            mDB = messagesObject.messages;
+            messagesIndex = 0;
+        }
+    })
+        .then(() => {
+            console.log("After", mDB);
+            console.log("Fromindex", fromIndex, "MessagesIndex", messagesIndex);
+            if (fromIndex - nrOfItemsToLoad < 0) {
+                initMessages(mDB, fromIndex, 0, toUser);
+            } else {
+                initMessages(mDB, fromIndex, messagesIndex - nrOfItemsToLoad, toUser);
+                messagesIndex = messagesIndex - nrOfItemsToLoad;
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+        });
 
-    if (fromIndex - nrOfItemsToLoad < 0) {
-        initMessages(mDB, fromIndex, 0, toUser);
-    } else {
-        initMessages(mDB, fromIndex, messagesIndex - nrOfItemsToLoad, toUser);
-    }
-    messagesIndex = messagesIndex - nrOfItemsToLoad;
+
 }
 
-function loadMessages(sender, receiver) {
+async function updateMessages(sender, receiver) {
     const data = {
         sender: sender,
         receiver: receiver,
     };
-
-    fetch('/src/server/getMessagesHandler', {
+    const response = fetch('/src/server/getMessagesHandler', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -301,8 +328,10 @@ function loadMessages(sender, receiver) {
         body: JSON.stringify(data)
     })
         .then(response => response.json())
-        .then(data => { mDB = data.messages })
+        .then(data => data.data.messages)
         .catch(error => console.error(error))
+
+    return response;
 }
 
 /* Loads user lists and creates event listeners for them to load the conversations */
@@ -318,7 +347,6 @@ export async function getUsers() {
             // console.log("otherUser: ", otherUser)
             trackable = 'message';
             getMessages(messagesIndex, user.textContent)
-            initIntersectionObserver();
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
         });
@@ -359,9 +387,13 @@ buttons.forEach((button) => {
                 if (message.value === "") {
                     alert("fill out user and message")
                     return false
-                } else {
-                    sendMessage()
                 }
+                if (!socket) {
+                    console.log("no connection");
+                    return false
+                }
+                sendMessage()
+                updateMessages(currentUser.innerHTML, otherUser);
                 break;
             default:
                 console.log(button.id)
@@ -398,7 +430,7 @@ async function makeNewPost() {
     var data = new FormData($('new-post'));
     var dataToSend = Object.fromEntries(data)
 
-    console.log(dataToSend);
+    console.log("dataToSend:", dataToSend);
 
     const res = await fetch('/src/server/addPostHandler', {
         method: "POST",
@@ -413,15 +445,19 @@ async function makeNewPost() {
 
     if (res.status == 200) {
         console.log(res.status)
-        //DO NOTHING? init Posts?
-
+        // clear the postsWrapper element
+        let interSection = $('intersection-observer');
         postsWrapper.innerHTML = '';
+        postsWrapper.appendChild(interSection);
+        // initialise postsObject
         postsObject = await getJSON('/src/server/getPostsHandler');
-        console.log(postsObject);
-        //uuesti start()?
-        //start()
+        console.log("Updated postsOpbject", postsObject);
+        currentIndex = 0;
+        pDB = postsObject.posts;
+        // restart the posts area of forum
+        start()
     } else {
-        console.log(res.status)
+        console.log("Status other", res.status)
         return res.json()
     }
 
@@ -435,8 +471,9 @@ $("message").addEventListener("keydown", function (event) {
         }
         event.preventDefault();//dont send the form
         event.stopPropagation();
-        console.log(event);
-        sendMessage()
+        console.log("Event", event);
+        sendMessage();
+        updateMessages(currentUser.innerHTML, otherUser);
     }
 })
 
@@ -447,7 +484,7 @@ function toggleMessageBoxVisibility(makeVisible) {
         messagesWrapper.parentElement.classList.remove('hidden'); // make messages box visible
     } else {
         messagesBackgroundOverlay.style.zIndex = '-1';
-        messagesWrapper.parentElement.classList.add('hidden');
+        hide(messagesWrapper.parentElement); // make messages box hidden
     }
 }
 
@@ -485,22 +522,20 @@ export function toggleLoginVisibility(makeVisible) {
 
 function toggleRegisterVisibility(makeVisible) {
     if (makeVisible) {
-        adsArea.classList.add('hidden');
-        postsWrapper.parentElement.classList.add('hidden');
-        userArea.classList.add('hidden');
-        profile.classList.add('hidden');
-        loginArea.classList.add('hidden');
-
+        hide(adsArea);
+        hide(postsWrapper.parentElement);
+        hide(userArea)
+        hide(profile);
+        hide(loginArea);
         logout.innerHTML = 'Login';
-        registerArea.classList.remove('hidden');
+        show(registerArea);
     } else {
-        adsArea.classList.remove('hidden');
-        postsWrapper.parentElement.classList.remove('hidden');
-        userArea.classList.remove('hidden');
-        profile.classList.remove('hidden');
-
+        show(adsArea);
+        show(postsWrapper.parentElement);
+        show(userArea);
+        show(profile);
         logout.innerHTML = 'Logout';
-        registerArea.classList.add('hidden');
+        hide(registerArea);
     }
 }
 

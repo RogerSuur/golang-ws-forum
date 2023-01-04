@@ -119,12 +119,14 @@ func createTable() {
 	for key, query := range map[string]string{
 		"addUser":       `INSERT INTO users (username, email, password, first_name, last_name, age, gender) VALUES (?, ?, ?, ?, ?, ?, ?);`,
 		"addPost":       `INSERT INTO posts (post_author, title, content, timestamp, categories, comments) VALUES (?, ?, ?, ?, ?, ?);`,
+		"addMessage":    `INSERT INTO messages (content, timestamp, from_id, to_id) VALUES (?, ?, ?, ?)`,
 		"addSession":    `INSERT INTO sessions (uuid, user_id) VALUES (?,?)`,
 		"getUsers":      `SELECT username from users`,
 		"deleteSession": `DELETE FROM sessions WHERE sessions.uuid = ?`,
 		"getPosts":      `SELECT post_id, username,title,timestamp, comments, content, categories FROM posts LEFT JOIN users AS u2 ON posts.post_author = u2.user_id ORDER BY posts.post_id DESC`,
 		"getMessages":   `SELECT  message_id, from_id, to_id, content, timestamp FROM messages WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?) ORDER BY message_id DESC`,
 		"getID":         `SELECT user_id FROM users WHERE username = ?`,
+		"getUsername":   `SELECT username FROM users WHERE user_id = ?`,
 		"getUser":       `SELECT user_id, username, password FROM users WHERE username = ? OR email = ? LIMIT 1`,
 		"getUserByUUID": `SELECT users.username FROM sessions LEFT JOIN users ON users.user_id = sessions.user_id WHERE uuid = ?`,
 	} {

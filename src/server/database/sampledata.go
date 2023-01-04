@@ -44,9 +44,6 @@ func insertSamplePosts(db *sql.DB) {
 		statement.Exec(rand.Intn(6)+1, v.Title, v.Content, v.Timestamp, v.Categories, v.Comments)
 	}
 
-	if err != nil {
-		log.Fatal(err.Error())
-	}
 	fmt.Println("Sampleposts inserted successfully!")
 }
 
@@ -77,9 +74,6 @@ func insertSampleUsers(db *sql.DB) {
 		count += 2
 	}
 
-	if err != nil {
-		log.Fatal(err.Error())
-	}
 	fmt.Println("Sampleusers inserted successfully!")
 }
 
@@ -103,12 +97,16 @@ func insertSampleMessages(db *sql.DB) {
 	}
 
 	for _, v := range posts.Status.Message {
-		ranInt := rand.Intn(7 - 1)
-		ranInt2 := rand.Intn(7 - 1)
+		ranInt := rand.Intn(7)
+		ranInt2 := rand.Intn(7)
 		if ranInt == ranInt2 {
-			statement.Exec(v.Content, v.Timestamp, ranInt, ranInt+1)
-		} else {
-			statement.Exec(v.Content, v.Timestamp, ranInt, ranInt2)
+			ranInt += 1
+			if ranInt > 6 {
+				ranInt = 0
+			}
 		}
+		statement.Exec(v.Content, v.Timestamp, ranInt+1, ranInt2+1)
 	}
+
+	fmt.Println("Samplemessages inserted successfully!")
 }
