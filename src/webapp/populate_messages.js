@@ -4,7 +4,6 @@ import { createDiv, $ } from "./DOM_helpers.js";
 
 export const initMessages = (DB, from, num) => {
 
-    //console.log("initMessages", from, num);
 
     let interSection = $('message-intersection-observer');
 

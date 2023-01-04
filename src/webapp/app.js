@@ -288,23 +288,24 @@ export function getPosts() {
 export function getMessages(fromIndex, toUser) {
     console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser, "from message nr", fromIndex);
     console.log("Before", mDB);
-    updateMessages(currentUser.innerHTML, toUser).then((updatedMessages) => {
-        if (updatedMessages) {
-            mDB = updatedMessages;
-            messagesIndex = updatedMessages.length;
-        } else {
-            messagesObject.messages = [];
-            mDB = messagesObject.messages;
-            messagesIndex = 0;
-        }
-    })
+    updateMessages(currentUser.innerHTML, toUser)
+        .then((updatedMessages) => {
+            if (updatedMessages) {
+                mDB = updatedMessages;
+                messagesIndex = updatedMessages.length;
+            } else {
+                messagesObject.messages = [];
+                mDB = messagesObject.messages;
+                messagesIndex = 0;
+            }
+        })
         .finally(() => {
             console.log("After", mDB);
             console.log("Fromindex", fromIndex, "MessagesIndex", messagesIndex);
-            if (fromIndex - nrOfItemsToLoad < 0) {
-                initMessages(mDB, fromIndex, 0, toUser);
+            if (messagesIndex - nrOfItemsToLoad < 0) {
+                initMessages(mDB, messagesIndex, 0, toUser);
             } else {
-                initMessages(mDB, fromIndex, messagesIndex - nrOfItemsToLoad, toUser);
+                initMessages(mDB, messagesIndex, messagesIndex - nrOfItemsToLoad, toUser);
                 messagesIndex = messagesIndex - nrOfItemsToLoad;
             }
         })
@@ -392,7 +393,10 @@ buttons.forEach((button) => {
                     console.log("no connection");
                     return false
                 }
-                sendMessage()
+                console.log("Event", event.type);
+                event.preventDefault();
+                event.stopPropagation();
+                sendMessage().then()
                 updateMessages(currentUser.innerHTML, otherUser);
                 break;
             default:
@@ -471,7 +475,7 @@ $("message").addEventListener("keydown", function (event) {
         }
         event.preventDefault();//dont send the form
         event.stopPropagation();
-        console.log("Event", event);
+        console.log("Event", event.type);
         sendMessage();
         updateMessages(currentUser.innerHTML, otherUser);
     }
