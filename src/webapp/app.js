@@ -275,7 +275,9 @@ export function getPosts(fromIndex) {
 export function getMessages(fromIndex, toUser) {
     debugger
     console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser, "from message nr", fromIndex);
-    updateMessages(currentUser.innerHTML, toUser);
+    console.log(mDB)
+    loadMessages(currentUser.innerHTML, toUser);
+    console.log(mDB)
 
     if (fromIndex - nrOfItemsToLoad < 0) {
         initMessages(mDB, fromIndex, 0, toUser);
@@ -285,7 +287,7 @@ export function getMessages(fromIndex, toUser) {
     messagesIndex = messagesIndex - nrOfItemsToLoad;
 }
 
-function updateMessages(sender, receiver) {
+function loadMessages(sender, receiver) {
     const data = {
         sender: sender,
         receiver: receiver,
@@ -299,7 +301,7 @@ function updateMessages(sender, receiver) {
         body: JSON.stringify(data)
     })
         .then(response => response.json())
-        .then(data => console.log(data))
+        .then(data => { mDB = data.messages })
         .catch(error => console.error(error))
 }
 

@@ -38,13 +38,15 @@ func getPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	// Get id-s or usernames from r.body
-	var d struct {
+	type d struct {
 		Sender   string `json:"sender"`
 		Receiver string `json:"receiver"`
 	}
 
+	var users d
+
 	// Use json.NewDecoder to read the request body and unmarshal it into the data struct
-	err := json.NewDecoder(r.Body).Decode(&d)
+	err := json.NewDecoder(r.Body).Decode(&users)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(400)
@@ -52,16 +54,16 @@ func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Do something with the request body
-	fmt.Println("body:", d.Sender, d.Receiver)
+	fmt.Println("body:", users.Sender, users.Receiver)
 	// GET id-s
-	ID1, err := getID(d.Sender)
+	ID1, err := getID(users.Sender)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(500)
 		return
 	}
 
-	ID2, err := getID(d.Receiver)
+	ID2, err := getID(users.Receiver)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(500)
@@ -76,6 +78,7 @@ func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println(string(messages))
 	w.Write(messages)
 }
 
