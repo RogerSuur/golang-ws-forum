@@ -118,11 +118,11 @@ func addPostHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&post)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Decoder error:", err.Error())
 		w.WriteHeader(400)
 		return
 	}
-	fmt.Println(post)
+	fmt.Println("Post", post)
 
 	post.User, _ = getID(user)
 	dt := time.Now()

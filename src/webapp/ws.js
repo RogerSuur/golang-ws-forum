@@ -6,7 +6,7 @@ import { createSingleMessage } from './populate_messages.js'
 import { $ } from "./DOM_helpers.js";
 
 export let webSocketUsers;
-let formattedDate
+let formattedDate = new Date().toLocaleString("en-US", { hour12: false }).replace(",", "");
 
 export function Forum() {
 
@@ -45,6 +45,7 @@ export function Forum() {
                 case "broadcast":
                     console.log("currentUser:", currentUser.innerHTML)
                     console.log("otherUser: ", otherUser)
+                    console.log("data: ", data)
                     newMessage = createSingleMessage(mDB.length, data.message, data.fromUser, formattedDate)
                     messagesWrapper.insertBefore(newMessage, lastMessage);
                     //getMessages(currentUser.value, otherUser)
@@ -61,23 +62,32 @@ export function Forum() {
 }
 
 //send messages to server
-export function sendMessage() {
+export async function sendMessage() {
     let jsonData = {};
+    jsonData["message_ID"] = `${mDB.length}`;
     jsonData["action"] = "broadcast";
-    jsonData["other_user"] = otherUser;
-    jsonData["username"] = currentUser.innerHTML;
-    jsonData["message"] = $('message').value;
-    const currentDate = new Date();
-    const month = currentDate.getMonth() + 1; // months are 0-based, so we need to add 1
-    const day = currentDate.getDate();
-    const year = currentDate.getFullYear();
-    const hours = currentDate.getHours();
-    const minutes = currentDate.getMinutes();
-    const seconds = currentDate.getSeconds()
-    formattedDate = `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
-    jsonData["timestamp"] = formattedDate
-    console.log(jsonData["timestamp"]);
+    jsonData["from"] = currentUser.innerHTML;
+    jsonData["to"] = otherUser;
+    jsonData["content"] = $('message').value;
+    jsonData["timestamp"] = formattedDate;
     socket.send(JSON.stringify(jsonData));
+
+    const res = await fetch('/src/server/addMessageHandler', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonData)
+    })
+    
+    console.log("messageData", jsonData);
+
+    if (res.status === 200) {
+        console.log("Message sent successfully", res.status)
+    } else {
+        console.log("Message not sent", res.status)
+    }
+
     $('message').value = "";
 
 }

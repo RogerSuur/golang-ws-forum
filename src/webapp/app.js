@@ -298,7 +298,7 @@ export function getMessages(fromIndex, toUser) {
             messagesIndex = 0;
         }
     })
-        .then(() => {
+        .finally(() => {
             console.log("After", mDB);
             console.log("Fromindex", fromIndex, "MessagesIndex", messagesIndex);
             if (fromIndex - nrOfItemsToLoad < 0) {
@@ -396,7 +396,7 @@ buttons.forEach((button) => {
                 updateMessages(currentUser.innerHTML, otherUser);
                 break;
             default:
-                console.log(button.id)
+                console.log("Button", button.id)
         }
     });
 });
@@ -430,7 +430,7 @@ async function makeNewPost() {
     var data = new FormData($('new-post'));
     var dataToSend = Object.fromEntries(data)
 
-    console.log("dataToSend:", dataToSend);
+    console.log("dataToSend", dataToSend);
 
     const res = await fetch('/src/server/addPostHandler', {
         method: "POST",
@@ -441,10 +441,10 @@ async function makeNewPost() {
         body: JSON.stringify(dataToSend)
     })
 
-    console.log(postsObject);
+    console.log("postsObject", postsObject);
 
     if (res.status == 200) {
-        console.log(res.status)
+        console.log("Status 200", res.status)
         // clear the postsWrapper element
         let interSection = $('intersection-observer');
         postsWrapper.innerHTML = '';
@@ -478,10 +478,10 @@ $("message").addEventListener("keydown", function (event) {
 })
 
 function toggleMessageBoxVisibility(makeVisible) {
-    console.log(makeVisible, "toggle messagebox");
+    //console.log(makeVisible, "toggle messagebox");
     if (makeVisible) {
         messagesBackgroundOverlay.style.zIndex = '1'; // bring overlay in front of posts area
-        messagesWrapper.parentElement.classList.remove('hidden'); // make messages box visible
+        show(messagesWrapper.parentElement); // make messages box visible
     } else {
         messagesBackgroundOverlay.style.zIndex = '-1';
         hide(messagesWrapper.parentElement); // make messages box hidden

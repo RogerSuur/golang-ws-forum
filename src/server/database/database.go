@@ -25,8 +25,8 @@ type Offline struct {
 
 type Message struct {
 	MessageID string `json:"message_id"`
-	From      string `json:"from"`
-	To        string `json:"to"`
+	Sender    string `json:"sender"`
+	Receiver  string `json:"receiver"`
 	Content   string `json:"content"`
 	Timestamp string `json:"timestamp"`
 }
@@ -115,7 +115,7 @@ func createTable() {
 	}
 	fmt.Println("Database created successfully!")
 
-	// sampledata(db)
+	//sampledata(db)
 	for key, query := range map[string]string{
 		"addUser":       `INSERT INTO users (username, email, password, first_name, last_name, age, gender) VALUES (?, ?, ?, ?, ?, ?, ?);`,
 		"addPost":       `INSERT INTO posts (post_author, title, content, timestamp, categories, comments) VALUES (?, ?, ?, ?, ?, ?);`,
@@ -124,7 +124,7 @@ func createTable() {
 		"getUsers":      `SELECT username from users`,
 		"deleteSession": `DELETE FROM sessions WHERE sessions.uuid = ?`,
 		"getPosts":      `SELECT post_id, username,title,timestamp, comments, content, categories FROM posts LEFT JOIN users AS u2 ON posts.post_author = u2.user_id ORDER BY posts.post_id DESC`,
-		"getMessages":   `SELECT  message_id, from_id, to_id, content, timestamp FROM messages WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?) ORDER BY message_id DESC`,
+		"getMessages":   `SELECT message_id, from_id, to_id, content, timestamp FROM messages WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?) ORDER BY message_id ASC`,
 		"getID":         `SELECT user_id FROM users WHERE username = ?`,
 		"getUsername":   `SELECT username FROM users WHERE user_id = ?`,
 		"getUser":       `SELECT user_id, username, password FROM users WHERE username = ? OR email = ? LIMIT 1`,
@@ -151,7 +151,7 @@ func CheckPasswordHash(password, hash string) bool {
 func UpdateOnlineUsers(usersList []string) {
 	jsonFile, err := os.Open("./src/webapp/static/usersData.json")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("File opening error", err)
 	}
 
 	defer jsonFile.Close()
@@ -197,7 +197,7 @@ func UpdateOnlineUsers(usersList []string) {
 	// Preparing the data to be marshalled and written.
 	result, e := json.MarshalIndent(users, "", "\t")
 	if e != nil {
-		fmt.Println("error", err)
+		fmt.Println("Marshalling error", err)
 	}
 
 	err = os.WriteFile("./src/webapp/static/usersData.json", result, 0o644)
@@ -209,7 +209,7 @@ func UpdateOnlineUsers(usersList []string) {
 func UpdateMessagesData(sender string, receiver string, message string) {
 	jsonFile, err := os.Open("./src/webapp/static/messagesData.json")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("File opening error", err)
 	}
 
 	defer jsonFile.Close()
@@ -223,8 +223,8 @@ func UpdateMessagesData(sender string, receiver string, message string) {
 	dt := time.Now()
 
 	users.Status.Message = append(users.Status.Message, Message{
-		From:      sender,
-		To:        receiver,
+		Sender:    sender,
+		Receiver:  receiver,
 		Content:   message,
 		Timestamp: dt.Format("01/02/2006 15:04"),
 	})
@@ -232,7 +232,7 @@ func UpdateMessagesData(sender string, receiver string, message string) {
 	// Preparing the data to be marshalled and written.
 	result, e := json.MarshalIndent(users, "", "\t")
 	if e != nil {
-		fmt.Println("error", err)
+		fmt.Println("Marshalling error", err)
 	}
 
 	err = os.WriteFile("./src/webapp/static/messagesData.json", result, 0o644)
