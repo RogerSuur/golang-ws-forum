@@ -393,11 +393,10 @@ buttons.forEach((button) => {
                     console.log("no connection");
                     return false
                 }
-                console.log("Event", event.type);
-                event.preventDefault();
-                event.stopPropagation();
-                sendMessage().then()
-                updateMessages(currentUser.innerHTML, otherUser);
+                // event.preventDefault();
+                // event.stopPropagation();
+                sendMessage()
+                //updateMessages(currentUser.innerHTML, otherUser);
                 break;
             default:
                 console.log("Button", button.id)
@@ -473,11 +472,10 @@ $("message").addEventListener("keydown", function (event) {
             console.log("no connection");
             return false
         }
-        event.preventDefault();//dont send the form
-        event.stopPropagation();
-        console.log("Event", event.type);
+        // event.preventDefault();//dont send the form
+        // event.stopPropagation();
         sendMessage();
-        updateMessages(currentUser.innerHTML, otherUser);
+        // updateMessages(currentUser.innerHTML, otherUser);
     }
 })
 

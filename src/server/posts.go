@@ -150,12 +150,11 @@ func addMessageHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
-	fmt.Println("Message", message)
 
 	message.Sender, _ = getID(message.Sender)
 	message.Receiver, _ = getID(message.Receiver)
 
-	_, err = database.Statements["addMessage"].Exec(message.Content, message.Timestamp, "1", "2")
+	_, err = database.Statements["addMessage"].Exec(message.Content, message.Timestamp, message.Sender, message.Receiver)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(500)

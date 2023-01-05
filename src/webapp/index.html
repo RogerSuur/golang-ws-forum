@@ -57,7 +57,9 @@
             <div class="current-user" id="current-userID"></div>
           </div>
           <div class="horizontal-spacer">|</div>
-          <button id="logout_User" class="logout-button" type="button">Logout</button>
+          <button id="logout_User" class="logout-button" type="button">
+            Logout
+          </button>
         </div>
       </div>
       <div class="logo">
@@ -73,26 +75,33 @@
       </div>
       <div class="ads-area">
         <div class="ad">
-          <a href="https://kood.tech/" target="_blank"><img class="ad-image" src="./static/images/ad.png" alt=""/></a>
+          <a href="https://kood.tech/" target="_blank"
+            ><img class="ad-image" src="./static/images/ad.png" alt=""
+          /></a>
         </div>
       </div>
-      <div class="lds-ellipsis hidden"><div></div><div></div><div></div><div></div></div>
+      <div class="lds-ellipsis hidden">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
       <div class="overlay"></div>
       <div class="posts-area hidden">
         <form class="user-input-area" id="new-post">
           <div class="new-post-header">
-              What's the time? Looks like it's New Post o'clock!
+            What's the time? Looks like it's New Post o'clock!
           </div>
-          <input type="text" id="titleID" name="title" placeholder="Title">
+          <input type="text" id="titleID" name="title" placeholder="Title" />
           <textarea
             name="content"
             id="contentID"
             placeholder="Content"
           ></textarea>
           <div class="button-wrapper">
-              <button id="post" type="submit">Share Your Thoughts</button>
+            <button id="post" type="submit">Share Your Thoughts</button>
           </div>
-      </form>
+        </form>
         <div class="posts-wrapper">
           <div id="intersection-observer"></div>
         </div>
@@ -139,7 +148,7 @@
           />
           <div class="button-wrapper">
             <button id="sendMessage" type="submit">Send Message</button>
-            <input type="hidden" name="action" id="action" />
+            <!-- <input type="hidden" name="action" id="action" /> -->
           </div>
         </div>
       </div>

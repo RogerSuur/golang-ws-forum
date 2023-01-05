@@ -43,9 +43,7 @@ export function Forum() {
                     //console.log("currentUser:", currentUser.value)
                     break;
                 case "broadcast":
-                    console.log("currentUser:", currentUser.innerHTML)
-                    console.log("otherUser: ", otherUser)
-                    console.log("data: ", data)
+                    console.log("broadcasting", data.message, "from:", data.otherUser);
                     newMessage = createSingleMessage(mDB.length, data.message, data.fromUser, formattedDate)
                     messagesWrapper.insertBefore(newMessage, lastMessage);
                     //getMessages(currentUser.value, otherUser)
@@ -79,7 +77,7 @@ export async function sendMessage() {
         },
         body: JSON.stringify(jsonData)
     })
-    
+
     console.log("messageData", jsonData);
 
     if (res.status === 200) {
