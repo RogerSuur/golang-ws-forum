@@ -43,8 +43,9 @@ export function Forum() {
                     //console.log("currentUser:", currentUser.value)
                     break;
                 case "broadcast":
-                    console.log("broadcasting", data.message, "from:", data.otherUser);
-                    newMessage = createSingleMessage(mDB.length, data.message, data.fromUser, formattedDate)
+                    console.log(data);
+                    console.log("broadcasting", data.content, "from:", currentUser.value, "to", data.to);
+                    newMessage = createSingleMessage(mDB.length, data.content, data.from, formattedDate)
                     messagesWrapper.insertBefore(newMessage, lastMessage);
                     //getMessages(currentUser.value, otherUser)
                     break;

@@ -37,9 +37,9 @@ var upgradeConnection = websocket.Upgrader{
 // response type that send back from the websocket
 type WsJsonResponse struct {
 	Action         string        `json:"action"`
-	Message        string        `json:"message"`
-	FromUser       string        `json:"fromUser"`
-	ToUser         string        `json:"toUser"`
+	Content        string        `json:"content"`
+	Sender         string        `json:"from"`
+	Receiver       string        `json:"to"`
 	MessageType    string        `json:"message_type"`
 	ConnectedUsers database.Data `json:"connected_users"`
 }
@@ -52,8 +52,9 @@ type WebSocketConnection struct {
 type WsPayload struct {
 	Action   string              `json:"action"`
 	Username string              `json:"username"`
-	Receiver string              `json:"Receiver"`
-	Message  string              `json:"Content"`
+	Content  string              `json:"content"`
+	Sender   string              `json:"from"`
+	Receiver string              `json:"to"`
 	Conn     WebSocketConnection `json:"-"`
 }
 
@@ -122,14 +123,33 @@ func ListenToWsChannel() {
 				BroadcastToAll(response)
 
 			case "broadcast":
+				fmt.Println("broadcasting")
+				fmt.Println(e)
+				fmt.Println(e.Action)
+				fmt.Println(e.Content)
+				fmt.Println(e.Username)
+				fmt.Println(e.Receiver)
+				fmt.Println(e.Sender)
 				response.Action = e.Action
-				response.Message = e.Message
-				response.FromUser = e.Username
-				response.ToUser = e.Receiver
+				response.Content = e.Content
+				response.Sender = e.Sender
+				response.Receiver = e.Receiver
 				// fmt.Println("Response", response)
+				// 			let jsonData = {};
+
+				// TODO
+				// MUUta see struct ühtima message structiga
+
+				// jsonData["message_ID"] = `${mDB.length}`;
+				// jsonData["action"] = "broadcast";
+				// jsonData["from"] = currentUser.innerHTML;
+				// jsonData["to"] = otherUser;
+				// jsonData["content"] = $('message').value;
+				// jsonData["timestamp"] = formattedDate;
+
 				// write message to database
 				// database.UpdateMessagesData(e.Username, e.MessageReceiver, e.Message)
-				BroadcastToClient(e.Username, e.Receiver, response)
+				BroadcastToClient(e.Sender, e.Receiver, response)
 			}
 		}
 	}
@@ -161,6 +181,7 @@ func BroadcastToAll(response WsJsonResponse) {
 }
 
 func BroadcastToClient(sender string, receiver string, response WsJsonResponse) {
+	fmt.Println("clients: ", clients, ",sender: ", sender, ",receiver: ", receiver)
 	for client := range clients {
 		if clients[client] == receiver || clients[client] == sender {
 			fmt.Println("broadcasting to client:", clients[client])
