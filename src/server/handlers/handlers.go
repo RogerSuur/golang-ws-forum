@@ -124,29 +124,10 @@ func ListenToWsChannel() {
 
 			case "broadcast":
 				fmt.Println("broadcasting")
-				fmt.Println(e)
-				fmt.Println(e.Action)
-				fmt.Println(e.Content)
-				fmt.Println(e.Username)
-				fmt.Println(e.Receiver)
-				fmt.Println(e.Sender)
 				response.Action = e.Action
 				response.Content = e.Content
 				response.Sender = e.Sender
 				response.Receiver = e.Receiver
-				// fmt.Println("Response", response)
-				// 			let jsonData = {};
-
-				// TODO
-				// MUUta see struct ühtima message structiga
-
-				// jsonData["message_ID"] = `${mDB.length}`;
-				// jsonData["action"] = "broadcast";
-				// jsonData["from"] = currentUser.innerHTML;
-				// jsonData["to"] = otherUser;
-				// jsonData["content"] = $('message').value;
-				// jsonData["timestamp"] = formattedDate;
-
 				// write message to database
 				// database.UpdateMessagesData(e.Username, e.MessageReceiver, e.Message)
 				BroadcastToClient(e.Sender, e.Receiver, response)
@@ -170,7 +151,6 @@ func getUserList() database.Data {
 
 func BroadcastToAll(response WsJsonResponse) {
 	for client := range clients {
-		fmt.Println("client:", clients[client])
 		err := client.WriteJSON(response)
 		if err != nil {
 			log.Println("websocket error")
@@ -181,7 +161,6 @@ func BroadcastToAll(response WsJsonResponse) {
 }
 
 func BroadcastToClient(sender string, receiver string, response WsJsonResponse) {
-	fmt.Println("clients: ", clients, ",sender: ", sender, ",receiver: ", receiver)
 	for client := range clients {
 		if clients[client] == receiver || clients[client] == sender {
 			fmt.Println("broadcasting to client:", clients[client])

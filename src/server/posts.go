@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -52,8 +51,6 @@ func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Do something with the request body
-	fmt.Println("body:", d.Sender, d.Receiver)
 	// GET id-s
 	ID1, err := getID(d.Sender)
 	if err != nil {
@@ -122,7 +119,6 @@ func addPostHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
-	fmt.Println("Post", post)
 
 	post.User, _ = getID(user)
 	dt := time.Now()
