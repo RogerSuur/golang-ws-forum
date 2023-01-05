@@ -38,6 +38,7 @@ var upgradeConnection = websocket.Upgrader{
 type WsJsonResponse struct {
 	Action         string        `json:"action"`
 	Content        string        `json:"content"`
+	ID             string        `json:"message_id"`
 	Sender         string        `json:"from"`
 	Receiver       string        `json:"to"`
 	MessageType    string        `json:"message_type"`

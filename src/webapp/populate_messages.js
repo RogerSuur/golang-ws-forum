@@ -2,21 +2,21 @@ import { messagesWrapper, currentUser } from "./app.js";
 import { createDiv, $ } from "./DOM_helpers.js";
 //import { getJSON } from "./read_JSON.js";
 
-export const initMessages = (DB, from, num) => {
+export const initMessages = (DB, fromIndex, toIndex) => {
 
-
+    //console.log("From", fromIndex, "to", toIndex)
     let interSection = $('message-intersection-observer');
 
-    if (from === DB.length) {
+    if (fromIndex === DB.length) {
         messagesWrapper.innerHTML = '';
         messagesWrapper.appendChild(interSection);
     }
 
-    let i = from - 1;
+    let i = fromIndex - 1;
     let nextUser;
-    while (i >= num) {
+    while (i >= toIndex) {
 
-        if (i === num) {
+        if (i === toIndex) {
             interSection.remove();
             messagesWrapper.appendChild(interSection);
         }

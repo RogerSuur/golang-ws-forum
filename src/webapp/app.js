@@ -77,7 +77,8 @@ const keepPostInFocus = (postInFocus, position) => {
 }
 
 const topSentCallback = async entry => {
-    if (messagesIndex <= 0) {
+    //console.log("TopSentCallback")
+    if (messagesIndex == 0 && topSentinelPreviousRatio != 0) {
         // if we are at the end of the DB, do nothing
         console.log("No more messages to load");
         return;
@@ -86,7 +87,11 @@ const topSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-
+    /*
+    console.log("currentY > topSentinelPreviousY", currentY > topSentinelPreviousY)
+    console.log("isIntersecting", isIntersecting)
+    console.log("currentRatio >= topSentinelPreviousRatio", currentRatio >= topSentinelPreviousRatio)
+    */
     // conditional check for Scrolling up
     if (
         currentY > topSentinelPreviousY &&
@@ -94,14 +99,15 @@ const topSentCallback = async entry => {
         currentRatio >= topSentinelPreviousRatio
     ) {
         // set spinner
-        let x = entry.target.getBoundingClientRect().left + entry.target.getBoundingClientRect().width / 2;
-        let y = entry.target.parentElement.getBoundingClientRect().top;
+        let x = entry.boundingClientRect.left + entry.boundingClientRect.width / 2;
+        let y = entry.boundingClientRect.top;
         spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
         show(spinner);
         await sleep(loadTime);
         hide(spinner);
         // load new data
-        getMessages(messagesIndex, otherUser)
+        console.log("Fetching more messages at index", messagesIndex)
+        getMessages(otherUser)
     }
 
     topSentinelPreviousY = currentY;
@@ -189,6 +195,7 @@ function signUp() {
                 createNewCookie(result.UUID)
                 toggleRegisterVisibility(false)
                 start()
+                initIntersectionObserver();
                 userFieldConnection(result.username)
             }
         })
@@ -223,11 +230,12 @@ function login() {
                 input_area.parentNode.insertBefore(errorMessage, input_area)
             } else {
                 //Attach the UUID to the document
-                createNewCookie(result.UUID)
-                toggleLoginVisibility(false)
-                start()
-                userFieldConnection(result.username)
-                currentUser.innerHTML = result.username
+                createNewCookie(result.UUID);
+                toggleLoginVisibility(false);
+                start();
+                initIntersectionObserver();
+                userFieldConnection(result.username);
+                currentUser.innerHTML = result.username;
             }
         })
 
@@ -267,9 +275,6 @@ const start = () => {
         isThread = false;
     });
 
-    if (nrOfItemsToLoad < currentIndex) {
-        initIntersectionObserver();
-    }
 }
 
 /* Loads next batch of posts */
@@ -285,14 +290,19 @@ export function getPosts() {
 
 
 /* Loads next batch of messages in a conversation */
-export function getMessages(fromIndex, toUser) {
-    console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser, "from message nr", fromIndex);
-    console.log("Before", mDB);
+export function getMessages(toUser, init = true) {
+    //console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser, "from message nr", fromIndex);
+    //console.log("Before", mDB);
     updateMessages(currentUser.innerHTML, toUser)
         .then((updatedMessages) => {
             if (updatedMessages) {
+                //console.log("lengths:", mDB.length, updatedMessages.length);
+                if (messagesIndex == 0) {
+                    messagesIndex = updatedMessages.length;
+                    console.log("reset MessagesIndex", messagesIndex);
+                }
                 mDB = updatedMessages;
-                messagesIndex = updatedMessages.length;
+                console.log("Last message:", mDB[mDB.length - 1])
             } else {
                 messagesObject.messages = [];
                 mDB = messagesObject.messages;
@@ -300,13 +310,17 @@ export function getMessages(fromIndex, toUser) {
             }
         })
         .finally(() => {
-            console.log("After", mDB);
-            console.log("Fromindex", fromIndex, "MessagesIndex", messagesIndex);
-            if (messagesIndex - nrOfItemsToLoad < 0) {
-                initMessages(mDB, messagesIndex, 0, toUser);
-            } else {
-                initMessages(mDB, messagesIndex, messagesIndex - nrOfItemsToLoad, toUser);
-                messagesIndex = messagesIndex - nrOfItemsToLoad;
+            //console.log("After", mDB);
+            if (init) {
+                //console.log("MessagesIndex", messagesIndex);
+                if (messagesIndex - nrOfItemsToLoad < 0) {
+                    initMessages(mDB, messagesIndex, 0, toUser);
+                    messagesIndex = 0;
+                } else {
+                    initMessages(mDB, messagesIndex, messagesIndex - nrOfItemsToLoad, toUser);
+                    messagesIndex = messagesIndex - nrOfItemsToLoad;
+                }
+                //console.log("Updated MessagesIndex", messagesIndex);
             }
         })
         .catch((err) => {
@@ -342,12 +356,17 @@ export async function getUsers() {
     userElements.forEach((user) => {
         user.addEventListener('click', () => {
             toggleMessageBoxVisibility(true);
-            // messagesWrapper.innerHTML = ''; // clear messages box contents
+            let interSection = $('message-intersection-observer');
+            messagesWrapper.innerHTML = ''; // clear messages box contents
+            threadWrapper.appendChild(interSection);
             otherUser = user.id;
             // console.log("currentUser:", currentUser)
-            // console.log("otherUser: ", otherUser)
+            // console.log("otherUser: ", otherUser, user.textContent)
             trackable = 'message';
-            getMessages(messagesIndex, user.textContent)
+            messagesIndex = 0;
+            topSentinelPreviousY = 0;
+            console.log("Loading messages at index", messagesIndex)
+            getMessages(otherUser)
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
         });
@@ -395,8 +414,9 @@ buttons.forEach((button) => {
                 }
                 // event.preventDefault();
                 // event.stopPropagation();
+                //getMessages(otherUser, false);
                 sendMessage()
-                //updateMessages(currentUser.innerHTML, otherUser);
+                //getMessages(otherUser, false);
                 break;
             default:
                 console.log("Button", button.id)
@@ -433,7 +453,7 @@ async function makeNewPost() {
     var data = new FormData($('new-post'));
     var dataToSend = Object.fromEntries(data)
 
-    console.log("dataToSend", dataToSend);
+    //console.log("dataToSend", dataToSend);
 
     const res = await fetch('/src/server/addPostHandler', {
         method: "POST",
@@ -444,7 +464,7 @@ async function makeNewPost() {
         body: JSON.stringify(dataToSend)
     })
 
-    console.log("postsObject", postsObject);
+    //console.log("postsObject", postsObject);
 
     if (res.status == 200) {
         console.log("Status 200", res.status)
@@ -454,7 +474,7 @@ async function makeNewPost() {
         postsWrapper.appendChild(interSection);
         // initialise postsObject
         postsObject = await getJSON('/src/server/getPostsHandler');
-        console.log("Updated postsOpbject", postsObject);
+        //console.log("Updated postsOpbject", postsObject);
         currentIndex = 0;
         pDB = postsObject.posts;
         // restart the posts area of forum

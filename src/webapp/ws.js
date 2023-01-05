@@ -1,6 +1,6 @@
 export const userRegister = document.getElementById("username-register")
 export let socket = null;
-import { currentUser, otherUser, getUsers, messagesWrapper, mDB } from './app.js'
+import { currentUser, otherUser, getMessages, getUsers, messagesWrapper, mDB } from './app.js'
 import { checkCookie } from './app.js';
 import { createSingleMessage } from './populate_messages.js'
 import { $ } from "./DOM_helpers.js";
@@ -43,9 +43,11 @@ export function Forum() {
                     //console.log("currentUser:", currentUser.value)
                     break;
                 case "broadcast":
+                    getMessages(otherUser, false)
+                    lastMessage = $(`message-${mDB.length - 1}`)
                     newMessage = createSingleMessage(mDB.length, data.content, data.from, formattedDate)
                     messagesWrapper.insertBefore(newMessage, lastMessage);
-                    //getMessages(currentUser.value, otherUser)
+                    //getMessages(otherUser, false)
                     break;
                 case "login":
                     console.log("login in socket")
@@ -61,7 +63,6 @@ export function Forum() {
 //send messages to server
 export async function sendMessage() {
     let jsonData = {};
-    jsonData["message_ID"] = `${mDB.length}`;
     jsonData["action"] = "broadcast";
     jsonData["from"] = currentUser.innerHTML;
     jsonData["to"] = otherUser;
@@ -77,7 +78,7 @@ export async function sendMessage() {
         body: JSON.stringify(jsonData)
     })
 
-    console.log("messageData", jsonData);
+    //console.log("messageData", jsonData);
 
     if (res.status === 200) {
         console.log("Message sent successfully", res.status)
