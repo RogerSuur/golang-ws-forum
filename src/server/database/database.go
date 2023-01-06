@@ -115,7 +115,7 @@ func createTable() {
 	}
 	fmt.Println("Database created successfully!")
 
-	//sampledata(db)
+	// sampledata(db)
 	for key, query := range map[string]string{
 		"addUser":       `INSERT INTO users (username, email, password, first_name, last_name, age, gender) VALUES (?, ?, ?, ?, ?, ?, ?);`,
 		"addPost":       `INSERT INTO posts (post_author, title, content, timestamp, categories, comments) VALUES (?, ?, ?, ?, ?, ?);`,

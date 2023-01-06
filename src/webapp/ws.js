@@ -43,10 +43,12 @@ export function Forum() {
                     //console.log("currentUser:", currentUser.value)
                     break;
                 case "broadcast":
-                    getMessages(otherUser, false)
-                    lastMessage = $(`message-${mDB.length - 1}`)
+                    //getMessages(otherUser, false)
+                    // lastMessage = $(`message-${mDB.length - 1}`)
+                    console.log(data);
                     newMessage = createSingleMessage(mDB.length, data.content, data.from, formattedDate)
-                    messagesWrapper.insertBefore(newMessage, lastMessage);
+                    //messagesWrapper.insertBefore(newMessage, lastMessage);
+                    messagesWrapper.prepend(newMessage);
                     //getMessages(otherUser, false)
                     break;
                 case "login":
