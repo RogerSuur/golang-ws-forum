@@ -44,11 +44,19 @@ export function Forum() {
                     break;
                 case "broadcast":
                     //getMessages(otherUser, false)
+
+                    //check wether to send notification or display msg
+                    if (!sendNotification(currentUser.innerHTML, data.from)) {
+                        newMessage = createSingleMessage(mDB.length, data.content, data.from, formattedDate)
+                        messagesWrapper.prepend(newMessage);
+                    }
+
                     // lastMessage = $(`message-${mDB.length - 1}`)
                     console.log(data);
-                    newMessage = createSingleMessage(mDB.length, data.content, data.from, formattedDate)
-                    //messagesWrapper.insertBefore(newMessage, lastMessage);
-                    messagesWrapper.prepend(newMessage);
+                    // //only if the chat with the receiver is open display the msg
+                    // newMessage = createSingleMessage(mDB.length, data.content, data.from, formattedDate)
+                    // //messagesWrapper.insertBefore(newMessage, lastMessage);
+                    // messagesWrapper.prepend(newMessage);
                     //getMessages(otherUser, false)
                     break;
                 case "login":
@@ -90,4 +98,32 @@ export async function sendMessage() {
 
     $('message').value = "";
 
+}
+
+//Checks which conversation is open
+function sendNotification(currentUser, sender) {
+    //determine if msg receiver has chat window open
+    console.log("currentUser", currentUser);
+    console.log("msg sender", sender);
+    if (sender === currentUser) {
+        return false
+    }
+
+    let div = document.querySelector('.messages-area');
+    let messagesHeaderText = document.querySelector('.messages-header-text');
+
+    if (div.classList.contains('hidden')) {
+        console.log('The div is hidden');
+        return true
+        //set notification next to bubble to msg sender username
+    } else {
+        console.log('The div is not hidden');
+
+        //check the user with whom the chat is open
+        console.log(messagesHeaderText.textContent);
+        if (messagesHeaderText.textContent === `Your conversation with ${sender}`) {
+            return false
+        }
+        return true
+    }
 }

@@ -291,7 +291,7 @@ export function getPosts() {
 
 /* Loads next batch of messages in a conversation */
 export function getMessages(toUser, init = true) {
-    //console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser, "from message nr", fromIndex);
+    console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser);
     //console.log("Before", mDB);
     updateMessages(currentUser.innerHTML, toUser)
         .then((updatedMessages) => {
@@ -299,10 +299,10 @@ export function getMessages(toUser, init = true) {
                 //console.log("lengths:", mDB.length, updatedMessages.length);
                 if (messagesIndex == 0) {
                     messagesIndex = updatedMessages.length;
-                    console.log("reset MessagesIndex", messagesIndex);
+                    // console.log("reset MessagesIndex", messagesIndex);
                 }
                 mDB = updatedMessages;
-                console.log("Last message:", mDB[mDB.length - 1])
+                // console.log("Last message:", mDB[mDB.length - 1])
             } else {
                 messagesObject.messages = [];
                 mDB = messagesObject.messages;
@@ -500,7 +500,7 @@ $("message").addEventListener("keydown", function (event) {
 })
 
 function toggleMessageBoxVisibility(makeVisible) {
-    //console.log(makeVisible, "toggle messagebox");
+    console.log(makeVisible, "toggle messagebox");
     if (makeVisible) {
         messagesBackgroundOverlay.style.zIndex = '1'; // bring overlay in front of posts area
         show(messagesWrapper.parentElement); // make messages box visible
