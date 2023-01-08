@@ -49,10 +49,8 @@ export function Forum() {
                         messagesWrapper.prepend(newMessage);
                     } else {
                         //display notification
-                        console.log(data.from);
                         const user = document.getElementById(`${data.from}`);
                         var notification = user.querySelector('.notification')
-                        console.log(user);
 
                         if (notification) {
                             const currentValue = parseInt(notification.innerHTML);
@@ -64,8 +62,6 @@ export function Forum() {
                             notification.innerHTML = 1;
                         }
                     }
-
-                    console.log(data);
                     break;
                 case "login":
                     console.log("login in socket")
@@ -110,9 +106,6 @@ export async function sendMessage() {
 
 //Checks which conversation is open and wether to send notification or display msg
 function sendNotification(currentUser, sender) {
-    //determine if msg receiver has chat window open
-    console.log("currentUser", currentUser);
-    console.log("msg sender", sender);
     if (sender === currentUser) {
         return false
     }
