@@ -49,6 +49,20 @@ export function Forum() {
                         messagesWrapper.prepend(newMessage);
                     } else {
                         //display notification
+                        console.log(data.from);
+                        const user = document.getElementById(`${data.from}`);
+                        var notification = user.querySelector('.notification')
+                        console.log(user);
+
+                        if (notification) {
+                            const currentValue = parseInt(notification.innerHTML);
+                            notification.innerHTML = currentValue + 1;
+                        } else {
+                            var notification = document.createElement('span');
+                            notification.setAttribute('class', 'notification')
+                            user.appendChild(notification);
+                            notification.innerHTML = 1;
+                        }
                     }
 
                     console.log(data);
