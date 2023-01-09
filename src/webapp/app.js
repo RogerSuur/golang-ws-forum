@@ -41,13 +41,7 @@ let postsObject = await getJSON('/src/server/getPostsHandler');
 let threadObject = await getJSON('/src/server/getCommentsHandler');
 //let usersObject = await getJSON('/static/usersData.json');
 //let messagesObject = await getJSON('/static/messagesData.json');
-let messagesObject = {
-    "comments": null,
-    "posts": null,
-    "online": null,
-    "offline": null,
-    "messages": [],
-};
+let messagesObject = {"messages": []};
 // export let currentUser = 'Petra Marsh';
 export let currentUser = $("current-userID");
 export let otherUser;
@@ -72,7 +66,7 @@ let currentIndex = 0,
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const keepPostInFocus = (postInFocus, position) => {
-    console.log(`focus on: ` + postInFocus)
+    //console.log(`focus on: ` + postInFocus)
     const scrollPointItem = $(postInFocus);
     scrollPointItem.scrollIntoView({ behavior: 'auto', block: position });
 }
@@ -107,7 +101,7 @@ const topSentCallback = async entry => {
         await sleep(loadTime);
         hide(spinner);
         // load new data
-        console.log("Fetching more messages at index", messagesIndex)
+        console.log("Fetching more messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex)
         getMessages(otherUser)
     }
 
@@ -291,63 +285,45 @@ export function getPosts() {
 
 
 /* Loads next batch of messages in a conversation */
-export function getMessages(toUser, init = true) {
-    console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser);
+export async function getMessages(toUser) {
+    //console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser);
     //console.log("Before", mDB);
-    updateMessages(currentUser.innerHTML, toUser)
-        .then((updatedMessages) => {
-            if (updatedMessages) {
-                //console.log("lengths:", mDB.length, updatedMessages.length);
-                if (messagesIndex == 0) {
-                    messagesIndex = updatedMessages.length;
-                    // console.log("reset MessagesIndex", messagesIndex);
-                }
-                mDB = updatedMessages;
-                // console.log("Last message:", mDB[mDB.length - 1])
-            } else {
-                messagesObject.messages = [];
-                mDB = messagesObject.messages;
-                messagesIndex = 0;
-            }
-        })
-        .finally(() => {
-            //console.log("After", mDB);
-            if (init) {
-                //console.log("MessagesIndex", messagesIndex);
-                if (messagesIndex - nrOfItemsToLoad < 0) {
-                    initMessages(mDB, messagesIndex, 0, toUser);
-                    messagesIndex = 0;
-                } else {
-                    initMessages(mDB, messagesIndex, messagesIndex - nrOfItemsToLoad, toUser);
-                    messagesIndex = messagesIndex - nrOfItemsToLoad;
-                }
-                //console.log("Updated MessagesIndex", messagesIndex);
-            }
-        })
-        .catch((err) => {
-            console.log(err)
-        });
-
-
+    await updateMessages(currentUser.innerHTML, toUser)
+    //console.log("After", mDB);
+    if (messagesIndex == 0) {
+        messagesIndex = mDB.length;
+        // console.log("reset MessagesIndex", messagesIndex);
+    }
+    if (messagesIndex - nrOfItemsToLoad < 0) {
+        initMessages(mDB, messagesIndex, 0, toUser);
+        messagesIndex = 0;
+    } else {
+        initMessages(mDB, messagesIndex, messagesIndex - nrOfItemsToLoad, toUser);
+        messagesIndex = messagesIndex - nrOfItemsToLoad;
+    }
 }
 
-async function updateMessages(sender, receiver) {
-    const data = {
-        sender: sender,
-        receiver: receiver,
-    };
-    const response = fetch('/src/server/getMessagesHandler', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-        .then(response => response.json())
-        .then(data => data.data.messages)
-        .catch(error => console.error(error))
-
-    return response;
+export async function updateMessages(sender, receiver) {
+    try {
+        const query = {
+            sender: sender,
+            receiver: receiver,
+        };
+        let response = await fetch('/src/server/getMessagesHandler', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            cache: 'no-cache',
+            body: JSON.stringify(query)
+        })
+        let data = await response.json();
+        //console.log("lengths:", mDB.length, data.data.messages.length);
+        //console.log("Last message:", await data.data.messages[data.data.messages.length - 1])
+        return mDB = await data.data.messages;
+    } catch (err) {
+        console.log("Error updating messages:", err);
+    }
 }
 
 /* Loads user lists and creates event listeners for them to load the conversations */
@@ -366,7 +342,7 @@ export async function getUsers() {
             trackable = 'message';
             messagesIndex = 0;
             topSentinelPreviousY = 0;
-            console.log("Loading messages at index", messagesIndex)
+            console.log("Loading messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex)
             getMessages(otherUser)
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
@@ -407,17 +383,15 @@ buttons.forEach((button) => {
             case 'sendMessage':
                 if (message.value === "") {
                     alert("fill out user and message")
-                    return false
+                    return
                 }
                 if (!socket) {
                     console.log("no connection");
-                    return false
+                    return
                 }
                 // event.preventDefault();
                 // event.stopPropagation();
-                //getMessages(otherUser, false);
                 sendMessage()
-                //getMessages(otherUser, false);
                 break;
             default:
                 console.log("Button", button.id)
@@ -496,12 +470,11 @@ $("message").addEventListener("keydown", function (event) {
         // event.preventDefault();//dont send the form
         // event.stopPropagation();
         sendMessage();
-        // updateMessages(currentUser.innerHTML, otherUser);
     }
 })
 
 function toggleMessageBoxVisibility(makeVisible) {
-    console.log(makeVisible, "toggle messagebox");
+    //console.log(makeVisible, "toggle messagebox");
     if (makeVisible) {
         messagesBackgroundOverlay.style.zIndex = '1'; // bring overlay in front of posts area
         show(messagesWrapper.parentElement); // make messages box visible

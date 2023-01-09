@@ -72,7 +72,7 @@ func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	// Use json.NewDecoder to read the request body and unmarshal it into the data struct
 	err := json.NewDecoder(r.Body).Decode(&d)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with decoding JSON", err.Error())
 		w.WriteHeader(400)
 		return
 	}
@@ -80,14 +80,14 @@ func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	// GET id-s
 	ID1, err := getID(d.Sender)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with getting IDs", err.Error())
 		w.WriteHeader(500)
 		return
 	}
 
 	ID2, err := getID(d.Receiver)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with getting IDs", err.Error())
 		w.WriteHeader(500)
 		return
 	}
@@ -95,7 +95,7 @@ func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	// then
 	messages, err := getMessagesQuery(ID1, ID2)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with messages query", err.Error())
 		w.WriteHeader(500)
 		return
 	}
@@ -106,14 +106,13 @@ func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
 func getMessagesQuery(ID1 string, ID2 string) ([]byte, error) {
 	rows, err := database.Statements["getMessages"].Query(ID1, ID2, ID2, ID1)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Erron in reading rows", err.Error())
 		return nil, err
 	}
 	var messages Data
 
 	for rows.Next() {
 		var message Message
-		// TODO: ID needs to be replaced with username
 		err = rows.Scan(&message.MessageID, &message.Sender, &message.Receiver, &message.Content, &message.Timestamp)
 
 		message.Receiver, _ = getUsername(message.Receiver)
@@ -122,14 +121,14 @@ func getMessagesQuery(ID1 string, ID2 string) ([]byte, error) {
 		messages.Status.Message = append(messages.Status.Message, message)
 
 		if err != nil {
-			log.Println(err.Error())
+			log.Println("Error in building the message struct", err.Error())
 			return nil, err
 		}
 	}
-
+	// fmt.Println("Last message retrieved: ", messages.Status.Message[len(messages.Status.Message)-1])
 	jsonResponse, err := json.Marshal(messages)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with generating JSON response", err.Error())
 		return nil, err
 	}
 	return jsonResponse, nil
@@ -154,7 +153,7 @@ func addPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err = database.Statements["addPost"].Exec(post.User, post.Title, post.Content, post.Timestamp, post.Categories, post.Comments)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with adding post", err.Error())
 		w.WriteHeader(500)
 		return
 	}
@@ -173,12 +172,14 @@ func addMessageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// fmt.Println("Adding message:", message)
+
 	message.Sender, _ = getID(message.Sender)
 	message.Receiver, _ = getID(message.Receiver)
 
 	_, err = database.Statements["addMessage"].Exec(message.Content, message.Timestamp, message.Sender, message.Receiver)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with adding message", err.Error())
 		w.WriteHeader(500)
 		return
 	}
@@ -190,7 +191,7 @@ func addMessageHandler(w http.ResponseWriter, r *http.Request) {
 func getID(name string) (string, error) {
 	rows, err := database.Statements["getID"].Query(name)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error getting ID", err.Error())
 		return "0", err
 	}
 	defer rows.Close()
@@ -204,7 +205,7 @@ func getID(name string) (string, error) {
 func getUsername(ID string) (string, error) {
 	rows, err := database.Statements["getUsername"].Query(ID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error getting username", err.Error())
 		return "0", err
 	}
 	defer rows.Close()

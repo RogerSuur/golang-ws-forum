@@ -1,6 +1,6 @@
 export const userRegister = document.getElementById("username-register")
 export let socket = null;
-import { currentUser, otherUser, getMessages, getUsers, messagesWrapper, mDB } from './app.js'
+import { currentUser, otherUser, updateMessages, getUsers, messagesWrapper } from './app.js'
 import { checkCookie } from './app.js';
 import { createSingleMessage } from './populate_messages.js'
 import { $ } from "./DOM_helpers.js";
@@ -32,7 +32,6 @@ export function Forum() {
 
         socket.onmessage = (msg) => {
             let data = JSON.parse(msg.data);
-            let lastMessage = $(`message-${mDB.length - 1}`)
             let newMessage;
             console.log("Action is", data.action);
             switch (data.action) {
@@ -45,18 +44,26 @@ export function Forum() {
                 case "broadcast":
                     //check wether to send notification or display msg
                     if (!sendNotification(currentUser.innerHTML, data.from)) {
-                        newMessage = createSingleMessage(mDB.length, data.content, data.from, formattedDate)
-                        messagesWrapper.prepend(newMessage);
+                        // refresh messages database
+                        //console.log("Updating messages from WS with ", currentUser.innerHTML, otherUser)
+                        updateMessages(currentUser.innerHTML, otherUser)
+                            .then((response) => response.length)
+                            .then((mDBlength) => {
+                                //console.log("mDBlength", mDBlength)
+                                newMessage = createSingleMessage(mDBlength, data.content, data.from, formattedDate)
+                                messagesWrapper.prepend(newMessage);
+                            })
+                            .catch(error => console.log(error))
                     } else {
                         //display notification
                         const user = document.getElementById(`${data.from}`);
-                        var notification = user.querySelector('.notification')
+                        let notification = user.querySelector('.notification')
 
                         if (notification) {
                             const currentValue = parseInt(notification.innerHTML);
                             notification.innerHTML = currentValue + 1;
                         } else {
-                            var notification = document.createElement('span');
+                            notification = document.createElement('span');
                             notification.setAttribute('class', 'notification')
                             user.appendChild(notification);
                             notification.innerHTML = 1;
@@ -76,32 +83,40 @@ export function Forum() {
 
 //send messages to server
 export async function sendMessage() {
-    let jsonData = {};
-    jsonData["action"] = "broadcast";
-    jsonData["from"] = currentUser.innerHTML;
-    jsonData["to"] = otherUser;
-    jsonData["content"] = $('message').value;
-    jsonData["timestamp"] = formattedDate;
-    socket.send(JSON.stringify(jsonData));
+    // console.log("Updating messages on sending message with", currentUser.innerHTML, otherUser)
+    // await updateMessages(currentUser.innerHTML, otherUser)
 
-    const res = await fetch('/src/server/addMessageHandler', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(jsonData)
-    })
+    try {
+        const jsonData = {};
+        jsonData["action"] = "broadcast";
+        jsonData["from"] = currentUser.innerHTML;
+        jsonData["to"] = otherUser;
+        jsonData["content"] = $('message').value;
+        jsonData["timestamp"] = formattedDate;
+        //socket.send(JSON.stringify(jsonData));
 
-    //console.log("messageData", jsonData);
+        const res = await fetch('/src/server/addMessageHandler', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
 
-    if (res.status === 200) {
-        console.log("Message sent successfully", res.status)
-    } else {
-        console.log("Message not sent", res.status)
+        //console.log("messageData", jsonData);
+
+        if (res.status === 200) {
+            console.log("Message sent successfully.")
+            socket.send(JSON.stringify(jsonData));
+        } else {
+            console.log("Message not sent", res.status)
+        }
+        
+    } catch (error) {
+        console.log("Error sending message", error)
     }
-
+    
     $('message').value = "";
-
 }
 
 //Checks which conversation is open and wether to send notification or display msg

@@ -124,7 +124,7 @@ func ListenToWsChannel() {
 				BroadcastToAll(response)
 
 			case "broadcast":
-				fmt.Println("broadcasting")
+				//fmt.Println("broadcasting")
 				response.Action = e.Action
 				response.Content = e.Content
 				response.Sender = e.Sender
