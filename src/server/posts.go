@@ -47,7 +47,7 @@ func getCommentsHandler(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var comment Comment
-		err = rows.Scan(&comment.CommentID, &comment.Author, &comment.PostID, &comment.Timestamp, &comment.Content)
+		err = rows.Scan(&comment.CommentID, &comment.Author, &comment.Timestamp, &comment.Content, &comment.PostID)
 
 		comments.Status.Comment = append(comments.Status.Comment, comment)
 
@@ -58,7 +58,6 @@ func getCommentsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// fmt.Println(comments)
 	jsonResponse, _ := json.Marshal(comments)
 	w.Write(jsonResponse)
 }

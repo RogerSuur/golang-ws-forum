@@ -38,10 +38,11 @@ const messagesBackgroundOverlay = qS('overlay');
 
 let postsObject = await getJSON('/src/server/getPostsHandler');
 //let postsObject = await getJSON('/static/postsData.json');
-let threadObject = await getJSON('/static/threadData.json');
+let threadObject = await getJSON('/src/server/getCommentsHandler');
 //let usersObject = await getJSON('/static/usersData.json');
 //let messagesObject = await getJSON('/static/messagesData.json');
 let messagesObject = {
+    "comments": null,
     "posts": null,
     "online": null,
     "offline": null,
