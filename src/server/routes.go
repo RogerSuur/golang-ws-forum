@@ -19,6 +19,7 @@ func routes() http.Handler {
 	mux.HandleFunc("/src/server/getUsersHandler", getUsersHandler)
 	mux.HandleFunc("/src/server/getPostsHandler", getPostsHandler)
 	mux.HandleFunc("/src/server/getMessagesHandler", getMessagesHandler)
+	mux.HandleFunc("/src/server/getCommentsHandler", getCommentsHandler)
 	mux.HandleFunc("/src/server/checkCookieHandler", checkCookieHandler)
 	mux.HandleFunc("/src/server/deleteCookieHandler", deleteCookieHandler)
 	// mux.HandleFunc("/src/server/authenticate", authenticate)

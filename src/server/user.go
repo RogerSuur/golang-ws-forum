@@ -59,6 +59,7 @@ type Message struct {
 }
 
 type Comment struct {
+	CommentID string `json:"commentID"`
 	Author    string `json:"user"`
 	PostID    string `json:"postID"`
 	Content   string `json:"content"`

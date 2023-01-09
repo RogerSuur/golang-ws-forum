@@ -47,7 +47,7 @@ func getCommentsHandler(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var comment Comment
-		err = rows.Scan(&comment.Author, &comment.PostID, &comment.Timestamp, &comment.Content)
+		err = rows.Scan(&comment.CommentID, &comment.Author, &comment.PostID, &comment.Timestamp, &comment.Content)
 
 		comments.Status.Comment = append(comments.Status.Comment, comment)
 
