@@ -41,7 +41,15 @@ type Post struct {
 	Categories string `json:"categories"`
 }
 
+type Comment struct {
+	Author    string `json:"user"`
+	PostID    string `json:"postID"`
+	Content   string `json:"content"`
+	Timestamp string `json:"timestamp"`
+}
+
 type Status struct {
+	Comment []Comment `json:"comments"`
 	Post    []Post    `json:"posts"`
 	Online  []Online  `json:"online"`
 	Offline []Offline `json:"offline"`
@@ -101,7 +109,8 @@ func createTable() {
 	CREATE TABLE IF NOT EXISTS comments (
 		comment_id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
 		content VARCHAR NOT NULL,
-		user_id INTEGER NOT NULL REFERENCES users (id),
+		timestamp VARCHAR NOT NULL,
+		user_id INTEGER NOT NULL REFERENCES users (user_id),
 		post_id INTEGER NOT NULL REFERENCES posts
 	);
 	CREATE TABLE IF NOT EXISTS sessions (
@@ -125,6 +134,7 @@ func createTable() {
 		"deleteSession": `DELETE FROM sessions WHERE sessions.uuid = ?`,
 		"getPosts":      `SELECT post_id, username,title,timestamp, comments, content, categories FROM posts LEFT JOIN users AS u2 ON posts.post_author = u2.user_id ORDER BY posts.post_id DESC`,
 		"getMessages":   `SELECT message_id, from_id, to_id, content, timestamp FROM messages WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?) ORDER BY message_id ASC`,
+		"getComments":   `SELECT comment_id, username,timestamp, content, post_id FROM comments LEFT JOIN users AS u2 ON comments.user_id = u2.user_id ORDER BY comments.comment_id DESC`,
 		"getID":         `SELECT user_id FROM users WHERE username = ?`,
 		"getUsername":   `SELECT username FROM users WHERE user_id = ?`,
 		"getUser":       `SELECT user_id, username, password FROM users WHERE username = ? OR email = ? LIMIT 1`,

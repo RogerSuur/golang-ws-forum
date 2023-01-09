@@ -19,6 +19,7 @@ func sampledata(db *sql.DB) {
 	insertSampleUsers(db)
 	insertSamplePosts(db)
 	insertSampleMessages(db)
+	insertSampleComments(db)
 }
 
 func insertSamplePosts(db *sql.DB) {
@@ -109,4 +110,30 @@ func insertSampleMessages(db *sql.DB) {
 	}
 
 	fmt.Println("Samplemessages inserted successfully!")
+}
+
+func insertSampleComments(db *sql.DB) {
+	jsonFile, err := os.Open("./src/webapp/static/threadData.json")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer jsonFile.Close()
+
+	byteValue, _ := io.ReadAll(jsonFile)
+
+	var comments Data
+
+	json.Unmarshal(byteValue, &comments)
+
+	statement, err := db.Prepare("INSERT OR IGNORE INTO comments ( content, timestamp, user_id, post_id) VALUES (?,?,?,?)")
+	if err != nil {
+		log.Fatal("error preparing statement,", err.Error())
+	}
+
+	for _, v := range comments.Status.Comment {
+		statement.Exec(v.Content, v.Timestamp, rand.Intn(6)+1, rand.Intn(34)+1)
+	}
+
+	fmt.Println("SampleComments inserted successfully!")
 }

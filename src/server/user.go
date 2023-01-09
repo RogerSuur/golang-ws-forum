@@ -58,7 +58,15 @@ type Message struct {
 	Timestamp string `json:"timestamp"`
 }
 
+type Comment struct {
+	Author    string `json:"user"`
+	PostID    string `json:"postID"`
+	Content   string `json:"content"`
+	Timestamp string `json:"timestamp"`
+}
+
 type Status struct {
+	Comment []Comment `json:"comments"`
 	Post    []Post    `json:"posts"`
 	Online  []Online  `json:"online"`
 	Offline []Offline `json:"offline"`

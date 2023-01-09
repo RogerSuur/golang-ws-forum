@@ -36,6 +36,33 @@ func getPostsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResponse)
 }
 
+func getCommentsHandler(w http.ResponseWriter, r *http.Request) {
+	rows, err := database.Statements["getComments"].Query()
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(500)
+		return
+	}
+	var comments Data
+
+	for rows.Next() {
+		var comment Comment
+		err = rows.Scan(&comment.Author, &comment.PostID, &comment.Timestamp, &comment.Content)
+
+		comments.Status.Comment = append(comments.Status.Comment, comment)
+
+		if err != nil {
+			log.Println(err.Error())
+			w.WriteHeader(500)
+			return
+		}
+	}
+
+	// fmt.Println(comments)
+	jsonResponse, _ := json.Marshal(comments)
+	w.Write(jsonResponse)
+}
+
 func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	// Get id-s or usernames from r.body
 	var d struct {
