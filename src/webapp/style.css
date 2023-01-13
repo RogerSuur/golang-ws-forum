@@ -615,6 +615,22 @@ textarea {
   font-size: inherit;
 }
 
+select {
+  font-family: inherit;
+  font-size: 100%;
+}
+
+.category-submit-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.category {
+  display: flex;
+  padding: 1%;
+}
+
 .button-wrapper {
   display: flex;
   flex-direction: column;
@@ -622,7 +638,8 @@ textarea {
   padding: 1%;
 }
 
-button {
+button,
+label  {
   border-radius: 10px;
   padding: 3px;
   align-self: flex-end;
@@ -632,7 +649,6 @@ button {
 }
 
 button[type="submit"] {
-  width: 25%;
   border: 1px solid var(--complementary-light);
 }
 

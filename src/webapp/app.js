@@ -431,7 +431,7 @@ async function makeNewPost() {
     var data = new FormData($('new-post'));
     var dataToSend = Object.fromEntries(data)
 
-    //console.log("dataToSend", dataToSend);
+    console.log("dataToSend", dataToSend);
 
     const res = await fetch('/src/server/addPostHandler', {
         method: "POST",
