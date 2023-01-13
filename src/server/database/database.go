@@ -137,6 +137,7 @@ func createTable() {
 		"getMessages":   `SELECT message_id, from_id, to_id, content, timestamp FROM messages WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?) ORDER BY message_id ASC`,
 		"getComments":   `SELECT comment_id, username,timestamp, content, post_id FROM comments LEFT JOIN users AS u2 ON comments.user_id = u2.user_id ORDER BY comments.comment_id DESC`,
 		"getID":         `SELECT user_id FROM users WHERE username = ?`,
+		"getPostID":     `SELECT post_id FROM posts WHERE title =?`,
 		"getUsername":   `SELECT username FROM users WHERE user_id = ?`,
 		"getUser":       `SELECT user_id, username, password FROM users WHERE username = ? OR email = ? LIMIT 1`,
 		"getUserByUUID": `SELECT users.username FROM sessions LEFT JOIN users ON users.user_id = sessions.user_id WHERE uuid = ?`,

@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -190,8 +189,6 @@ func addMessageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("adding comments")
-
 	var title string = r.Header.Get("Post-title")
 	var user string = r.Header.Get("X-Username")
 	var comment Comment
@@ -204,13 +201,12 @@ func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	currentTime := time.Now()
-	formattedTime := currentTime.Format("1/1/2006 15:04:32")
+	formattedTime := currentTime.Format("2/1/2006 15:04:05")
 	comment.Timestamp = formattedTime
 
 	comment.Author, _ = getID(user)
-	// comment.PostID, _ = getPostID(title)
+	comment.PostID, _ = getPostID(title)
 
-	fmt.Println("adding comments to db:", comment, title)
 	_, err = database.Statements["addComment"].Exec(comment.Content, comment.Timestamp, comment.Author, comment.PostID)
 	if err != nil {
 		log.Println("Error with adding message", err.Error())
@@ -220,6 +216,20 @@ func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
 
 	b, _ := json.Marshal("ok")
 	w.Write(b)
+}
+
+func getPostID(name string) (string, error) {
+	rows, err := database.Statements["getPostID"].Query(name)
+	if err != nil {
+		log.Println("Error getting postID", err.Error())
+		return "0", err
+	}
+	defer rows.Close()
+	postID := ""
+	rows.Next()
+	rows.Scan(&postID)
+	rows.Close()
+	return postID, nil
 }
 
 func getID(name string) (string, error) {
