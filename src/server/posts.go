@@ -204,7 +204,7 @@ func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	currentTime := time.Now()
-	formattedTime := currentTime.Format("01/01/2006 15:04:32")
+	formattedTime := currentTime.Format("1/1/2006 15:04:32")
 	comment.Timestamp = formattedTime
 
 	comment.Author, _ = getID(user)
