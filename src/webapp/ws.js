@@ -67,7 +67,7 @@ export function Forum() {
                             */
                     } else {
                         //display notification
-                        const user = document.getElementById(`${data.from}`);
+                        const user = $(`${data.from}`);
                         let notification = user.querySelector('.notification')
 
                         if (notification) {

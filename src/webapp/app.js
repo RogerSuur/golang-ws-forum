@@ -335,17 +335,21 @@ export async function getUsers() {
             toggleMessageBoxVisibility(true);
             let interSection = $('message-intersection-observer');
             messagesWrapper.innerHTML = ''; // clear messages box contents
-            threadWrapper.appendChild(interSection);
+            messagesWrapper.appendChild(interSection);
             otherUser = user.id;
-            // console.log("currentUser:", currentUser)
-            // console.log("otherUser: ", otherUser, user.textContent)
+            
+            let notification = user.querySelector('.notification')
+            if (notification) {
+                notification.remove();
+            }
+
             trackable = 'message';
             messagesIndex = 0;
             topSentinelPreviousY = 0;
             console.log("Loading messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex)
             getMessages(otherUser)
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
-            messageBoxHeader.textContent = `Your conversation with ${user.textContent}`;
+            messageBoxHeader.textContent = `Your conversation with ${otherUser}`;
         });
     });
 
