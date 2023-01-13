@@ -15,14 +15,12 @@ export async function populateUsers() {
     offlineUsersWrapper.innerHTML = '';
     if (webSocketUsers !== undefined) {
         //Update usersObject with ws given list of users
-        //console.log(webSocketUsers.data.online);
         usersObject.online = webSocketUsers.data.online
         if (usersObject.online !== null) {
             usersObject.offline = createOnlineUsers(usersObject.online, usersObject.offline)
         }
     }
-    //console.log("usersObject.online", usersObject.online)
-    //console.log("usersObject.offline", usersObject.offline)
+
     if (usersObject.online !== null) {
         constructUserLists(usersObject.online, onlineUsersWrapper, 'online');
     }

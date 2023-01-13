@@ -248,6 +248,7 @@ function login() {
 const start = () => {
 
     //DB = initDB(DBSize, postsObject);
+    getUsers();
     getPosts();
     const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
     threadOpeningElements.forEach((threadLink) => {
@@ -386,7 +387,6 @@ export async function getUsers() {
 };
 
 startHeaderClock;
-getUsers();
 
 //Maybe can be refactored without needing this function
 buttons.forEach((button) => {
