@@ -41,13 +41,13 @@ type Offline struct {
 }
 
 type Post struct {
-	User       string `json:"user"`
-	PostID     string `json:"postID"`
-	Title      string `json:"title"`
-	Content    string `json:"content"`
-	Timestamp  string `json:"timestamp"`
-	Comments   int    `json:"comments"`
-	Categories string `json:"categories"`
+	User      string `json:"user"`
+	PostID    string `json:"postID"`
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	Timestamp string `json:"timestamp"`
+	Comments  int    `json:"comments"`
+	Category  string `json:"category"`
 }
 
 type Message struct {

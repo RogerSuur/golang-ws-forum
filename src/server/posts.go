@@ -20,7 +20,7 @@ func getPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var post Post
-		err = rows.Scan(&post.PostID, &post.User, &post.Title, &post.Timestamp, &post.Comments, &post.Content, &post.Categories)
+		err = rows.Scan(&post.PostID, &post.User, &post.Title, &post.Timestamp, &post.Comments, &post.Content, &post.Category)
 
 		posts.Status.Post = append(posts.Status.Post, post)
 
@@ -148,10 +148,10 @@ func addPostHandler(w http.ResponseWriter, r *http.Request) {
 	post.User, _ = getID(user)
 	dt := time.Now()
 	post.Timestamp = dt.Format("01/02/2006 15:04")
-	post.Categories = "Lorem"
+	//post.Category = "Lorem"
 	post.Comments = 0
 
-	_, err = database.Statements["addPost"].Exec(post.User, post.Title, post.Content, post.Timestamp, post.Categories, post.Comments)
+	_, err = database.Statements["addPost"].Exec(post.User, post.Title, post.Content, post.Timestamp, post.Category, post.Comments)
 	if err != nil {
 		log.Println("Error with adding post", err.Error())
 		w.WriteHeader(500)

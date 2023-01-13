@@ -32,13 +32,13 @@ type Message struct {
 }
 
 type Post struct {
-	User       string `json:"user"`
-	PostID     string `json:"postID"`
-	Title      string `json:"title"`
-	Content    string `json:"content"`
-	Timestamp  string `json:"timestamp"`
-	Comments   int    `json:"comments"`
-	Categories string `json:"categories"`
+	User      string `json:"user"`
+	PostID    string `json:"postID"`
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	Timestamp string `json:"timestamp"`
+	Comments  int    `json:"comments"`
+	Category  string `json:"category"`
 }
 
 type Comment struct {
@@ -62,19 +62,36 @@ type Data struct {
 
 var Statements = map[string]*sql.Stmt{}
 
-func DatabaseGod() {
+func DatabaseGod(generateNew bool) {
 	// At one point we need to close the db with defer db.Close(), but where?
-	if _, err := os.Stat("forum.db"); err != nil {
-		file, err := os.Create("forum.db")
-		if err != nil {
-			log.Fatal(err)
+
+	if generateNew {
+		if _, err := os.Stat("forum.db"); err == nil {
+			fmt.Println("Removing old database file...")
+			e := os.Remove("forum.db")
+			if e != nil {
+				log.Fatal("Error removing database file", e)
+			}
 		}
-		file.Close()
+		fmt.Println("Creating new database file...")
+		_, e := os.Create("forum.db")
+		if e != nil {
+			log.Fatal(e)
+		}
+	} else {
+		if _, err := os.Stat("forum.db"); err != nil {
+			file, err := os.Create("forum.db")
+			if err != nil {
+				log.Fatal("Database file missing", err)
+			}
+			file.Close()
+		}
 	}
-	createTable()
+
+	createTable(generateNew)
 }
 
-func createTable() {
+func createTable(generateNew bool) {
 	db, err := sql.Open("sqlite3", "./forum.db")
 	if err != nil {
 		log.Fatal(err)
@@ -122,9 +139,15 @@ func createTable() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	fmt.Println("Database created successfully!")
 
-	//sampledata(db)
+	if generateNew {
+		sampledata(db)
+		fmt.Println("Database created successfully!")
+	} else {
+		fmt.Println("Database opened successfully!")
+	}
+
+	//
 	for key, query := range map[string]string{
 		"addUser":       `INSERT INTO users (username, email, password, first_name, last_name, age, gender) VALUES (?, ?, ?, ?, ?, ?, ?);`,
 		"addPost":       `INSERT INTO posts (post_author, title, content, timestamp, categories, comments) VALUES (?, ?, ?, ?, ?, ?);`,

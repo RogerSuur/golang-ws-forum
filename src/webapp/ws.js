@@ -6,7 +6,7 @@ import { createSingleMessage } from './populate_messages.js'
 import { $ } from "./DOM_helpers.js";
 
 export let webSocketUsers;
-let formattedDate = new Date().toLocaleString("en-US", { hour12: false }).replace(",", "");
+let formattedDate = new Date().toLocaleString("en-IE", { hour12: false }).replace(",", "");
 
 export function Forum() {
 

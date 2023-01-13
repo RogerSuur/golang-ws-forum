@@ -42,7 +42,7 @@ func insertSamplePosts(db *sql.DB) {
 	}
 
 	for _, v := range posts.Status.Post {
-		statement.Exec(rand.Intn(6)+1, v.Title, v.Content, v.Timestamp, v.Categories, v.Comments)
+		statement.Exec(rand.Intn(6)+1, v.Title, v.Content, v.Timestamp, v.Category, v.Comments)
 	}
 
 	fmt.Println("Sampleposts inserted successfully!")
@@ -113,7 +113,7 @@ func insertSampleMessages(db *sql.DB) {
 }
 
 func insertSampleComments(db *sql.DB) {
-	jsonFile, err := os.Open("./src/webapp/static/threadData.json")
+	jsonFile, err := os.Open("./src/webapp/static/commentsData.json")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -132,7 +132,7 @@ func insertSampleComments(db *sql.DB) {
 	}
 
 	for _, v := range comments.Status.Comment {
-		statement.Exec(v.Content, v.Timestamp, rand.Intn(6)+1, rand.Intn(34)+1)
+		statement.Exec(v.Content, v.Timestamp, rand.Intn(6)+1, rand.Intn(26)+1)
 	}
 
 	fmt.Println("SampleComments inserted successfully!")
