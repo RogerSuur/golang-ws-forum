@@ -1,6 +1,6 @@
 export const userRegister = document.getElementById("username-register")
 export let socket = null;
-import { currentUser, otherUser, updateMessages, getUsers, messagesWrapper } from './app.js'
+import { currentUser, otherUser, getUsers, mDB, messagesWrapper } from './app.js'
 import { checkCookie } from './app.js';
 import { createSingleMessage } from './populate_messages.js'
 import { $ } from "./DOM_helpers.js";
@@ -9,6 +9,8 @@ export let webSocketUsers;
 let formattedDate = new Date().toLocaleString("en-US", { hour12: false }).replace(",", "");
 
 export function Forum() {
+
+    let mDBlength = 0;
 
     window.onbeforeunload = function () {
         let jsonData = {};
@@ -32,7 +34,6 @@ export function Forum() {
 
         socket.onmessage = (msg) => {
             let data = JSON.parse(msg.data);
-            let newMessage;
             console.log("Action is", data.action);
             switch (data.action) {
                 case "list_users":
@@ -46,14 +47,24 @@ export function Forum() {
                     if (!sendNotification(currentUser.innerHTML, data.from)) {
                         // refresh messages database
                         //console.log("Updating messages from WS with ", currentUser.innerHTML, otherUser)
+                        /*
+                        let's remove updateMessages from here now
                         updateMessages(currentUser.innerHTML, otherUser)
                             .then((response) => response.length)
                             .then((mDBlength) => {
                                 //console.log("mDBlength", mDBlength)
-                                newMessage = createSingleMessage(mDBlength, data.content, data.from, formattedDate)
+                                */
+                                if (mDB.length - 1 > mDBlength) {
+                                    mDBlength = mDB.length;
+                                } else {
+                                    mDBlength += 1;
+                                }
+                                let newMessage = createSingleMessage(mDBlength, data.content, data.from, formattedDate)
                                 messagesWrapper.prepend(newMessage);
-                            })
+                            /*
+                            )})
                             .catch(error => console.log(error))
+                            */
                     } else {
                         //display notification
                         const user = document.getElementById(`${data.from}`);

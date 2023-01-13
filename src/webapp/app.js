@@ -35,13 +35,12 @@ const closeMessagesBox = qS('close-messages-button');
 const closeThread = qS('close-thread-button');
 const messagesBackgroundOverlay = qS('overlay');
 
-
 let postsObject = await getJSON('/src/server/getPostsHandler');
 //let postsObject = await getJSON('/static/postsData.json');
 let threadObject = await getJSON('/src/server/getCommentsHandler');
 //let usersObject = await getJSON('/static/usersData.json');
 //let messagesObject = await getJSON('/static/messagesData.json');
-let messagesObject = { "messages": [] };
+let messagesObject = {"messages": []};
 // export let currentUser = 'Petra Marsh';
 export let currentUser = $("current-userID");
 export let otherUser;
@@ -242,6 +241,7 @@ function login() {
 const start = () => {
 
     //DB = initDB(DBSize, postsObject);
+    getUsers();
     getPosts();
     const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
     threadOpeningElements.forEach((threadLink) => {
@@ -362,7 +362,6 @@ export async function getUsers() {
 };
 
 startHeaderClock;
-getUsers();
 
 //Maybe can be refactored without needing this function
 buttons.forEach((button) => {

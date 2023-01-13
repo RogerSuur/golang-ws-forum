@@ -97,21 +97,21 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	// decoder.DisallowUnknownFields()
 	err := decoder.Decode(&data)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error decoding signup data:", err.Error())
 		w.WriteHeader(400)
 		return
 	}
 
 	hash, err := database.HashPassword(data.Password)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error in hashing password:", err.Error())
 		w.WriteHeader(400)
 		return
 	}
 
 	_, err = database.Statements["addUser"].Exec(data.Username, data.Email, hash, data.FirstName, data.LastName, data.Age, data.Gender)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error in adding user to db:", err.Error())
 		jsonResponse := map[string]string{
 			"message":     "",
 			"requirement": "",
@@ -131,13 +131,13 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		user_ID, err := getIDbyUsername(data.Username)
 		if err != nil {
-			log.Println(err.Error())
+			log.Println("Error with getting user ID:", err.Error())
 			w.WriteHeader(500)
 			return
 		}
 		UUID, err := createSession(strconv.FormatInt(int64(user_ID), 10))
 		if err != nil {
-			log.Println(err.Error())
+			log.Println("Error with creating session:", err.Error())
 			w.WriteHeader(500)
 			return
 		}
@@ -159,7 +159,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	// decoder.DisallowUnknownFields()
 	err := decoder.Decode(&data)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with decoding signindata:", err.Error())
 		w.WriteHeader(400)
 		return
 	}
@@ -169,7 +169,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	// Put this to separate function
 	err = database.Statements["getUser"].QueryRow(data.Username, data.Email).Scan(&hashpass.UserID, &hashpass.Username, &hashpass.Password)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with querying user data:", err.Error())
 		w.WriteHeader(408)
 		jsonResponse, _ := json.Marshal(map[string]string{
 			"message":     "username_login",
@@ -192,7 +192,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	UUID, err := createSession(hashpass.UserID)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with creating session:", err.Error())
 		w.WriteHeader(500)
 		return
 	}
@@ -233,7 +233,7 @@ func getIDbyUsername(username string) (ID int, err error) {
 func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.Statements["getUsers"].Query()
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with getting users from DB:", err.Error())
 		return
 	}
 
@@ -247,7 +247,7 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 			Unread:   false,
 		})
 		if err != nil {
-			log.Println(err.Error())
+			log.Println("Error with scanning usernames:", err.Error())
 			w.WriteHeader(400)
 			return
 		}
@@ -267,7 +267,7 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 func checkCookieHandler(w http.ResponseWriter, r *http.Request) {
 	userUUID, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with getting UUID:", err.Error())
 		w.WriteHeader(400)
 		return
 	}
@@ -276,7 +276,7 @@ func checkCookieHandler(w http.ResponseWriter, r *http.Request) {
 	var username string
 	err = database.Statements["getUserByUUID"].QueryRow(string(userUUID)).Scan(&username)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with getting user by UUID from db:", err.Error())
 		w.WriteHeader(500)
 		jsonResponse, _ := json.Marshal(map[string]string{
 			"message": "can't find session UUID",
@@ -294,7 +294,7 @@ func checkCookieHandler(w http.ResponseWriter, r *http.Request) {
 func deleteCookieHandler(w http.ResponseWriter, r *http.Request) {
 	userUUID, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with getting user to delete by UUID:", err.Error())
 		w.WriteHeader(400)
 		return
 	}
@@ -304,7 +304,7 @@ func deleteCookieHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err = database.Statements["deleteSession"].Exec(string(userUUID))
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Error with deleting session:", err.Error())
 		w.WriteHeader(500)
 		jsonResponse, _ := json.Marshal(map[string]string{
 			"message": "can't find session UUID",
