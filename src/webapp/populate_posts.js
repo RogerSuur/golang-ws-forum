@@ -32,7 +32,9 @@ export const initPosts = (DB, from, to, isThread) => {
         postBody.classList.add('post-body');
 
         if (DB[i].title) {
+            let category = createDiv('post-category', `${DB[i].category}`, `${DB[i].category}`);
             let postTitle = createDiv('post-title', `${DB[i].title}`, `${DB[i].postID}`);
+            postTitle.prepend(category);
             postBody.appendChild(postTitle);
         }
 

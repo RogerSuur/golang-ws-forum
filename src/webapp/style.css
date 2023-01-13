@@ -331,7 +331,20 @@ img {
   padding: 3px 10px 30px;
 }
 
+.post-category {
+  padding: 3px;
+  margin-right: 5px;
+  border-radius: 7px;
+  border: 1px solid var(--complementary-dark);
+  box-shadow: 0px 3px var(--complementary-light);
+  background-color: var(--secondary-color);
+  font-size: small;
+  font-weight: bold;
+  color: var(--primary-light);
+}
+
 .post-title {
+  display: flex;
   margin-bottom: 20px;
   font-weight: bold;
   font-size: larger;
@@ -671,9 +684,7 @@ button:hover {
   background-color: var(--complementary-light);
 }
 
-.more-posts,
-.more-comments,
-.more-messages {
+.more-posts {
   display: flex;
   flex-direction: row;
   align-items: center;
