@@ -70,7 +70,6 @@ func WsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	conn := WebSocketConnection{Conn: ws}
 	clients[conn] = ""
-
 	go ListenForWs(&conn)
 }
 
