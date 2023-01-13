@@ -511,7 +511,11 @@ async function makeNewPost() {
         console.log("Status other", res.status)
         return res.json()
     }
-
+    
+    // resetting form values
+    $('contentID').value = '';
+    $('titleID').value = '';
+    $('categoryID').value = 'general';
 }
 
 $("message").addEventListener("keydown", function (event) {
