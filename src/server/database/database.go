@@ -124,11 +124,12 @@ func createTable() {
 	}
 	fmt.Println("Database created successfully!")
 
-	//sampledata(db)
+	// sampledata(db)
 	for key, query := range map[string]string{
 		"addUser":       `INSERT INTO users (username, email, password, first_name, last_name, age, gender) VALUES (?, ?, ?, ?, ?, ?, ?);`,
 		"addPost":       `INSERT INTO posts (post_author, title, content, timestamp, categories, comments) VALUES (?, ?, ?, ?, ?, ?);`,
 		"addMessage":    `INSERT INTO messages (content, timestamp, from_id, to_id) VALUES (?, ?, ?, ?)`,
+		"addComment":    `INSERT INTO comments (content, timestamp, user_id, post_id) VALUES (?,?,?,?)`,
 		"addSession":    `INSERT INTO sessions (uuid, user_id) VALUES (?,?)`,
 		"getUsers":      `SELECT username from users`,
 		"deleteSession": `DELETE FROM sessions WHERE sessions.uuid = ?`,

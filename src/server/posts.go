@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -178,6 +179,39 @@ func addMessageHandler(w http.ResponseWriter, r *http.Request) {
 	message.Receiver, _ = getID(message.Receiver)
 
 	_, err = database.Statements["addMessage"].Exec(message.Content, message.Timestamp, message.Sender, message.Receiver)
+	if err != nil {
+		log.Println("Error with adding message", err.Error())
+		w.WriteHeader(500)
+		return
+	}
+
+	b, _ := json.Marshal("ok")
+	w.Write(b)
+}
+
+func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("adding comments")
+
+	var title string = r.Header.Get("Post-title")
+	var user string = r.Header.Get("X-Username")
+	var comment Comment
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&comment)
+	if err != nil {
+		log.Println("Decoder error:", err.Error())
+		w.WriteHeader(400)
+		return
+	}
+
+	currentTime := time.Now()
+	formattedTime := currentTime.Format("01/01/2006 15:04:32")
+	comment.Timestamp = formattedTime
+
+	comment.Author, _ = getID(user)
+	// comment.PostID, _ = getPostID(title)
+
+	fmt.Println("adding comments to db:", comment, title)
+	_, err = database.Statements["addComment"].Exec(comment.Content, comment.Timestamp, comment.Author, comment.PostID)
 	if err != nil {
 		log.Println("Error with adding message", err.Error())
 		w.WriteHeader(500)

@@ -37,10 +37,11 @@ const messagesBackgroundOverlay = qS('overlay');
 
 let postsObject = await getJSON('/src/server/getPostsHandler');
 //let postsObject = await getJSON('/static/postsData.json');
-let threadObject = await getJSON('/src/server/getCommentsHandler');
+//let threadObject = await getJSON('/src/server/getCommentsHandler');
+let threadObject = await getJSON('/static/threadData.json')
 //let usersObject = await getJSON('/static/usersData.json');
 //let messagesObject = await getJSON('/static/messagesData.json');
-let messagesObject = {"messages": []};
+let messagesObject = { "messages": [] };
 // export let currentUser = 'Petra Marsh';
 export let currentUser = $("current-userID");
 export let otherUser;
@@ -256,7 +257,7 @@ const start = () => {
             trackable = 'thread';
             postsIndex = currentIndex;
             currentIndex = 0;
-            pDB = threadObject.posts;
+            pDB = threadObject.comments;
             isThread = true;
             getPosts();
         });
@@ -337,7 +338,7 @@ export async function getUsers() {
             messagesWrapper.innerHTML = ''; // clear messages box contents
             messagesWrapper.appendChild(interSection);
             otherUser = user.id;
-            
+
             let notification = user.querySelector('.notification')
             if (notification) {
                 notification.remove();
@@ -426,6 +427,55 @@ $('new-post').addEventListener('submit', (e) => {
     console.log("new Post area eventlistener");
     e.preventDefault();
 });
+
+$('new-comment').addEventListener('submit', (e) => {
+    //check that comment field is not empty) {
+    makeNewComment();
+    //toggleRegisterVisibility(false)
+    //}
+    console.log("new Comment area eventlistener");
+    e.preventDefault();
+});
+
+async function makeNewComment() {
+    var data = new FormData($('new-comment'));
+    var dataToSend = Object.fromEntries(data)
+
+    //get post title
+    var header = qS("thread-header-text")
+    console.log("dataToSend", dataToSend);
+
+    const res = await fetch('/src/server/addCommentsHandler', {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Username': currentUser.innerHTML,
+            'Post-title': header.innerHTML,
+        },
+        body: JSON.stringify(dataToSend)
+    })
+
+    //console.log("postsObject", postsObject);
+
+    if (res.status == 200) {
+        console.log("Status 200", res.status)
+        // // clear the postsWrapper element
+        // let interSection = $('intersection-observer');
+        // postsWrapper.innerHTML = '';
+        // postsWrapper.appendChild(interSection);
+        // // initialise postsObject
+        // postsObject = await getJSON('/src/server/getPostsHandler');
+        // //console.log("Updated postsOpbject", postsObject);
+        // currentIndex = 0;
+        // pDB = postsObject.posts;
+        // // restart the posts area of forum
+        // start()
+    } else {
+        console.log("Status other", res.status)
+        return res.json()
+    }
+
+}
 
 async function makeNewPost() {
     var data = new FormData($('new-post'));
