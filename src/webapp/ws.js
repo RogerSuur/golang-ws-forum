@@ -38,6 +38,7 @@ export function Forum() {
             switch (data.action) {
                 case "list_users":
                     webSocketUsers = data.connected_users
+                    console.log("wsUsers:", webSocketUsers);
                     getUsers()
                     // alert("list_users")
                     //console.log("currentUser:", currentUser.value)
