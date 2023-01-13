@@ -41,7 +41,7 @@ let postsObject = await getJSON('/src/server/getPostsHandler');
 let threadObject = await getJSON('/src/server/getCommentsHandler');
 //let usersObject = await getJSON('/static/usersData.json');
 //let messagesObject = await getJSON('/static/messagesData.json');
-let messagesObject = {"messages": []};
+let messagesObject = { "messages": [] };
 // export let currentUser = 'Petra Marsh';
 export let currentUser = $("current-userID");
 export let otherUser;

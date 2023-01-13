@@ -111,11 +111,11 @@ export async function sendMessage() {
         } else {
             console.log("Message not sent", res.status)
         }
-        
+
     } catch (error) {
         console.log("Error sending message", error)
     }
-    
+
     $('message').value = "";
 }
 
