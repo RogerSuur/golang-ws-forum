@@ -289,6 +289,7 @@ img {
   padding-right: 10px;
   overflow: scroll;
   scrollbar-width: thin;
+  scroll-behavior: smooth;
 }
 
 .thread-wrapper > .single-post:first-of-type {
@@ -821,3 +822,12 @@ a {
   background-color: red;
   color: white;
 }
+
+/*
+#intersection-observer,
+#thread-intersection-observer,
+#message-intersection-observer {
+  border: red solid 3px;
+  width: 100%;
+}
+*/

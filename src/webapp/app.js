@@ -10,7 +10,7 @@ import { socket } from "./ws.js";
 import { newPostValidation, signUpValidation, loginValidation } from "./validate.js";
 import { badValidation } from "./validate.js";
 
-const forum = new Forum()
+new Forum()
 
 export const postsWrapper = qS('posts-wrapper');
 export const threadWrapper = qS('thread-wrapper');
@@ -72,7 +72,6 @@ const keepPostInFocus = (postInFocus, position) => {
 }
 
 const topSentCallback = async entry => {
-    //console.log("TopSentCallback")
     if (messagesIndex == 0 && topSentinelPreviousRatio != 0) {
         // if we are at the end of the DB, do nothing
         console.log("No more messages to load");
@@ -82,11 +81,8 @@ const topSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-    /*
-    console.log("currentY > topSentinelPreviousY", currentY > topSentinelPreviousY)
-    console.log("isIntersecting", isIntersecting)
-    console.log("currentRatio >= topSentinelPreviousRatio", currentRatio >= topSentinelPreviousRatio)
-    */
+    //console.log("Firing topSentCallback")
+    
     // conditional check for Scrolling up
     if (
         currentY > topSentinelPreviousY &&
@@ -94,15 +90,16 @@ const topSentCallback = async entry => {
         currentRatio >= topSentinelPreviousRatio
     ) {
         // set spinner
-        let x = entry.boundingClientRect.left + entry.boundingClientRect.width / 2;
-        let y = entry.boundingClientRect.top;
-        spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
+        //console.log("Executing topSentCallback")
+        let messagesAreaRect = qS('messages-area').getBoundingClientRect();
+        let x = messagesAreaRect.left + messagesAreaRect.width / 2 - 40;
+        let y = messagesAreaRect.top + 40;
+        adspinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
         show(spinner);
         await sleep(loadTime);
         hide(spinner);
         // load new data
-        console.log("Fetching more messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex)
-        getMessages(otherUser)
+        getMessages(otherUser).then(() => {console.log("Fetching more messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex)})
     }
 
     topSentinelPreviousY = currentY;
@@ -118,15 +115,16 @@ const bottomSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-
+    
     if (
         currentY < bottomSentinelPreviousY &&
         currentRatio > bottomSentinelPreviousRatio &&
         isIntersecting
     ) {
         // set spinner
-        let x = entry.target.getBoundingClientRect().left + entry.target.getBoundingClientRect().width / 2;
-        let y = entry.target.parentElement.getBoundingClientRect().bottom - 100;
+        let postsAreaRect = qS('posts-area').getBoundingClientRect();
+        let x = postsAreaRect.left + postsAreaRect.width / 2 - 40;
+        let y = postsAreaRect.bottom - 100;
         spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
         if (entry.target.getBoundingClientRect().top < window.innerHeight) {
             show(spinner);
@@ -150,21 +148,33 @@ const bottomSentCallback = async entry => {
     bottomSentinelPreviousRatio = currentRatio;
 }
 
-const initIntersectionObserver = () => {
+const initPostIntersectionObserver = () => {
 
     const callback = entries => {
         entries.forEach(entry => {
-            //console.log("Trackable: ", trackable);
-            if (trackable === 'message') {
-                topSentCallback(entry);
-            } else {
-                bottomSentCallback(entry);
-            }
+            bottomSentCallback(entry);
         });
     }
-    var observer = new IntersectionObserver(callback);
+    let options = {
+        root: qS('posts-area')
+    }
+    var observer = new IntersectionObserver(callback, options);
     observer.observe($(`intersection-observer`));
-    observer.observe($(`thread-intersection-observer`));
+    //observer.observe($(`thread-intersection-observer`));
+    //observer.observe($(`message-intersection-observer`));
+}
+
+const initMessageIntersectionObserver = () => {
+
+    const callback = entries => {
+        entries.forEach(entry => {
+            topSentCallback(entry);
+        });
+    }
+    let options = {
+        root: qS('messages-area')
+    }
+    var observer = new IntersectionObserver(callback, options);
     observer.observe($(`message-intersection-observer`));
 }
 
@@ -190,7 +200,8 @@ function signUp() {
                 createNewCookie(result.UUID)
                 toggleRegisterVisibility(false)
                 start()
-                initIntersectionObserver();
+                initPostIntersectionObserver();
+                initMessageIntersectionObserver();
                 userFieldConnection(result.username)
             }
         })
@@ -228,7 +239,8 @@ function login() {
                 createNewCookie(result.UUID);
                 toggleLoginVisibility(false);
                 start();
-                initIntersectionObserver();
+                initPostIntersectionObserver();
+                initMessageIntersectionObserver();
                 userFieldConnection(result.username);
                 currentUser.innerHTML = result.username;
             }
@@ -275,7 +287,7 @@ const start = () => {
 
 /* Loads next batch of posts */
 export function getPosts() {
-    console.log("Total number of posts", pDB.length, ", current index", currentIndex);
+    console.log("Total number of posts", pDB.length, ", loading posts at index", currentIndex);
     if (currentIndex + nrOfItemsToLoad > pDB.length) {
         initPosts(pDB, currentIndex, pDB.length, isThread);
     } else {
@@ -287,10 +299,7 @@ export function getPosts() {
 
 /* Loads next batch of messages in a conversation */
 export async function getMessages(toUser) {
-    //console.log("Loading messages from " + currentUser.innerHTML + " to " + toUser);
-    //console.log("Before", mDB);
     await updateMessages(currentUser.innerHTML, toUser)
-    //console.log("After", mDB);
     if (messagesIndex == 0) {
         messagesIndex = mDB.length;
         // console.log("reset MessagesIndex", messagesIndex);
@@ -347,8 +356,7 @@ export async function getUsers() {
             trackable = 'message';
             messagesIndex = 0;
             topSentinelPreviousY = 0;
-            console.log("Loading messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex)
-            getMessages(otherUser)
+            getMessages(otherUser).then(() => {console.log("Loading messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex)})
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${otherUser}`;
         });
@@ -358,11 +366,13 @@ export async function getUsers() {
         toggleMessageBoxVisibility(false);
         trackable = 'post';
         messagesIndex = mDB.length;
+        /*
         if (isThread) {
             currentIndex = threadIndex;
         } else {
             currentIndex = postsIndex;
         }
+        */
     });
 };
 
@@ -443,7 +453,7 @@ async function makeNewComment() {
 
     //get post title
     var header = qS("thread-header-text")
-    console.log("dataToSend", dataToSend);
+    //console.log("dataToSend", dataToSend);
 
     const res = await fetch('/src/server/addCommentsHandler', {
         method: "POST",
