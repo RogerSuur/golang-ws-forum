@@ -241,6 +241,7 @@ img {
   display: flex;
   flex-direction: column;
   padding: 1%;
+  width: 98%;
   background-color: var(--primary-light);
   border-radius: 7px;
   box-shadow: 2px 3px var(--complementary-light);
@@ -621,11 +622,13 @@ input {
 
 textarea {
   width: 98%;
+  max-width: 100%;
   border-radius: 10px;
   border: 1px solid var(--complementary-light);
   padding: 1%;
   font-family: inherit;
   font-size: inherit;
+  resize: vertical;
 }
 
 select {
