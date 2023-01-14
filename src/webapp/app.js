@@ -55,7 +55,6 @@ const nrOfItemsToLoad = 10;
 const loadTime = 1500;
 let pDB = postsObject.posts;
 export let mDB = messagesObject.messages;
-let trackable = 'post';
 let isThread = false;
 
 let currentIndex = 0,
@@ -94,7 +93,7 @@ const topSentCallback = async entry => {
         let messagesAreaRect = qS('messages-area').getBoundingClientRect();
         let x = messagesAreaRect.left + messagesAreaRect.width / 2 - 40;
         let y = messagesAreaRect.top + 40;
-        adspinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
+        spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
         show(spinner);
         await sleep(loadTime);
         hide(spinner);
@@ -158,7 +157,7 @@ const initPostIntersectionObserver = () => {
     let options = {
         root: qS('posts-area')
     }
-    var observer = new IntersectionObserver(callback, options);
+    let observer = new IntersectionObserver(callback, options);
     observer.observe($(`intersection-observer`));
     //observer.observe($(`thread-intersection-observer`));
     //observer.observe($(`message-intersection-observer`));
@@ -174,13 +173,13 @@ const initMessageIntersectionObserver = () => {
     let options = {
         root: qS('messages-area')
     }
-    var observer = new IntersectionObserver(callback, options);
+    let observer = new IntersectionObserver(callback, options);
     observer.observe($(`message-intersection-observer`));
 }
 
 function signUp() {
-    var data = new FormData($('register-area'));
-    var dataToSend = Object.fromEntries(data);
+    let data = new FormData($('register-area'));
+    let dataToSend = Object.fromEntries(data);
 
     fetch('/src/server/signup', {
         method: "POST",
@@ -212,8 +211,8 @@ function signUp() {
 }
 
 function login() {
-    var data = new FormData($('login-area'));
-    var dataToSend = Object.fromEntries(data)
+    let data = new FormData($('login-area'));
+    let dataToSend = Object.fromEntries(data)
 
     fetch('/src/server/login', {
         method: "POST",
@@ -228,8 +227,8 @@ function login() {
         .then((result) => {
             if (result.hasOwnProperty('message')) {
                 //badValidation(result.message, result.requirement)
-                var input_area = $("username_loginID")
-                var input_area2 = $("password_loginID")
+                let input_area = $("username_loginID")
+                let input_area2 = $("password_loginID")
                 input_area.style.borderColor = 'red'
                 input_area2.style.borderColor = 'red'
                 let errorMessage = createDiv('error-message', result.requirement, 'error-message');
@@ -266,7 +265,6 @@ const start = () => {
             let selectedPost = postsObject.posts.filter(post => post.postID === threadLink.id)[0]
             threadHeader.innerHTML = selectedPost.title;
             //let threadDB = initDB(selectedPost.comments, threadObject);
-            trackable = 'thread';
             postsIndex = currentIndex;
             currentIndex = 0;
             pDB = threadObject.comments;
@@ -277,7 +275,6 @@ const start = () => {
 
     closeThread.addEventListener('click', () => {
         toggleThreadVisibility(false);
-        trackable = 'post';
         currentIndex = postsIndex;
         pDB = postsObject.posts;
         isThread = false;
@@ -353,7 +350,6 @@ export async function getUsers() {
                 notification.remove();
             }
 
-            trackable = 'message';
             messagesIndex = 0;
             topSentinelPreviousY = 0;
             getMessages(otherUser).then(() => {console.log("Loading messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex)})
@@ -364,7 +360,6 @@ export async function getUsers() {
 
     closeMessagesBox.addEventListener('click', () => {
         toggleMessageBoxVisibility(false);
-        trackable = 'post';
         messagesIndex = mDB.length;
         /*
         if (isThread) {
@@ -448,11 +443,11 @@ $('new-comment').addEventListener('submit', (e) => {
 });
 
 async function makeNewComment() {
-    var data = new FormData($('new-comment'));
-    var dataToSend = Object.fromEntries(data)
+    let data = new FormData($('new-comment'));
+    let dataToSend = Object.fromEntries(data)
 
     //get post title
-    var header = qS("thread-header-text")
+    let header = qS("thread-header-text")
     //console.log("dataToSend", dataToSend);
 
     const res = await fetch('/src/server/addCommentsHandler', {
@@ -488,8 +483,8 @@ async function makeNewComment() {
 }
 
 async function makeNewPost() {
-    var data = new FormData($('new-post'));
-    var dataToSend = Object.fromEntries(data)
+    let data = new FormData($('new-post'));
+    let dataToSend = Object.fromEntries(data)
 
     console.log("dataToSend", dataToSend);
 
@@ -607,7 +602,7 @@ export function checkCookie() {
     if (document.cookie == "") {
         toggleLoginVisibility(true)
     } else {
-        var user_uuid = getCookie();
+        let user_uuid = getCookie();
 
         fetch('/src/server/checkCookieHandler', {
             method: "POST",
@@ -645,14 +640,14 @@ function createNewCookie(uuid) {
 }
 
 function getCookie() {
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split('=');
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split('=');
     return ca[1]
 }
 
 
 $('logout_User').addEventListener('click', () => {
-    var user_uuid = getCookie();
+    let user_uuid = getCookie();
 
     //fetch to send db request deleting cookie
     fetch('/src/server/deleteCookieHandler', {
@@ -676,8 +671,8 @@ $('logout_User').addEventListener('click', () => {
         });
 
     document.cookie = "username" + "=" + ";" + "Max-Age=-99999999" + ";path=/;"
-    var input_area = $("username_loginID")
-    var input_area2 = $("password_loginID")
+    let input_area = $("username_loginID")
+    let input_area2 = $("password_loginID")
     input_area.style.borderColor = ''
     input_area2.style.borderColor = ''
     $("login-area").reset()
