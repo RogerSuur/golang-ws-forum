@@ -1,7 +1,7 @@
 import { createDiv, $, qS } from "./DOM_helpers.js";
 import { startHeaderClock } from "./header_clock.js";
 import { getJSON } from "./read_JSON.js";
-import { initPosts, createCommentNode } from "./populate_posts.js";
+import { initPosts, createPost } from "./populate_posts.js";
 import { initMessages } from "./populate_messages.js";
 import { populateUsers } from "./populate_users.js";
 import { Forum } from './ws.js';
@@ -114,14 +114,14 @@ const bottomSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-    console.log("Firing bottomSentCallback")
+   
     if (
         currentY < bottomSentinelPreviousY &&
         currentRatio > bottomSentinelPreviousRatio &&
         isIntersecting
     ) {
         // set spinner
-        console.log("Executing bottomSentCallback")
+        //console.log("Executing bottomSentCallback")
         let postsAreaRect = qS('posts-area').getBoundingClientRect();
         let x = postsAreaRect.left + postsAreaRect.width / 2 - 40;
         let y = postsAreaRect.bottom - 100;
@@ -152,7 +152,6 @@ const initPostIntersectionObserver = () => {
 
     const callback = entries => {
         entries.forEach(entry => {
-            console.log("Firing callback")
             bottomSentCallback(entry);
         });
     }
@@ -274,7 +273,10 @@ const start = () => {
             currentIndex = 0;
             isThread = true;
             updateComments((threadLink.id))
-                .then(() => {getPosts()});
+                .then(() => {getPosts()})
+                .catch((err) => {
+                    console.log("Error with displaying comments: ", err)
+                    });
         });
     });
 
@@ -489,13 +491,18 @@ async function makeNewComment() {
     if (res.status == 200) {
         console.log("Status 200", res.status)
         // clear the postsWrapper element
-        let interSection = $('thread-intersection-observer');
-        threadWrapper.innerHTML = '';
-        threadWrapper.appendChild(interSection);
+        // let interSection = $('thread-intersection-observer');
+        // threadWrapper.innerHTML = '';
+        // threadWrapper.appendChild(interSection);
         // initialise messagesObject
-        currentIndex = 0;
-        updateComments(dataToSend.postID)
-                .then(() => {getPosts()});
+        // currentIndex = 0;
+        let last = threadWrapper.lastElementChild.id.replace("thread-", "") * 1;
+        dataToSend.commentID = last + 1;
+        dataToSend.timestamp = new Date().toLocaleString("en-IE", { hour12: false }).replace(",", "");
+        dataToSend.user = currentUser.innerHTML;
+        let newComment = createPost(dataToSend, false, true);
+        threadWrapper.appendChild(newComment);
+        //updateComments(dataToSend.postID).then(() => {getPosts()});
     } else {
         console.log("Status other", res.status)
         return res.json()
@@ -523,16 +530,23 @@ async function makeNewPost() {
     if (res.status == 200) {
         console.log("Status 200", res.status)
         // clear the postsWrapper element
-        let interSection = $('intersection-observer');
-        postsWrapper.innerHTML = '';
-        postsWrapper.appendChild(interSection);
+        //let interSection = $('intersection-observer');
+        //postsWrapper.innerHTML = '';
+        //postsWrapper.appendChild(interSection);
         // initialise postsObject
-        postsObject = await getJSON('/src/server/getPostsHandler');
+        //postsObject = await getJSON('/src/server/getPostsHandler');
         //console.log("Updated postsOpbject", postsObject);
-        currentIndex = 0;
-        pDB = postsObject.posts;
+        // currentIndex = 0;
+        // pDB = postsObject.posts;
         // restart the posts area of forum
-        getPosts()
+        let last = postsWrapper.firstElementChild.id.replace("post-", '') * 1;
+        // console.log("Lastchild", last)
+        dataToSend.postID = last + 1;
+        dataToSend.timestamp = new Date().toLocaleString("en-IE", { hour12: false }).replace(",", "");
+        dataToSend.comments = 0;
+        dataToSend.user = currentUser.innerHTML;
+        let newPost = createPost(dataToSend);
+        postsWrapper.prepend(newPost);
     } else {
         console.log("Status other", res.status)
         return res.json()
