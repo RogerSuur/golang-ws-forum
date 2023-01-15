@@ -30,7 +30,6 @@ const spinner = qS('lds-ellipsis');
 const buttons = document.querySelectorAll('button');
 
 const threadHeader = qS('thread-header-text');
-const parentID = $('parentID');
 const messageBoxHeader = qS('messages-header-text');
 const closeMessagesBox = qS('close-messages-button');
 const closeThread = qS('close-thread-button');
@@ -266,13 +265,15 @@ const start = () => {
             threadWrapper.innerHTML = ''; // clear thread box contents
             threadWrapper.appendChild(interSection);
             let selectedPost = postsObject.posts.filter(post => post.postID === threadLink.id)[0]
+            let category = createDiv('post-category', selectedPost.category, selectedPost.category);
             threadHeader.innerHTML = selectedPost.title;
-            parentID.value = selectedPost.postID;
+            threadHeader.prepend(category);
+
             //let threadDB = initDB(selectedPost.comments, threadObject);
             postsIndex = currentIndex;
             currentIndex = 0;
             isThread = true;
-            updateComments((selectedPost.postID))
+            updateComments((threadLink.id))
                 .then(() => {getPosts()});
         });
     });

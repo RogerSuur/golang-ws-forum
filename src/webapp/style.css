@@ -502,6 +502,7 @@ img {
 
 .messages-header-text,
 .thread-header-text {
+  display: flex;
   font-weight: bold;
   font-size: larger;
   padding: 1%;
