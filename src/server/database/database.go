@@ -112,7 +112,7 @@ func createTable(generateNew bool) {
 		title VARCHAR NOT NULL,
 		content VARCHAR NOT NULL,
 		timestamp VARCHAR NOT NULL,
-		categories VARCHAR,
+		category VARCHAR,
 		comments INT,
 		FOREIGN KEY (post_author) REFERENCES users (user_id)
 	);
@@ -149,21 +149,22 @@ func createTable(generateNew bool) {
 
 	//
 	for key, query := range map[string]string{
-		"addUser":       `INSERT INTO users (username, email, password, first_name, last_name, age, gender) VALUES (?, ?, ?, ?, ?, ?, ?);`,
-		"addPost":       `INSERT INTO posts (post_author, title, content, timestamp, categories, comments) VALUES (?, ?, ?, ?, ?, ?);`,
-		"addMessage":    `INSERT INTO messages (content, timestamp, from_id, to_id) VALUES (?, ?, ?, ?)`,
-		"addComment":    `INSERT INTO comments (content, timestamp, user_id, post_id) VALUES (?,?,?,?)`,
-		"addSession":    `INSERT INTO sessions (uuid, user_id) VALUES (?,?)`,
-		"getUsers":      `SELECT username from users`,
-		"deleteSession": `DELETE FROM sessions WHERE sessions.uuid = ?`,
-		"getPosts":      `SELECT post_id, username,title,timestamp, comments, content, categories FROM posts LEFT JOIN users AS u2 ON posts.post_author = u2.user_id ORDER BY posts.post_id DESC`,
-		"getMessages":   `SELECT message_id, from_id, to_id, content, timestamp FROM messages WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?) ORDER BY message_id ASC`,
-		"getComments":   `SELECT comment_id, username,timestamp, content, post_id FROM comments LEFT JOIN users AS u2 ON comments.user_id = u2.user_id ORDER BY comments.comment_id DESC`,
-		"getID":         `SELECT user_id FROM users WHERE username = ?`,
-		"getPostID":     `SELECT post_id FROM posts WHERE title =?`,
-		"getUsername":   `SELECT username FROM users WHERE user_id = ?`,
-		"getUser":       `SELECT user_id, username, password FROM users WHERE username = ? OR email = ? LIMIT 1`,
-		"getUserByUUID": `SELECT users.username FROM sessions LEFT JOIN users ON users.user_id = sessions.user_id WHERE uuid = ?`,
+		"addUser":          `INSERT INTO users (username, email, password, first_name, last_name, age, gender) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+		"addPost":          `INSERT INTO posts (post_author, title, content, timestamp, category, comments) VALUES (?, ?, ?, ?, ?, ?);`,
+		"addMessage":       `INSERT INTO messages (content, timestamp, from_id, to_id) VALUES (?, ?, ?, ?)`,
+		"addComment":       `INSERT INTO comments (content, timestamp, user_id, post_id) VALUES (?,?,?,?)`,
+		"addSession":       `INSERT INTO sessions (uuid, user_id) VALUES (?,?)`,
+		"getUsers":         `SELECT username from users`,
+		"deleteSession":    `DELETE FROM sessions WHERE sessions.uuid = ?`,
+		"getPosts":         `SELECT post_id, username,title,timestamp, comments, content, category FROM posts LEFT JOIN users AS u2 ON posts.post_author = u2.user_id ORDER BY posts.post_id DESC`,
+		"getMessages":      `SELECT message_id, from_id, to_id, content, timestamp FROM messages WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?) ORDER BY message_id ASC`,
+		"getComments":      `SELECT comment_id, username, timestamp, content FROM comments LEFT JOIN users AS u2 ON comments.user_id = u2.user_id WHERE comments.post_id = ? ORDER BY comments.comment_id ASC`,
+		"getCommentParent": `SELECT post_id, username, timestamp, content FROM posts LEFT JOIN users AS u2 ON posts.post_author = u2.user_id WHERE post_id = ?`,
+		"getID":            `SELECT user_id FROM users WHERE username = ?`,
+		"getPostID":        `SELECT post_id FROM posts WHERE title =?`,
+		"getUsername":      `SELECT username FROM users WHERE user_id = ?`,
+		"getUser":          `SELECT user_id, username, password FROM users WHERE username = ? OR email = ? LIMIT 1`,
+		"getUserByUUID":    `SELECT users.username FROM sessions LEFT JOIN users ON users.user_id = sessions.user_id WHERE uuid = ?`,
 	} {
 		Statements[key], _ = db.Prepare(query)
 		if err != nil {

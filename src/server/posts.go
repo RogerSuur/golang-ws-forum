@@ -31,23 +31,38 @@ func getPostsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// fmt.Println(posts)
 	jsonResponse, _ := json.Marshal(posts)
 	w.Write(jsonResponse)
 }
 
 func getCommentsHandler(w http.ResponseWriter, r *http.Request) {
-	rows, err := database.Statements["getComments"].Query()
+
+	var d struct {
+		PostID string `json:"postID"`
+	}
+	// Use json.NewDecoder to read the request body and unmarshal it into the data struct
+	err := json.NewDecoder(r.Body).Decode(&d)
+	if err != nil {
+		log.Println("Error with decoding JSON", err.Error())
+		w.WriteHeader(400)
+		return
+	}
+
+	rows, err := database.Statements["getComments"].Query(d.PostID)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(500)
 		return
 	}
-	var comments Data
 
+	var comments Data
+	var comment Comment
+
+	comment, err = getCommentParent(d.PostID)
+	comments.Status.Comment = append(comments.Status.Comment, comment)
 	for rows.Next() {
-		var comment Comment
-		err = rows.Scan(&comment.CommentID, &comment.Author, &comment.Timestamp, &comment.Content, &comment.PostID)
+
+		err = rows.Scan(&comment.CommentID, &comment.Author, &comment.Timestamp, &comment.Content)
 
 		comments.Status.Comment = append(comments.Status.Comment, comment)
 
@@ -189,7 +204,6 @@ func addMessageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
-	var title string = r.Header.Get("Post-title")
 	var user string = r.Header.Get("X-Username")
 	var comment Comment
 	decoder := json.NewDecoder(r.Body)
@@ -205,7 +219,6 @@ func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	comment.Timestamp = formattedTime
 
 	comment.Author, _ = getID(user)
-	comment.PostID, _ = getPostID(title)
 
 	_, err = database.Statements["addComment"].Exec(comment.Content, comment.Timestamp, comment.Author, comment.PostID)
 	if err != nil {
@@ -218,7 +231,7 @@ func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func getPostID(name string) (string, error) {
+func getPostID(name string) (string, error) { // This func seems to be unused?
 	rows, err := database.Statements["getPostID"].Query(name)
 	if err != nil {
 		log.Println("Error getting postID", err.Error())
@@ -230,6 +243,20 @@ func getPostID(name string) (string, error) {
 	rows.Scan(&postID)
 	rows.Close()
 	return postID, nil
+}
+
+func getCommentParent(postID string) (Comment, error) { // This func seems to be unused?
+	var parentPost Comment
+	rows, err := database.Statements["getCommentParent"].Query(postID)
+	if err != nil {
+		log.Println("Error getting postID", err.Error())
+		return parentPost, err
+	}
+	defer rows.Close()
+	rows.Next()
+	rows.Scan(&parentPost.PostID, &parentPost.Author, &parentPost.Timestamp, &parentPost.Content)
+	rows.Close()
+	return parentPost, nil
 }
 
 func getID(name string) (string, error) {

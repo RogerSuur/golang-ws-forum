@@ -3,14 +3,14 @@ import { createDiv, horizontalDivider, $ } from './DOM_helpers.js';
 
 export const initPosts = (DB, from, to, isThread) => {
 
-    //console.log("initPosts", DB, from, to);
+    //console.log("initPosts", DB, from, to, isThread);
 
     let i = from;
     while (i < to) {
 
         const singlePost = createDiv('single-post');
         if (isThread) {
-            singlePost.setAttribute('id', `thread-${DB[i].postID}`);
+            singlePost.setAttribute('id', `thread-${DB[i].commentID}`);
         } else {
             singlePost.setAttribute('id', `post-${DB[i].postID}`);
         }

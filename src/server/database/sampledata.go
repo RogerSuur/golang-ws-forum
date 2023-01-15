@@ -36,13 +36,13 @@ func insertSamplePosts(db *sql.DB) {
 
 	json.Unmarshal(byteValue, &posts)
 
-	statement, err := db.Prepare("INSERT OR IGNORE INTO posts (post_author, title, content, timestamp, categories, comments) VALUES (?,?,?,?,?,?)")
+	statement, err := db.Prepare("INSERT OR IGNORE INTO posts (post_author, title, content, timestamp, category, comments) VALUES (?,?,?,?,?,?)")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
 	for _, v := range posts.Status.Post {
-		statement.Exec(rand.Intn(6)+1, v.Title, v.Content, v.Timestamp, v.Category, v.Comments)
+		statement.Exec(rand.Intn(7)+1, v.Title, v.Content, v.Timestamp, v.Category, v.Comments)
 	}
 
 	fmt.Println("Sampleposts inserted successfully!")
@@ -132,7 +132,7 @@ func insertSampleComments(db *sql.DB) {
 	}
 
 	for _, v := range comments.Status.Comment {
-		statement.Exec(v.Content, v.Timestamp, rand.Intn(6)+1, rand.Intn(26)+1)
+		statement.Exec(v.Content, v.Timestamp, rand.Intn(7)+1, rand.Intn(27)+1)
 	}
 
 	fmt.Println("SampleComments inserted successfully!")

@@ -30,6 +30,7 @@ const spinner = qS('lds-ellipsis');
 const buttons = document.querySelectorAll('button');
 
 const threadHeader = qS('thread-header-text');
+const parentID = $('parentID');
 const messageBoxHeader = qS('messages-header-text');
 const closeMessagesBox = qS('close-messages-button');
 const closeThread = qS('close-thread-button');
@@ -37,7 +38,7 @@ const messagesBackgroundOverlay = qS('overlay');
 
 let postsObject = await getJSON('/src/server/getPostsHandler');
 //let postsObject = await getJSON('/static/postsData.json');
-let threadObject = await getJSON('/src/server/getCommentsHandler');
+let threadObject = { "posts": [] };
 //let threadObject = await getJSON('/static/threadData.json')
 //let usersObject = await getJSON('/static/usersData.json');
 //let messagesObject = await getJSON('/static/messagesData.json');
@@ -114,13 +115,14 @@ const bottomSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-    
+    console.log("Firing bottomSentCallback")
     if (
         currentY < bottomSentinelPreviousY &&
         currentRatio > bottomSentinelPreviousRatio &&
         isIntersecting
     ) {
         // set spinner
+        console.log("Executing bottomSentCallback")
         let postsAreaRect = qS('posts-area').getBoundingClientRect();
         let x = postsAreaRect.left + postsAreaRect.width / 2 - 40;
         let y = postsAreaRect.bottom - 100;
@@ -151,6 +153,7 @@ const initPostIntersectionObserver = () => {
 
     const callback = entries => {
         entries.forEach(entry => {
+            console.log("Firing callback")
             bottomSentCallback(entry);
         });
     }
@@ -264,12 +267,13 @@ const start = () => {
             threadWrapper.appendChild(interSection);
             let selectedPost = postsObject.posts.filter(post => post.postID === threadLink.id)[0]
             threadHeader.innerHTML = selectedPost.title;
+            parentID.value = selectedPost.postID;
             //let threadDB = initDB(selectedPost.comments, threadObject);
             postsIndex = currentIndex;
             currentIndex = 0;
-            pDB = threadObject.comments;
             isThread = true;
-            getPosts();
+            updateComments((selectedPost.postID))
+                .then(() => {getPosts()});
         });
     });
 
@@ -284,7 +288,7 @@ const start = () => {
 
 /* Loads next batch of posts */
 export function getPosts() {
-    console.log("Total number of posts", pDB.length, ", loading posts at index", currentIndex);
+    console.log("Total number of posts", pDB.length, ", loading at index", currentIndex, ", is comments thread", isThread);
     if (currentIndex + nrOfItemsToLoad > pDB.length) {
         initPosts(pDB, currentIndex, pDB.length, isThread);
     } else {
@@ -330,6 +334,28 @@ export async function updateMessages(sender, receiver) {
         return mDB = await data.data.messages;
     } catch (err) {
         console.log("Error updating messages:", err);
+    }
+}
+
+async function updateComments(postID) {
+    console.log("Updating comments for postID:", postID)
+    try {
+        const query = {
+            postID: postID.toString(),
+        };
+        console.log("Query:", query)
+        let response = await fetch('/src/server/getCommentsHandler', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            cache: 'no-cache',
+            body: JSON.stringify(query)
+        })
+        let data = await response.json();
+        return pDB = await data.data.comments;
+    } catch (err) {
+        console.log("Error updating comments:", err);
     }
 }
 
@@ -447,7 +473,6 @@ async function makeNewComment() {
     let dataToSend = Object.fromEntries(data)
 
     //get post title
-    let header = qS("thread-header-text")
     //console.log("dataToSend", dataToSend);
 
     const res = await fetch('/src/server/addCommentsHandler', {
@@ -455,26 +480,21 @@ async function makeNewComment() {
         headers: {
             'Content-Type': 'application/json',
             'X-Username': currentUser.innerHTML,
-            'Post-title': header.innerHTML,
         },
         body: JSON.stringify(dataToSend)
     })
 
-    //console.log("postsObject", postsObject);
 
     if (res.status == 200) {
         console.log("Status 200", res.status)
-        // // clear the postsWrapper element
-        // let interSection = $('intersection-observer');
-        // postsWrapper.innerHTML = '';
-        // postsWrapper.appendChild(interSection);
-        // // initialise postsObject
-        // postsObject = await getJSON('/src/server/getPostsHandler');
-        // //console.log("Updated postsOpbject", postsObject);
-        // currentIndex = 0;
-        // pDB = postsObject.posts;
-        // // restart the posts area of forum
-        // start()
+        // clear the postsWrapper element
+        let interSection = $('thread-intersection-observer');
+        threadWrapper.innerHTML = '';
+        threadWrapper.appendChild(interSection);
+        // initialise messagesObject
+        currentIndex = 0;
+        updateComments(dataToSend.postID)
+                .then(() => {getPosts()});
     } else {
         console.log("Status other", res.status)
         return res.json()
@@ -486,7 +506,7 @@ async function makeNewPost() {
     let data = new FormData($('new-post'));
     let dataToSend = Object.fromEntries(data)
 
-    console.log("dataToSend", dataToSend);
+    //console.log("dataToSend", dataToSend);
 
     const res = await fetch('/src/server/addPostHandler', {
         method: "POST",
@@ -511,7 +531,7 @@ async function makeNewPost() {
         currentIndex = 0;
         pDB = postsObject.posts;
         // restart the posts area of forum
-        start()
+        getPosts()
     } else {
         console.log("Status other", res.status)
         return res.json()

@@ -61,9 +61,9 @@ type Message struct {
 type Comment struct {
 	CommentID string `json:"commentID"`
 	Author    string `json:"user"`
-	PostID    string `json:"postID"`
 	Content   string `json:"content"`
 	Timestamp string `json:"timestamp"`
+	PostID    string `json:"postID"`
 }
 
 type Status struct {
