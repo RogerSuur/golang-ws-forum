@@ -478,6 +478,7 @@ async function makeNewComment() {
         dataToSend.user = currentUser.innerHTML;
         let newComment = createPost(dataToSend, false, true);
         threadWrapper.appendChild(newComment);
+        keepPostInFocus(newComment.id, 'end');
         //updateComments(dataToSend.postID).then(() => {getPosts()});
     } else {
         console.log("Status other", res.status)
@@ -525,6 +526,7 @@ async function makeNewPost() {
         dataToSend.user = currentUser.innerHTML;
         let newPost = createPost(dataToSend);
         postsWrapper.prepend(newPost);
+        keepPostInFocus(newPost.id, 'start');
         getPosts();
         makeLinksClickable();
         let jsonData = {};
