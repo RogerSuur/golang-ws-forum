@@ -8,6 +8,8 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"sort"
+	"time"
 )
 
 var (
@@ -35,6 +37,18 @@ func insertSamplePosts(db *sql.DB) {
 	var posts Data
 
 	json.Unmarshal(byteValue, &posts)
+
+	sort.Slice(posts.Status.Post, func(i, j int) bool {
+		layout := "2/1/2006 15:04:05"
+		a := posts.Status.Post[i].Timestamp
+		b := posts.Status.Post[j].Timestamp
+		t1, err := time.Parse(layout, a)
+		t2, err2 := time.Parse(layout, b)
+		if err != nil || err2 != nil {
+			fmt.Println(err, err2)
+		}
+		return t1.Before(t2)
+	})
 
 	statement, err := db.Prepare("INSERT OR IGNORE INTO posts (post_author, title, content, timestamp, category, comments) VALUES (?,?,?,?,?,?)")
 	if err != nil {
@@ -92,6 +106,18 @@ func insertSampleMessages(db *sql.DB) {
 
 	json.Unmarshal(byteValue, &posts)
 
+	sort.Slice(posts.Status.Message, func(i, j int) bool {
+		layout := "2/1/2006 15:04:05"
+		a := posts.Status.Message[i].Timestamp
+		b := posts.Status.Message[j].Timestamp
+		t1, err := time.Parse(layout, a)
+		t2, err2 := time.Parse(layout, b)
+		if err != nil || err2 != nil {
+			fmt.Println(err, err2)
+		}
+		return t1.Before(t2)
+	})
+
 	statement, err := db.Prepare("INSERT OR IGNORE INTO messages (content, timestamp, from_id, to_id) VALUES (?,?,?,?)")
 	if err != nil {
 		log.Fatal(err.Error())
@@ -122,16 +148,28 @@ func insertSampleComments(db *sql.DB) {
 
 	byteValue, _ := io.ReadAll(jsonFile)
 
-	var comments Data
+	var posts Data
 
-	json.Unmarshal(byteValue, &comments)
+	json.Unmarshal(byteValue, &posts)
+
+	sort.Slice(posts.Status.Post, func(i, j int) bool {
+		layout := "2/1/2006 15:04:05"
+		a := posts.Status.Post[i].Timestamp
+		b := posts.Status.Post[j].Timestamp
+		t1, err := time.Parse(layout, a)
+		t2, err2 := time.Parse(layout, b)
+		if err != nil || err2 != nil {
+			fmt.Println(err, err2)
+		}
+		return t1.Before(t2)
+	})
 
 	statement, err := db.Prepare("INSERT OR IGNORE INTO comments ( content, timestamp, user_id, post_id) VALUES (?,?,?,?)")
 	if err != nil {
 		log.Fatal("error preparing statement,", err.Error())
 	}
 
-	for _, v := range comments.Status.Comment {
+	for _, v := range posts.Status.Comment {
 		statement.Exec(v.Content, v.Timestamp, rand.Intn(7)+1, rand.Intn(27)+1)
 	}
 

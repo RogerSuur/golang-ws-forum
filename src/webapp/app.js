@@ -338,12 +338,12 @@ export async function updateMessages(sender, receiver) {
 }
 
 async function updateComments(postID) {
-    console.log("Updating comments for postID:", postID)
+    //console.log("Updating comments for postID:", postID)
     try {
         const query = {
             postID: postID.toString(),
         };
-        console.log("Query:", query)
+        //console.log("Query:", query)
         let response = await fetch('/src/server/getCommentsHandler', {
             method: 'POST',
             headers: {

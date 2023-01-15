@@ -162,7 +162,7 @@ func addPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	post.User, _ = getID(user)
 	dt := time.Now()
-	post.Timestamp = dt.Format("01/02/2006 15:04")
+	post.Timestamp = dt.Format("01/02/2006 15:04:05")
 	//post.Category = "Lorem"
 	post.Comments = 0
 
