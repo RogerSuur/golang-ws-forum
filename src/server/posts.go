@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -219,7 +220,7 @@ func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	comment.Timestamp = formattedTime
 
 	comment.Author, _ = getID(user)
-
+	fmt.Println("Adding comment:", comment)
 	_, err = database.Statements["addComment"].Exec(comment.Content, comment.Timestamp, comment.Author, comment.PostID)
 	if err != nil {
 		log.Println("Error with adding message", err.Error())

@@ -714,7 +714,7 @@ button:hover {
 }
 
 .load-more:hover {
-  background-color: var(--complementary-light);
+  background-color: var(--complementary-dark);
   cursor: pointer;
   user-select: none;
 }

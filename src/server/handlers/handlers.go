@@ -103,6 +103,12 @@ func ListenToWsChannel() {
 			// response.Message = fmt.Sprintf("Some message and action was%v", e.Action)
 			switch e.Action {
 
+			case "new_post":
+				response.Action = e.Action
+				response.Sender = e.Sender
+				// fmt.Println("new posts notification")
+				BroadcastToAll(response)
+
 			case "username":
 				// get a list of all users and send it back via broadcast
 				clients[e.Conn] = e.Username // gives username to the connection

@@ -1,9 +1,10 @@
 export const userRegister = document.getElementById("username-register")
 export let socket = null;
-import { currentUser, otherUser, getUsers, mDB, messagesWrapper } from './app.js'
+import { currentUser, otherUser, getUsers, mDB, messagesWrapper, postsWrapper, spinner, sleep, hide, show, loadTime, getPosts, makeLinksClickable } from './app.js'
 import { checkCookie } from './app.js';
 import { createSingleMessage } from './populate_messages.js'
-import { $ } from "./DOM_helpers.js";
+import { createDiv, $, qS } from "./DOM_helpers.js";
+import { initPosts } from './populate_posts.js';
 
 export let webSocketUsers;
 let formattedDate = new Date().toLocaleString("en-IE", { hour12: false }).replace(",", "");
@@ -36,6 +37,29 @@ export function Forum() {
             let data = JSON.parse(msg.data);
             console.log("Action is", data.action);
             switch (data.action) {
+                case "new_post":
+                    //console.log("new posts", data.posts)
+                    if (data.from != currentUser.innerHTML) {
+                        //console.log("new posts to be seen!", data)
+                        let loadMore = createDiv([`load-more`, `posts`], `New posts have been added in real time! Load more ...`);
+                        postsWrapper.prepend(loadMore);
+                        loadMore.addEventListener("click", () => {
+                            loadMore.remove();
+                            //console.log("Load more posts", data.posts)
+                            let postsAreaRect = qS('posts-area').getBoundingClientRect();
+                            let x = postsAreaRect.left + postsAreaRect.width / 2 - 40;
+                            let y = postsAreaRect.bottom - 100;
+                            spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
+                            show(spinner);
+                            sleep(loadTime);
+                            hide(spinner);
+                            getPosts(0, true)
+                                .then(() => {makeLinksClickable()})
+                                .catch(error => console.log(error))
+                            })
+                            
+                        }
+                    break
                 case "list_users":
                     webSocketUsers = data.connected_users
                     getUsers()

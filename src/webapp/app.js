@@ -16,8 +16,8 @@ export const postsWrapper = qS('posts-wrapper');
 export const threadWrapper = qS('thread-wrapper');
 export const messagesWrapper = qS('messages-wrapper');
 
-function hide(x) { return x.classList.add('hidden'); }
-function show(x) { return x.classList.remove('hidden'); }
+export function hide(x) { return x.classList.add('hidden'); }
+export function show(x) { return x.classList.remove('hidden'); }
 
 const profile = qS('user-profile-container');
 const logout = $('logout');
@@ -25,17 +25,18 @@ const adsArea = qS('ads-area');
 const loginArea = qS('login-area');
 const registerArea = qS('register-area');
 const userArea = qS('user-list');
-const spinner = qS('lds-ellipsis');
+export const spinner = qS('lds-ellipsis');
 
 const buttons = document.querySelectorAll('button');
 
 const threadHeader = qS('thread-header-text');
+const parentID = $('parentID');
 const messageBoxHeader = qS('messages-header-text');
 const closeMessagesBox = qS('close-messages-button');
 const closeThread = qS('close-thread-button');
 const messagesBackgroundOverlay = qS('overlay');
 
-let postsObject = await getJSON('/src/server/getPostsHandler');
+let postsObject = { "posts": [] };
 //let postsObject = await getJSON('/static/postsData.json');
 let threadObject = { "posts": [] };
 //let threadObject = await getJSON('/static/threadData.json')
@@ -52,7 +53,7 @@ let bottomSentinelPreviousY = 0;
 let bottomSentinelPreviousRatio = 0;
 
 const nrOfItemsToLoad = 10;
-const loadTime = 1500;
+export const loadTime = 1500;
 let pDB = postsObject.posts;
 export let mDB = messagesObject.messages;
 let isThread = false;
@@ -62,7 +63,7 @@ let currentIndex = 0,
     threadIndex,
     messagesIndex = mDB.length;
 
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+export const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const keepPostInFocus = (postInFocus, position) => {
     //console.log(`focus on: ` + postInFocus)
@@ -140,6 +141,7 @@ const bottomSentCallback = async entry => {
             postInFocus = postsWrapper.lastChild.id;
         }
         getPosts();
+        makeLinksClickable()
         keepPostInFocus(postInFocus, 'end');
 
     }
@@ -251,53 +253,28 @@ function login() {
         });
 }
 
-const start = () => {
+const start = async () => {
 
     //DB = initDB(DBSize, postsObject);
-    getUsers();
-    getPosts();
-    const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
-    threadOpeningElements.forEach((threadLink) => {
-        threadLink.addEventListener('click', () => {
-            toggleThreadVisibility(true);
-            let interSection = $('thread-intersection-observer');
-            threadWrapper.innerHTML = ''; // clear thread box contents
-            threadWrapper.appendChild(interSection);
-            let selectedPost = postsObject.posts.filter(post => post.postID === threadLink.id)[0]
-            let category = createDiv('post-category', selectedPost.category, selectedPost.category);
-            threadHeader.innerHTML = selectedPost.title;
-            threadHeader.prepend(category);
-
-            //let threadDB = initDB(selectedPost.comments, threadObject);
-            postsIndex = currentIndex;
-            currentIndex = 0;
-            isThread = true;
-            updateComments((threadLink.id))
-                .then(() => {getPosts()})
-                .catch((err) => {
-                    console.log("Error with displaying comments: ", err)
-                    });
-        });
-    });
-
-    closeThread.addEventListener('click', () => {
-        toggleThreadVisibility(false);
-        currentIndex = postsIndex;
-        pDB = postsObject.posts;
-        isThread = false;
-    });
+    await getUsers();
+    await getPosts();
+    makeLinksClickable();
 
 }
 
 /* Loads next batch of posts */
-export function getPosts() {
-    console.log("Total number of posts", pDB.length, ", loading at index", currentIndex, ", is comments thread", isThread);
-    if (currentIndex + nrOfItemsToLoad > pDB.length) {
-        initPosts(pDB, currentIndex, pDB.length, isThread);
-    } else {
-        initPosts(pDB, currentIndex, currentIndex + nrOfItemsToLoad, isThread);
+export async function getPosts(index = currentIndex, prepend = false, isThread = false) {
+    if (!isThread) {
+        postsObject = await getJSON('/src/server/getPostsHandler');
+        pDB = postsObject.posts;
     }
-    currentIndex = currentIndex + nrOfItemsToLoad;
+    console.log("Total number of posts", pDB.length, ", loading at index", index, ", is comments thread", isThread);
+    if (index + nrOfItemsToLoad > pDB.length) {
+        initPosts(pDB, index, pDB.length, isThread, prepend);
+    } else {
+        initPosts(pDB, index, index + nrOfItemsToLoad, isThread, prepend);
+    }
+    currentIndex = index + nrOfItemsToLoad;
 }
 
 
@@ -486,8 +463,7 @@ async function makeNewComment() {
         },
         body: JSON.stringify(dataToSend)
     })
-
-
+    
     if (res.status == 200) {
         console.log("Status 200", res.status)
         // clear the postsWrapper element
@@ -508,6 +484,8 @@ async function makeNewComment() {
         return res.json()
     }
 
+    // resetting form values
+    $('commentContentID').value = '';
 }
 
 async function makeNewPost() {
@@ -547,6 +525,14 @@ async function makeNewPost() {
         dataToSend.user = currentUser.innerHTML;
         let newPost = createPost(dataToSend);
         postsWrapper.prepend(newPost);
+        getPosts();
+        makeLinksClickable();
+        let jsonData = {};
+        console.log("broadcasting new post");
+        jsonData["action"] = "new_post";
+        jsonData["from"] = currentUser.innerHTML;
+        socket.send(JSON.stringify(jsonData));
+
     } else {
         console.log("Status other", res.status)
         return res.json()
@@ -557,6 +543,39 @@ async function makeNewPost() {
     $('titleID').value = '';
     $('categoryID').value = 'general';
 }
+
+export function makeLinksClickable() {
+    const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
+    threadOpeningElements.forEach((threadLink) => {
+        threadLink.addEventListener('click', () => {
+            toggleThreadVisibility(true);
+            isThread = true;
+            let interSection = $('thread-intersection-observer');
+            threadWrapper.innerHTML = ''; // clear thread box contents
+            threadWrapper.appendChild(interSection);
+            updateComments((threadLink.id))
+                .then(() => {
+                    getPosts(0, false, isThread)
+                    let selectedPost = postsObject.posts.filter(post => post.postID === threadLink.id)[0]
+                    let category = createDiv('post-category', selectedPost.category, selectedPost.category);
+                    threadHeader.innerHTML = selectedPost.title;
+                    parentID.value = selectedPost.postID;
+                    threadHeader.prepend(category);
+                })
+                .catch((err) => {
+                    console.log("Error with displaying comments: ", err)
+                    }); 
+        });
+    });
+
+    closeThread.addEventListener('click', () => {
+        toggleThreadVisibility(false);
+        currentIndex = postsIndex;
+        pDB = postsObject.posts;
+        isThread = false;
+    });
+}
+
 
 $("message").addEventListener("keydown", function (event) {
     if (event.code === "Enter") {

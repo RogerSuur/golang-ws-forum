@@ -1,7 +1,7 @@
 import { postsWrapper, threadWrapper } from './app.js';
 import { createDiv, horizontalDivider, $ } from './DOM_helpers.js';
 
-export const initPosts = (DB, from, to, isThread = false) => {
+export const initPosts = (DB, from, to, isThread = false, prepend = false) => {
 
     //console.log("initPosts", DB, from, to, isThread);
 
@@ -21,12 +21,10 @@ export const initPosts = (DB, from, to, isThread = false) => {
         }
         let insertIntersection = false;
         if (i === to - 1 && DB.length != 1) {
-            //console.log("prev to last post");
             insertIntersection = true;
         }
 
         let newPost = createPost(DB[i], insertIntersection, isThread)
-
         if (isThread) {
             if (DB.length == 1) {
                 threadWrapper.prepend(newPost);
@@ -34,7 +32,11 @@ export const initPosts = (DB, from, to, isThread = false) => {
                 threadWrapper.appendChild(newPost);
             }
         } else {
-            postsWrapper.appendChild(newPost);
+            if (prepend) {
+                postsWrapper.prepend(newPost);
+            } else {
+                postsWrapper.appendChild(newPost);
+            }
         }
        
         i++;
