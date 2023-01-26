@@ -98,7 +98,6 @@ export function Forum() {
                         }
                         let newMessage = createSingleMessage(mDBlength, data.content, data.from, formatTimeStamp(formattedDate))
                         messagesWrapper.prepend(newMessage);
-                        //sortUsersbyLastMessage(data.from)
                         /*
                         )})
                         .catch(error => console.log(error))

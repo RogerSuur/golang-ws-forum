@@ -150,7 +150,7 @@ func getMessagesQuery(ID1 string, ID2 string) ([]byte, error) {
 }
 
 func addPostHandler(w http.ResponseWriter, r *http.Request) {
-	//var user string = r.Header.Get("X-Username")
+	// var user string = r.Header.Get("X-Username")
 	var post Post
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&post)
@@ -161,11 +161,11 @@ func addPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	post.User, _ = getID(post.User)
-	//currentTime := time.Now().UTC()
-	//post.Timestamp = currentTime.Format(time.RFC3339)
-	//post.Category = "Lorem"
-	//post.Comments = 0
-	//fmt.Printf("Empty %+v\n", post)
+	// currentTime := time.Now().UTC()
+	// post.Timestamp = currentTime.Format(time.RFC3339)
+	// post.Category = "Lorem"
+	// post.Comments = 0
+	// fmt.Printf("Empty %+v\n", post)
 	_, err = database.Statements["addPost"].Exec(post.User, post.Title, post.Content, post.Timestamp, post.Category, post.Comments)
 	if err != nil {
 		log.Println("Error with adding post", err.Error())
@@ -206,20 +206,15 @@ func addMessageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
-	//var user string = r.Header.Get("X-Username")
+	// var user string = r.Header.Get("X-Username")
 	var comment Comment
 	decoder := json.NewDecoder(r.Body)
-	//fmt.Printf("Empty %+v\n", comment)
 	err := decoder.Decode(&comment)
 	if err != nil {
 		log.Println("Decoder error:", err.Error())
 		w.WriteHeader(400)
 		return
 	}
-	//fmt.Printf("Filled %+v\n", comment)
-	//currentTime := time.Now().UTC()
-	//formattedTime := currentTime.Format(time.RFC3339)
-	//comment.Timestamp = formattedTime
 
 	comment.Author, _ = getID(comment.Author)
 	fmt.Println("Adding comment:", comment)
@@ -228,8 +223,8 @@ func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error with adding message", err.Error())
 		w.WriteHeader(500)
 		return
-	} 
-	
+	}
+
 	// update comment count for post
 	_, err = database.Statements["updateCommentCount"].Exec(comment.PostID)
 	if err != nil {
