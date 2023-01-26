@@ -1,14 +1,12 @@
 import { createDiv, $, qS } from "./DOM_helpers.js";
 import { startHeaderClock } from "./header_clock.js";
 import { getJSON } from "./read_JSON.js";
-import { initPosts, createPost } from "./populate_posts.js";
-import { initMessages } from "./populate_messages.js";
-import { populateUsers } from "./populate_users.js";
-import { Forum } from './ws.js';
-import { sendMessage } from "./ws.js";
-import { socket } from "./ws.js";
-import { newPostValidation, signUpValidation, loginValidation } from "./validate.js";
-import { badValidation } from "./validate.js";
+import { initPosts, createPost } from "./posts.js";
+import { initMessages } from "./messages.js";
+import { populateUsers } from "./users.js";
+import { Forum, socket, sendMessage, userFieldConnection, userLogoutConnection } from './ws.js';
+import { getCookie, createNewCookie, newPostValidation, signUpValidation, loginValidation, badValidation } from "./validate.js";
+import { hide, show, toggleMessageBoxVisibility, toggleThreadVisibility, toggleLoginVisibility, toggleRegisterVisibility } from "./visibility_togglers.js";
 
 new Forum()
 
@@ -16,15 +14,6 @@ export const postsWrapper = qS('posts-wrapper');
 export const threadWrapper = qS('thread-wrapper');
 export const messagesWrapper = qS('messages-wrapper');
 
-export function hide(x) { return x.classList.add('hidden'); }
-export function show(x) { return x.classList.remove('hidden'); }
-
-const profile = qS('user-profile-container');
-const logout = $('logout');
-const adsArea = qS('ads-area');
-const loginArea = qS('login-area');
-const registerArea = qS('register-area');
-const userArea = qS('user-list');
 export const spinner = qS('lds-ellipsis');
 
 const buttons = document.querySelectorAll('button');
@@ -34,11 +23,9 @@ const parentID = $('parentID');
 const messageBoxHeader = qS('messages-header-text');
 const closeMessagesBox = qS('close-messages-button');
 const closeThread = qS('close-thread-button');
-const messagesBackgroundOverlay = qS('overlay');
 
 let postsObject = { "posts": [] };
 //let postsObject = await getJSON('/static/postsData.json');
-let threadObject = { "posts": [] };
 //let threadObject = await getJSON('/static/threadData.json')
 //let usersObject = await getJSON('/static/usersData.json');
 //let messagesObject = await getJSON('/static/messagesData.json');
@@ -60,7 +47,7 @@ let isThread = false;
 
 let currentIndex = 0,
     postsIndex,
-    threadIndex,
+    //threadIndex,
     messagesIndex = mDB.length;
 
 export const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -253,7 +240,7 @@ function login() {
         });
 }
 
-const start = async () => {
+export const start = async () => {
 
     //DB = initDB(DBSize, postsObject);
     await getUsers();
@@ -375,7 +362,7 @@ export async function getUsers() {
         }
         */
     });
-};
+}
 
 startHeaderClock;
 
@@ -580,7 +567,7 @@ export function makeLinksClickable() {
 
 
 $("message").addEventListener("keydown", function (event) {
-    if (event.code === "Enter") {
+    if (event.code === "Enter" || event.code === "NumpadEnter") {
         if (!socket) {
             console.log("no connection");
             return false
@@ -590,117 +577,6 @@ $("message").addEventListener("keydown", function (event) {
         sendMessage();
     }
 })
-
-function toggleMessageBoxVisibility(makeVisible) {
-    //console.log(makeVisible, "toggle messagebox");
-    if (makeVisible) {
-        messagesBackgroundOverlay.style.zIndex = '1'; // bring overlay in front of posts area
-        show(messagesWrapper.parentElement); // make messages box visible
-    } else {
-        messagesBackgroundOverlay.style.zIndex = '-1';
-        hide(messagesWrapper.parentElement); // make messages box hidden
-    }
-}
-
-function toggleThreadVisibility(makeVisible) {
-    if (makeVisible) {
-        hide(postsWrapper.parentElement); // make posts hidden
-        show(threadWrapper.parentElement); // make thread visible
-    } else {
-        show(postsWrapper.parentElement);
-        hide(threadWrapper.parentElement);
-    }
-}
-
-export function toggleLoginVisibility(makeVisible) {
-    if (makeVisible) {
-        toggleMessageBoxVisibility(false);
-        hide(adsArea);
-        hide(postsWrapper.parentElement);
-        hide(userArea);
-        hide(profile);
-        hide(registerArea);
-        logout.innerHTML = 'Login';
-        show(loginArea);
-
-    } else {
-        show(adsArea);
-        show(postsWrapper.parentElement);
-        show(userArea);
-        show(profile);
-
-        logout.innerHTML = 'Logout';
-        hide(loginArea);
-    }
-}
-
-function toggleRegisterVisibility(makeVisible) {
-    if (makeVisible) {
-        hide(adsArea);
-        hide(postsWrapper.parentElement);
-        hide(userArea)
-        hide(profile);
-        hide(loginArea);
-        logout.innerHTML = 'Login';
-        show(registerArea);
-    } else {
-        show(adsArea);
-        show(postsWrapper.parentElement);
-        show(userArea);
-        show(profile);
-        logout.innerHTML = 'Logout';
-        hide(registerArea);
-    }
-}
-
-export function checkCookie() {
-    //var currentUser
-    if (document.cookie == "") {
-        toggleLoginVisibility(true)
-    } else {
-        let user_uuid = getCookie();
-
-        fetch('/src/server/checkCookieHandler', {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: user_uuid
-        })
-
-            .then((res) => {
-                if (res.ok) {
-                    toggleLoginVisibility(false)
-                    start()
-                    return res.json()
-                } else {
-                    throw res.statusText
-                }
-            })
-
-            .then((result) => {
-                //set username to result.user
-                userFieldConnection(result.user)
-                currentUser.innerHTML = result.user;
-            })
-
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-    }
-}
-
-function createNewCookie(uuid) {
-    const d = new Date();
-    d.setTime(d.getTime() + (1 * 7 * 60 * 1000));
-    let expires = "expires=" + d.toUTCString();
-    document.cookie = "username=" + encodeURI(uuid) + "; Path=/; " + expires + ";";
-}
-
-function getCookie() {
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split('=');
-    return ca[1]
-}
-
 
 $('logout_User').addEventListener('click', () => {
     let user_uuid = getCookie();
@@ -721,7 +597,6 @@ $('logout_User').addEventListener('click', () => {
             }
         })
 
-
         .catch((error) => {
             console.error('Error:', error);
         });
@@ -735,20 +610,3 @@ $('logout_User').addEventListener('click', () => {
 
     toggleLoginVisibility(true);
 })
-
-//gives loginwsconnection a username
-function userFieldConnection(username) {
-    let jsonData = {};
-    console.log("userfield connection");
-    jsonData["action"] = "username";
-    jsonData["username"] = username;
-    socket.send(JSON.stringify(jsonData));
-}
-
-//removes wsconnections
-function userLogoutConnection() {
-    let jsonData = {};
-    console.log("userlogoutconnection");
-    jsonData["action"] = "left";
-    socket.send(JSON.stringify(jsonData));
-}

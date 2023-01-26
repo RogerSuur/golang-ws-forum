@@ -1,4 +1,7 @@
 import { createDiv } from "./DOM_helpers.js";
+import { currentUser, start } from "./app.js";
+import { toggleLoginVisibility } from "./visibility_togglers.js";
+import { userFieldConnection } from "./ws.js";
 
 const patterns = {
     "username-register": /^[a-zA-Z\d]{1,15}$/,
@@ -8,10 +11,10 @@ const patterns = {
 
 export const newPostValidation = () => {
 
-    var data = new FormData(document.getElementById('new-post'));
-    var dataToSend = Object.fromEntries(data)
+    let data = new FormData(document.getElementById('new-post'));
+    let dataToSend = Object.fromEntries(data)
 
-    var errors = document.getElementsByClassName('error-message');
+    let errors = document.getElementsByClassName('error-message');
     while (errors[0]) {
         errors[0].parentNode.removeChild(errors[0]);
     }
@@ -20,15 +23,15 @@ export const newPostValidation = () => {
         badValidation("title", "Please add a title")
         return false
     } else {
-        var input_area = document.getElementById("titleID")
-        input_area.style.borderColor = "";
+        let title_input_area = document.getElementById("titleID")
+        title_input_area.style.borderColor = "";
     }
 
     if (dataToSend.content == "") {
         badValidation("content", "We are not mind-readers")
         return false
     } else {
-        var input_area = document.getElementById("contentID")
+        let input_area = document.getElementById("contentID")
         input_area.style.borderColor = "";
     }
 
@@ -36,10 +39,10 @@ export const newPostValidation = () => {
 }
 
 export const loginValidation = () => {
-    var data = new FormData(document.getElementById('login-area'));
-    var dataToSend = Object.fromEntries(data)
+    let data = new FormData(document.getElementById('login-area'));
+    let dataToSend = Object.fromEntries(data)
 
-    var errors = document.getElementsByClassName('error-message');
+    let errors = document.getElementsByClassName('error-message');
     while (errors[0]) {
         errors[0].parentNode.removeChild(errors[0]);
     }
@@ -48,15 +51,15 @@ export const loginValidation = () => {
         badValidation("username_login", "Please add a username")
         return false
     } else {
-        var input_area = document.getElementById("username_loginID")
-        input_area.style.borderColor = "";
+        let username_input_area = document.getElementById("username_loginID")
+        username_input_area.style.borderColor = "";
     }
 
     if (dataToSend.password_login == "") {
         badValidation("password_login", "Please enter password")
         return false
     } else {
-        var input_area = document.getElementById("password_loginID")
+        let input_area = document.getElementById("password_loginID")
         input_area.style.borderColor = "";
     }
 
@@ -65,10 +68,10 @@ export const loginValidation = () => {
 
 export const signUpValidation = () => {
 
-    var data = new FormData(document.getElementById('register-area'));
-    var dataToSend = Object.fromEntries(data)
+    let data = new FormData(document.getElementById('register-area'));
+    let dataToSend = Object.fromEntries(data)
 
-    var errors = document.getElementsByClassName('error-message');
+    let errors = document.getElementsByClassName('error-message');
     while (errors[0]) {
         errors[0].parentNode.removeChild(errors[0]);
     }
@@ -116,7 +119,7 @@ function validateRegex(field, value, requirement) {
 }
 
 export function badValidation(field, requirement) {
-    var input_area = document.getElementById(field + "ID")
+    let input_area = document.getElementById(field + "ID")
     input_area.style.borderColor = 'red'
     let errorMessage = createDiv('error-message', requirement, 'error-message');
     input_area.parentNode.insertBefore(errorMessage, input_area)
@@ -124,6 +127,54 @@ export function badValidation(field, requirement) {
 }
 
 function goodValidation(field) {
-    var div = document.getElementById(field + "ID")
+    let div = document.getElementById(field + "ID")
     div.style.borderColor = 'green'
+}
+
+export function checkCookie() {
+    //let currentUser
+    if (document.cookie == "") {
+        toggleLoginVisibility(true)
+    } else {
+        let user_uuid = getCookie();
+
+        fetch('/src/server/checkCookieHandler', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: user_uuid
+        })
+
+            .then((res) => {
+                if (res.ok) {
+                    toggleLoginVisibility(false)
+                    start()
+                    return res.json()
+                } else {
+                    throw res.statusText
+                }
+            })
+
+            .then((result) => {
+                //set username to result.user
+                userFieldConnection(result.user)
+                currentUser.innerHTML = result.user;
+            })
+
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+}
+
+export function createNewCookie(uuid) {
+    const d = new Date();
+    d.setTime(d.getTime() + (1 * 7 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = "username=" + encodeURI(uuid) + "; Path=/; " + expires + ";";
+}
+
+export function getCookie() {
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split('=');
+    return ca[1]
 }

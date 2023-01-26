@@ -20,7 +20,7 @@ body {
   width: 100vw;
   align-items: top;
   grid-template-rows: [header] 5vh [title] 15vh [main] 80vh [row-end];
-  grid-template-columns: [col-start] 5fr [left-bar] 15vw [main-posts] 50vw [main-users] 25vw [right-bar] 5fr [col-end];
+  grid-template-columns: [col-start] minmax(5px, 5fr) [left-bar] minmax(160px, 15vw) [main-posts] minmax(500px, 50vw) [main-users] minmax(200px, 25vw) [right-bar] minmax(5px, 5fr) [col-end];
 }
 
 /* HEADER, TITLE and CLOCK */
@@ -113,6 +113,7 @@ body {
   width: 100%;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
   background-color: var(--accent-color);
 }
 

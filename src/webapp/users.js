@@ -1,4 +1,3 @@
-import { otherUser } from './app.js';
 import { createDiv } from './DOM_helpers.js';
 import { getJSON } from "./read_JSON.js";
 import { webSocketUsers } from './ws.js';
@@ -25,7 +24,7 @@ export async function populateUsers() {
         constructUserLists(usersObject.online, onlineUsersWrapper, 'online');
     }
     constructUserLists(usersObject.offline, offlineUsersWrapper, 'offline');
-};
+}
 
 const createOnlineUsers = function (onlineUsers, offlineUsers) {
     offlineUsers.forEach(function (user) {
