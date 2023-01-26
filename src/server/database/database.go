@@ -42,10 +42,11 @@ type Post struct {
 }
 
 type Comment struct {
-	Author    string `json:"user"`
 	PostID    string `json:"postID"`
 	Content   string `json:"content"`
+	CommentID string `json:"commentID"`
 	Timestamp string `json:"timestamp"`
+	Author    string `json:"user"`
 }
 
 type Status struct {

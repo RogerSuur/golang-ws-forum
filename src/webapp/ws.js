@@ -2,12 +2,12 @@ export const userRegister = document.getElementById("username-register")
 export let socket = null;
 import { currentUser, otherUser, getUsers, mDB, messagesWrapper, postsWrapper, spinner, sleep, loadTime, getPosts, makeLinksClickable } from './app.js'
 import { createSingleMessage } from './messages.js'
-import { createDiv, $, qS } from "./DOM_helpers.js";
+import { createDiv, $, qS, formatTimeStamp } from "./DOM_helpers.js";
 import { hide, show } from "./visibility_togglers.js";
 import { checkCookie } from './validate.js';
 
 export let webSocketUsers;
-let formattedDate = new Date().toLocaleString("en-IE", { hour12: false }).replace(",", "");
+let formattedDate = new Date().toISOString();
 
 export function Forum() {
 
@@ -83,7 +83,7 @@ export function Forum() {
                                 } else {
                                     mDBlength += 1;
                                 }
-                                let newMessage = createSingleMessage(mDBlength, data.content, data.from, formattedDate)
+                                let newMessage = createSingleMessage(mDBlength, data.content, data.from, formatTimeStamp(formattedDate))
                                 messagesWrapper.prepend(newMessage);
                             /*
                             )})

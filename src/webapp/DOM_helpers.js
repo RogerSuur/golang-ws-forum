@@ -30,3 +30,8 @@ export function horizontalDivider(type) {
     hr.classList.add(type);
     return hr;
 }
+
+export function formatTimeStamp(timestamp) {
+    timestamp = new Date(timestamp);
+    return timestamp.toLocaleString("en-IE", { hour12: false }).replace(",", "");
+}
