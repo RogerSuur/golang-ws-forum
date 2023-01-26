@@ -511,7 +511,6 @@ async function makeNewPost() {
         // currentIndex = 0;
         // pDB = postsObject.posts;
         // restart the posts area of forum
-
         let last = postsWrapper.firstElementChild.id.replace("post-", '') * 1;
         dataToSend.postID = last + 1;
         let newPost = createPost(dataToSend);

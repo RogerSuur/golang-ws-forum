@@ -209,17 +209,12 @@ func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	// var user string = r.Header.Get("X-Username")
 	var comment Comment
 	decoder := json.NewDecoder(r.Body)
-	// fmt.Printf("Empty %+v\n", comment)
 	err := decoder.Decode(&comment)
 	if err != nil {
 		log.Println("Decoder error:", err.Error())
 		w.WriteHeader(400)
 		return
 	}
-	// fmt.Printf("Filled %+v\n", comment)
-	// currentTime := time.Now().UTC()
-	// formattedTime := currentTime.Format(time.RFC3339)
-	// comment.Timestamp = formattedTime
 
 	comment.Author, _ = getID(comment.Author)
 	fmt.Println("Adding comment:", comment)
