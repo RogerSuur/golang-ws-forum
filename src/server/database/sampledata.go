@@ -39,7 +39,7 @@ func insertSamplePosts(db *sql.DB) {
 	json.Unmarshal(byteValue, &posts)
 
 	sort.Slice(posts.Status.Post, func(i, j int) bool {
-		layout := "2/1/2006 15:04:05"
+		layout := time.RFC3339
 		a := posts.Status.Post[i].Timestamp
 		b := posts.Status.Post[j].Timestamp
 		t1, err := time.Parse(layout, a)
@@ -107,7 +107,7 @@ func insertSampleMessages(db *sql.DB) {
 	json.Unmarshal(byteValue, &posts)
 
 	sort.Slice(posts.Status.Message, func(i, j int) bool {
-		layout := "2006/1/2 15:04:05"
+		layout := time.RFC3339
 		a := posts.Status.Message[i].Timestamp
 		b := posts.Status.Message[j].Timestamp
 		t1, err := time.Parse(layout, a)

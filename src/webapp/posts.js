@@ -1,5 +1,5 @@
 import { postsWrapper, threadWrapper } from './app.js';
-import { createDiv, horizontalDivider, $ } from './DOM_helpers.js';
+import { createDiv, horizontalDivider, $, formatTimeStamp } from './DOM_helpers.js';
 
 export const initPosts = (DB, from, to, isThread = false, prepend = false) => {
 
@@ -53,7 +53,7 @@ export function createPost(postData, insertIntersection = false, isThread = fals
 
     let postHeader = createDiv('post-header');
 
-    let postDate = createDiv('post-date', `real time of posting: ${postData.timestamp}`);
+    let postDate = createDiv('post-date', `real time of posting: ${formatTimeStamp(postData.timestamp)}`);
     postHeader.appendChild(postDate);
 
     let postAuthor = createDiv('post-user', `real posting by: <b>${postData.user}</b>`);

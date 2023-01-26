@@ -439,6 +439,10 @@ async function makeNewComment() {
     let data = new FormData($('new-comment'));
     let dataToSend = Object.fromEntries(data)
 
+    dataToSend.timestamp = new Date().toISOString();
+    dataToSend.user = currentUser.innerHTML;
+    console.log("dataToSend", dataToSend);
+    
     //get post title
     //console.log("dataToSend", dataToSend);
 
@@ -446,7 +450,6 @@ async function makeNewComment() {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-            'X-Username': currentUser.innerHTML,
         },
         body: JSON.stringify(dataToSend)
     })
@@ -459,10 +462,11 @@ async function makeNewComment() {
         // threadWrapper.appendChild(interSection);
         // initialise messagesObject
         // currentIndex = 0;
+        
+        // Generate ID for HTML element (the actual ID is given in DB, but that is not known until the DB is updated and is not relevant here, too)
         let last = threadWrapper.lastElementChild.id.replace("thread-", "") * 1;
-        dataToSend.commentID = last + 1;
-        dataToSend.timestamp = new Date().toLocaleString("en-IE", { hour12: false }).replace(",", "");
-        dataToSend.user = currentUser.innerHTML;
+        dataToSend.commentID = (last + 1).toString();
+        
         let newComment = createPost(dataToSend, false, true);
         threadWrapper.appendChild(newComment);
         keepPostInFocus(newComment.id, 'end');
@@ -480,13 +484,15 @@ async function makeNewPost() {
     let data = new FormData($('new-post'));
     let dataToSend = Object.fromEntries(data)
 
-    //console.log("dataToSend", dataToSend);
+    dataToSend.timestamp = new Date().toISOString();
+    dataToSend.comments = 0;
+    dataToSend.user = currentUser.innerHTML;
+    console.log("dataToSend", dataToSend);
 
     const res = await fetch('/src/server/addPostHandler', {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-            'X-Username': currentUser.innerHTML
         },
         body: JSON.stringify(dataToSend)
     })
@@ -505,12 +511,9 @@ async function makeNewPost() {
         // currentIndex = 0;
         // pDB = postsObject.posts;
         // restart the posts area of forum
+        
         let last = postsWrapper.firstElementChild.id.replace("post-", '') * 1;
-        // console.log("Lastchild", last)
         dataToSend.postID = last + 1;
-        dataToSend.timestamp = new Date().toLocaleString("en-IE", { hour12: false }).replace(",", "");
-        dataToSend.comments = 0;
-        dataToSend.user = currentUser.innerHTML;
         let newPost = createPost(dataToSend);
         postsWrapper.prepend(newPost);
         keepPostInFocus(newPost.id, 'start');

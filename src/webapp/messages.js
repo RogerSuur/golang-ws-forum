@@ -1,5 +1,5 @@
 import { messagesWrapper, currentUser } from "./app.js";
-import { createDiv, $ } from "./DOM_helpers.js";
+import { createDiv, $, formatTimeStamp } from "./DOM_helpers.js";
 //import { getJSON } from "./read_JSON.js";
 
 export const initMessages = (DB, fromIndex, toIndex) => {
@@ -26,7 +26,7 @@ export const initMessages = (DB, fromIndex, toIndex) => {
             nextUser = DB[i - 1].from;
         }
         //console.log("i", DB[i].content, "DB[i] current", DB[i].from, "DB[i-1] next", nextUser)
-        let singleMessage = createSingleMessage(i, DB[i].content, DB[i].from, DB[i].timestamp, nextUser)
+        let singleMessage = createSingleMessage(i, DB[i].content, DB[i].from, formatTimeStamp(DB[i].timestamp), nextUser)
 
         messagesWrapper.appendChild(singleMessage);
 
