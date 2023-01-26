@@ -1,10 +1,10 @@
 export const userRegister = document.getElementById("username-register")
 export let socket = null;
-import { currentUser, otherUser, getUsers, mDB, messagesWrapper, postsWrapper, spinner, sleep, hide, show, loadTime, getPosts, makeLinksClickable } from './app.js'
-import { checkCookie } from './app.js';
-import { createSingleMessage } from './populate_messages.js'
+import { currentUser, otherUser, getUsers, mDB, messagesWrapper, postsWrapper, spinner, sleep, loadTime, getPosts, makeLinksClickable } from './app.js'
+import { createSingleMessage } from './messages.js'
 import { createDiv, $, qS } from "./DOM_helpers.js";
-import { initPosts } from './populate_posts.js';
+import { hide, show } from "./visibility_togglers.js";
+import { checkCookie } from './validate.js';
 
 export let webSocketUsers;
 let formattedDate = new Date().toLocaleString("en-IE", { hour12: false }).replace(",", "");
@@ -26,7 +26,7 @@ export function Forum() {
 
         socket.onopen = () => {
             console.log("Successfully connected");
-            checkCookie()
+            checkCookie(currentUser.innerHTML)
         };
 
         socket.onclose = () => {
@@ -202,4 +202,21 @@ function sendNotification(currentUser, sender) {
         }
         return true
     }
+}
+
+//gives loginwsconnection a username
+export function userFieldConnection(username) {
+    let jsonData = {};
+    console.log("userfield connection");
+    jsonData["action"] = "username";
+    jsonData["username"] = username;
+    socket.send(JSON.stringify(jsonData));
+}
+
+//removes wsconnections
+export function userLogoutConnection() {
+    let jsonData = {};
+    console.log("userlogoutconnection");
+    jsonData["action"] = "left";
+    socket.send(JSON.stringify(jsonData));
 }

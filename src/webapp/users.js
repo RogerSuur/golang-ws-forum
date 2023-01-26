@@ -1,4 +1,4 @@
-import { currentUser, otherUser } from './app.js';
+import { otherUser } from './app.js';
 import { createDiv } from './DOM_helpers.js';
 import { getJSON } from "./read_JSON.js";
 import { webSocketUsers } from './ws.js';
@@ -9,10 +9,8 @@ let offlineUsersWrapper = document.querySelector(".offline");
 
 export async function populateUsers() {
     //loads fresh set of user
-    //let usersObject = await getJSON('/src/server/getUsersHandler');
-    let usersObject = await loadUsersObject();
+    let usersObject = await getJSON('/src/server/getUsersHandler');
 
-    console.log("currentUser.innerHTML", currentUser.innerHTML);
     onlineUsersWrapper.innerHTML = '';
     offlineUsersWrapper.innerHTML = '';
     if (webSocketUsers !== undefined) {
@@ -28,29 +26,6 @@ export async function populateUsers() {
     }
     constructUserLists(usersObject.offline, offlineUsersWrapper, 'offline');
 };
-
-async function loadUsersObject() {
-    const data = await fetch('/src/server/getUsersHandler', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Username': currentUser.innerHTML,
-        },
-        body: JSON.stringify({
-        }),
-    })
-        .then((response) => response.json())
-        .then((result) => {
-            if (!result.hasOwnProperty('data')) alert(result.message);
-            else {
-                return result.data
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-    return data
-}
 
 const createOnlineUsers = function (onlineUsers, offlineUsers) {
     offlineUsers.forEach(function (user) {
@@ -77,7 +52,3 @@ const constructUserLists = (usersArray, usersWrapper, type) => {
         if (user.unread) {
             singleUser.classList.add('unread-messages');
         }
-
-        usersWrapper.appendChild(singleUser);
-    });
-};
