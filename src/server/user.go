@@ -231,6 +231,8 @@ func getIDbyUsername(username string) (ID int, err error) {
 }
 
 func getUsersHandler(w http.ResponseWriter, r *http.Request) {
+	var user string = r.Header.Get("X-Username")
+
 	rows, err := database.Statements["getUsers"].Query()
 	if err != nil {
 		log.Println("Error with getting users from DB:", err.Error())
@@ -242,22 +244,25 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 		var username Offline
 
 		err = rows.Scan(&username.Username)
-		users.Status.Offline = append(users.Status.Offline, Offline{
-			Username: username.Username,
-			Unread:   false,
-		})
-		if err != nil {
-			log.Println("Error with scanning usernames:", err.Error())
-			w.WriteHeader(400)
-			return
+		fmt.Println("&username.Username", username.Username)
+		if username.Username != user {
+			users.Status.Offline = append(users.Status.Offline, Offline{
+				Username: username.Username,
+				Unread:   false,
+			})
+			if err != nil {
+				log.Println("Error with scanning usernames:", err.Error())
+				w.WriteHeader(400)
+				return
+			}
 		}
 	}
-	//*
-	//
-	//FIND ONLINE USERS FROM WEBSOCKETCONNECTION POOL
-	//
-	//
-	//*
+
+	fmt.Println("My user is:", user)
+	fmt.Println("All users:", users)
+
+	// get all messages from the users and then sort the users based on the message to "user"
+
 	users.Status.Online = []Online{} // Needed to keep JSon going stupid
 
 	b, _ := json.Marshal(users)

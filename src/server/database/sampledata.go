@@ -107,7 +107,7 @@ func insertSampleMessages(db *sql.DB) {
 	json.Unmarshal(byteValue, &posts)
 
 	sort.Slice(posts.Status.Message, func(i, j int) bool {
-		layout := "2/1/2006 15:04:05"
+		layout := "2006/1/2 15:04:05"
 		a := posts.Status.Message[i].Timestamp
 		b := posts.Status.Message[j].Timestamp
 		t1, err := time.Parse(layout, a)

@@ -37,7 +37,6 @@ func getPostsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getCommentsHandler(w http.ResponseWriter, r *http.Request) {
-
 	var d struct {
 		PostID string `json:"postID"`
 	}
@@ -164,7 +163,7 @@ func addPostHandler(w http.ResponseWriter, r *http.Request) {
 	post.User, _ = getID(user)
 	dt := time.Now()
 	post.Timestamp = dt.Format("2/1/2006 15:04:05")
-	//post.Category = "Lorem"
+	// post.Category = "Lorem"
 	post.Comments = 0
 
 	_, err = database.Statements["addPost"].Exec(post.User, post.Title, post.Content, post.Timestamp, post.Category, post.Comments)
@@ -188,6 +187,8 @@ func addMessageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	dt := time.Now()
+	message.Timestamp = dt.Format("2006/1/2 15:04:05")
 	// fmt.Println("Adding message:", message)
 
 	message.Sender, _ = getID(message.Sender)
