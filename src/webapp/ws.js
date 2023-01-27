@@ -54,11 +54,11 @@ export function Forum() {
                             sleep(loadTime);
                             hide(spinner);
                             getPosts(0, true)
-                                .then(() => {makeLinksClickable()})
+                                .then(() => { makeLinksClickable() })
                                 .catch(error => console.log(error))
-                            })
-                            
-                        }
+                        })
+
+                    }
                     break
                 case "list_users":
                     webSocketUsers = data.connected_users
@@ -151,7 +151,35 @@ export async function sendMessage() {
         console.log("Error sending message", error)
     }
 
+    sortUsersbyLastMessage(currentUser.innerHTML, otherUser)
     $('message').value = "";
+}
+
+//Sorts usersDiv by last message sent
+function sortUsersbyLastMessage(sender, receiver) {
+
+    // const userList = $('user-list');
+    // const userNames = userList.getElementsByClassName('user-name');
+    // const activeReceiver = $('Mark');
+
+    // console.log(userList.hasChildNodes);
+    // console.log(userList.contains(activeReceiver));
+
+
+    // //userList.insertBefore(activeReceiver, userNames[0]);
+    // userList.insertBefore(activeReceiver, userList.firstChild)
+
+    // Get the element to be moved
+    var element = document.getElementById(`${receiver}`);
+
+    // Remove the element from its current position
+    element.remove();
+
+    // Get the "offline-group" element
+    var offlineGroup = document.getElementsByClassName("offline-group")[0];
+
+    // Insert the receiver div after the "offline-group" element
+    offlineGroup.after(element);
 }
 
 //Checks which conversation is open and wether to send notification or display msg
