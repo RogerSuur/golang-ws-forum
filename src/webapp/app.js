@@ -29,7 +29,7 @@ let postsObject = { "posts": [] };
 //let threadObject = await getJSON('/static/threadData.json')
 //let usersObject = await getJSON('/static/usersData.json');
 //let messagesObject = await getJSON('/static/messagesData.json');
-let messagesObject = { "messages": [] };
+let messagesObject = { "messages": [{ "content": "No messages yet" }] };
 // export let currentUser = 'Petra Marsh';
 export let currentUser = $("current-userID");
 export let otherUser;
@@ -53,7 +53,6 @@ let currentIndex = 0,
 export const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const keepPostInFocus = (postInFocus, position) => {
-    //console.log(`focus on: ` + postInFocus)
     const scrollPointItem = $(postInFocus);
     scrollPointItem.scrollIntoView({ behavior: 'auto', block: position });
 }
@@ -68,7 +67,6 @@ const topSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-    //console.log("Firing topSentCallback")
 
     // conditional check for Scrolling up
     if (
@@ -77,7 +75,6 @@ const topSentCallback = async entry => {
         currentRatio >= topSentinelPreviousRatio
     ) {
         // set spinner
-        //console.log("Executing topSentCallback")
         let messagesAreaRect = qS('messages-area').getBoundingClientRect();
         let x = messagesAreaRect.left + messagesAreaRect.width / 2 - 40;
         let y = messagesAreaRect.top + 40;
@@ -109,10 +106,14 @@ const bottomSentCallback = async entry => {
         isIntersecting
     ) {
         // set spinner
-        //console.log("Executing bottomSentCallback")
-        let postsAreaRect = qS('posts-area').getBoundingClientRect();
-        let x = postsAreaRect.left + postsAreaRect.width / 2 - 40;
-        let y = postsAreaRect.bottom - 100;
+        let rect;
+        if (isThread) {
+            rect = qS('thread-area').getBoundingClientRect();
+        } else {
+            rect = qS('posts-area').getBoundingClientRect();
+        }
+        let x = rect.left + rect.width / 2 - 40;
+        let y = rect.bottom - 100;
         spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
         if (entry.target.getBoundingClientRect().top < window.innerHeight) {
             show(spinner);
@@ -127,8 +128,13 @@ const bottomSentCallback = async entry => {
         } else {
             postInFocus = postsWrapper.lastChild.id;
         }
-        getPosts();
-        makeLinksClickable()
+        getPosts(currentIndex, false, isThread)
+            .then(() => {
+                if (!isThread) {
+                    makeLinksClickable()
+                }
+            })
+
         keepPostInFocus(postInFocus, 'end');
 
     }
@@ -137,25 +143,27 @@ const bottomSentCallback = async entry => {
     bottomSentinelPreviousRatio = currentRatio;
 }
 
-const initPostIntersectionObserver = () => {
+const callback = entries => {
+    entries.forEach(entry => {
+        bottomSentCallback(entry);
+    });
+}
 
-    const callback = entries => {
-        entries.forEach(entry => {
-            bottomSentCallback(entry);
-        });
+let observer = new IntersectionObserver(callback);
+
+const initPostIntersectionObserver = (open) => {
+    if (open) {
+        observer.observe($(`intersection-observer`));
+        observer.unobserve($(`thread-intersection-observer`));
+    } else {
+        observer.unobserve($(`intersection-observer`));
+        observer.observe($(`thread-intersection-observer`));
     }
-    let options = {
-        root: qS('posts-area')
-    }
-    let observer = new IntersectionObserver(callback, options);
-    observer.observe($(`intersection-observer`));
-    //observer.observe($(`thread-intersection-observer`));
-    //observer.observe($(`message-intersection-observer`));
 }
 
 const initMessageIntersectionObserver = () => {
 
-    const callback = entries => {
+    const messagesCallback = entries => {
         entries.forEach(entry => {
             topSentCallback(entry);
         });
@@ -163,8 +171,8 @@ const initMessageIntersectionObserver = () => {
     let options = {
         root: qS('messages-area')
     }
-    let observer = new IntersectionObserver(callback, options);
-    observer.observe($(`message-intersection-observer`));
+    let messagesObserver = new IntersectionObserver(messagesCallback, options);
+    messagesObserver.observe($(`message-intersection-observer`));
 }
 
 function signUp() {
@@ -189,14 +197,14 @@ function signUp() {
                 createNewCookie(result.UUID)
                 toggleRegisterVisibility(false)
                 start()
-                initPostIntersectionObserver();
+                initPostIntersectionObserver(true);
                 initMessageIntersectionObserver();
                 userFieldConnection(result.username)
             }
         })
 
         .catch((err) => {
-            console.log(err);
+            console.log("Error with signup", err);
         });
 }
 
@@ -228,7 +236,8 @@ function login() {
                 createNewCookie(result.UUID);
                 toggleLoginVisibility(false);
                 start();
-                initPostIntersectionObserver();
+                initPostIntersectionObserver(true);
+                //initThreadIntersectionObserver();
                 initMessageIntersectionObserver();
                 userFieldConnection(result.username);
                 currentUser.innerHTML = result.username;
@@ -236,16 +245,15 @@ function login() {
         })
 
         .catch((err) => {
-            console.log(err);
+            console.log("Error with login", err);
         });
 }
 
 export const start = async () => {
 
     //DB = initDB(DBSize, postsObject);
-    //await getUsers();
-    await getPosts();
-    makeLinksClickable();
+    await getUsers();
+    await getPosts().then(() => { makeLinksClickable() });
 
 }
 
@@ -267,10 +275,17 @@ export async function getPosts(index = currentIndex, prepend = false, isThread =
 
 /* Loads next batch of messages in a conversation */
 export async function getMessages(toUser) {
+    /* 
+    console.log("mDB", mDB)
+    if (mDB[0].timestamp == undefined) {
+        console.log("No messages to show");
+        initMessages(mDB, 1, 0, toUser);
+    }
+    */
+
     await updateMessages(currentUser.innerHTML, toUser)
     if (messagesIndex == 0) {
         messagesIndex = mDB.length;
-        // console.log("reset MessagesIndex", messagesIndex);
     }
     if (messagesIndex - nrOfItemsToLoad < 0) {
         initMessages(mDB, messagesIndex, 0, toUser);
@@ -296,8 +311,6 @@ export async function updateMessages(sender, receiver) {
             body: JSON.stringify(query)
         })
         let data = await response.json();
-        //console.log("lengths:", mDB.length, data.data.messages.length);
-        //console.log("Last message:", await data.data.messages[data.data.messages.length - 1])
         return mDB = await data.data.messages;
     } catch (err) {
         console.log("Error updating messages:", err);
@@ -305,12 +318,11 @@ export async function updateMessages(sender, receiver) {
 }
 
 async function updateComments(postID) {
-    //console.log("Updating comments for postID:", postID)
+    console.log("Updating comments for postID:", postID)
     try {
         const query = {
             postID: postID.toString(),
         };
-        //console.log("Query:", query)
         let response = await fetch('/src/server/getCommentsHandler', {
             method: 'POST',
             headers: {
@@ -404,16 +416,16 @@ buttons.forEach((button) => {
 $('register-area').addEventListener('submit', (e) => {
     if (signUpValidation()) {
         signUp();
-        //toggleRegisterVisibility(false)
     }
+    console.log("new register area eventlistener");
     e.preventDefault();
 });
 
 $('login-area').addEventListener('submit', (e) => {
     if (loginValidation()) {
-        //console.log(e.target);
         login();
     }
+    console.log("new login area eventlistener");
     e.preventDefault();
 });
 
@@ -441,10 +453,6 @@ async function makeNewComment() {
 
     dataToSend.timestamp = new Date().toISOString();
     dataToSend.user = currentUser.innerHTML;
-    console.log("dataToSend", dataToSend);
-
-    //get post title
-    //console.log("dataToSend", dataToSend);
 
     const res = await fetch('/src/server/addCommentsHandler', {
         method: "POST",
@@ -455,14 +463,6 @@ async function makeNewComment() {
     })
 
     if (res.status == 200) {
-        console.log("Status 200", res.status)
-        // clear the postsWrapper element
-        // let interSection = $('thread-intersection-observer');
-        // threadWrapper.innerHTML = '';
-        // threadWrapper.appendChild(interSection);
-        // initialise messagesObject
-        // currentIndex = 0;
-
         // Generate ID for HTML element (the actual ID is given in DB, but that is not known until the DB is updated and is not relevant here, too)
         let last = threadWrapper.lastElementChild.id.replace("thread-", "") * 1;
         dataToSend.commentID = (last + 1).toString();
@@ -470,7 +470,6 @@ async function makeNewComment() {
         let newComment = createPost(dataToSend, false, true);
         threadWrapper.appendChild(newComment);
         keepPostInFocus(newComment.id, 'end');
-        //updateComments(dataToSend.postID).then(() => {getPosts()});
     } else {
         console.log("Status other", res.status)
         return res.json()
@@ -487,7 +486,6 @@ async function makeNewPost() {
     dataToSend.timestamp = new Date().toISOString();
     dataToSend.comments = 0;
     dataToSend.user = currentUser.innerHTML;
-    console.log("dataToSend", dataToSend);
 
     const res = await fetch('/src/server/addPostHandler', {
         method: "POST",
@@ -497,27 +495,13 @@ async function makeNewPost() {
         body: JSON.stringify(dataToSend)
     })
 
-    //console.log("postsObject", postsObject);
-
     if (res.status == 200) {
-        console.log("Status 200", res.status)
-        // clear the postsWrapper element
-        //let interSection = $('intersection-observer');
-        //postsWrapper.innerHTML = '';
-        //postsWrapper.appendChild(interSection);
-        // initialise postsObject
-        //postsObject = await getJSON('/src/server/getPostsHandler');
-        //console.log("Updated postsOpbject", postsObject);
-        // currentIndex = 0;
-        // pDB = postsObject.posts;
-        // restart the posts area of forum
         let last = postsWrapper.firstElementChild.id.replace("post-", '') * 1;
         dataToSend.postID = last + 1;
         let newPost = createPost(dataToSend);
         postsWrapper.prepend(newPost);
         keepPostInFocus(newPost.id, 'start');
-        getPosts();
-        makeLinksClickable();
+        getPosts().then(() => { makeLinksClickable() });
         let jsonData = {};
         console.log("broadcasting new post");
         jsonData["action"] = "new_post";
@@ -544,23 +528,26 @@ export function makeLinksClickable() {
             let interSection = $('thread-intersection-observer');
             threadWrapper.innerHTML = ''; // clear thread box contents
             threadWrapper.appendChild(interSection);
+            postsIndex = currentIndex;
             updateComments((threadLink.id))
                 .then(() => {
-                    getPosts(0, false, isThread)
+                    getPosts(0, false, isThread);
                     let selectedPost = postsObject.posts.filter(post => post.postID === threadLink.id)[0]
                     let category = createDiv('post-category', selectedPost.category, selectedPost.category);
                     threadHeader.innerHTML = selectedPost.title;
                     parentID.value = selectedPost.postID;
                     threadHeader.prepend(category);
                 })
+                .then(() => { initPostIntersectionObserver(false) })
                 .catch((err) => {
                     console.log("Error with displaying comments: ", err)
                 });
-        });
+        }, { once: true });
     });
 
     closeThread.addEventListener('click', () => {
         toggleThreadVisibility(false);
+        initPostIntersectionObserver(true);
         currentIndex = postsIndex;
         pDB = postsObject.posts;
         isThread = false;
@@ -578,6 +565,7 @@ $("message").addEventListener("keydown", function (event) {
         // event.stopPropagation();
         sendMessage();
     }
+    console.log("new message area eventlistener");
 })
 
 $('logout_User').addEventListener('click', () => {
