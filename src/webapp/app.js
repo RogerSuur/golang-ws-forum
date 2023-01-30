@@ -565,7 +565,7 @@ export function makeLinksClickable() {
                 .catch((err) => {
                     console.log("Error with displaying comments: ", err)
                 });
-        });
+        }, { once: true });
     });
 
     closeThread.addEventListener('click', () => {
