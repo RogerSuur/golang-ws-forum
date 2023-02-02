@@ -232,35 +232,37 @@ func getIDbyUsername(username string) (ID int, err error) {
 
 func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	var user string = r.Header.Get("X-Username")
+	userID, err := getIDbyUsername(user)
+	if err != nil {
+		log.Println("Error with getting users ID", err.Error())
+		return
+	}
 
-	rows, err := database.Statements["getUsers"].Query()
+	rows, err := database.Statements["getUsers"].Query(userID, userID)
 	if err != nil {
 		log.Println("Error with getting users from DB:", err.Error())
 		return
 	}
+	defer rows.Close()
 
 	var users Data
-	for rows.Next() {
-		var username Offline
 
-		err = rows.Scan(&username.Username)
-		fmt.Println("&username.Username", username.Username)
-		if username.Username != user {
+	for rows.Next() {
+		var username string
+		var timestamp string
+		err = rows.Scan(&username, &timestamp)
+		if err != nil {
+			log.Println("Error with scanning usernames:", err.Error())
+			w.WriteHeader(400)
+			return
+		}
+		if username != user {
 			users.Status.Offline = append(users.Status.Offline, Offline{
-				Username: username.Username,
+				Username: username,
 				Unread:   false,
 			})
-			if err != nil {
-				log.Println("Error with scanning usernames:", err.Error())
-				w.WriteHeader(400)
-				return
-			}
 		}
 	}
-
-	fmt.Println("My user is:", user)
-	fmt.Println("All users:", users)
-
 	// get all messages from the users and then sort the users based on the message to "user"
 
 	users.Status.Online = []Online{} // Needed to keep JSon going stupid
