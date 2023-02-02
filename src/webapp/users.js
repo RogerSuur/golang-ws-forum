@@ -19,6 +19,12 @@ export async function populateUsers() {
         offlineUsersWrapper.innerHTML = '';
         //Update usersObject with ws given list of users
         usersObject.online = webSocketUsers.data.online
+        //sort alphabetically
+        usersObject.online.sort((a, b) => {
+            if (a.name < b.name) return -1;
+            if (a.name > b.name) return 1;
+            return 0;
+        });
         usersObject.offline = createOnlineUsers(usersObject.online, usersObject.offline)
 
         constructUserLists(usersObject.online, onlineUsersWrapper, 'online');
