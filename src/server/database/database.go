@@ -170,7 +170,7 @@ func createTable(generateNew bool) {
 	} {
 		Statements[key], _ = db.Prepare(query)
 		if err != nil {
-			log.Fatal(err.Error())
+			log.Fatal("Error with preparing query", err.Error())
 		}
 	}
 }
