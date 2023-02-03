@@ -36,7 +36,6 @@ func getPostsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getCommentsHandler(w http.ResponseWriter, r *http.Request) {
-
 	var d struct {
 		PostID string `json:"postID"`
 	}
@@ -187,6 +186,8 @@ func addMessageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	dt := time.Now()
+	message.Timestamp = dt.Format("2006/1/2 15:04:05")
 	// fmt.Println("Adding message:", message)
 
 	message.Sender, _ = getID(message.Sender)
