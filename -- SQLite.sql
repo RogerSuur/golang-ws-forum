@@ -102,23 +102,61 @@
 -- FROM users
 -- ORDER BY username ASC;
 
-WITH selected_users AS (
-  SELECT DISTINCT u.username, m.timestamp
-  FROM users u
-  JOIN messages m ON u.user_id = m.from_id OR u.user_id = m.to_id
-  WHERE m.from_id = 3 OR m.to_id = 3
-),
-all_users AS (
-  SELECT username
-  FROM users
-)
-SELECT username, timestamp
-FROM selected_users
-UNION
-SELECT username, NULL as timestamp
-FROM all_users
-WHERE username NOT IN (SELECT username FROM selected_users)
-ORDER BY COALESCE(timestamp, '9999-12-31T23:59:59.999Z'), username;
+-- WITH selected_users AS (
+--   SELECT DISTINCT u.username, m.timestamp
+--   FROM users u
+--   JOIN messages m ON u.user_id = m.from_id OR u.user_id = m.to_id
+--   WHERE m.from_id = 3 OR m.to_id = 3
+-- ),
+-- all_users AS (
+--   SELECT username
+--   FROM users
+-- )
+-- SELECT username, timestamp
+-- FROM selected_users
+-- UNION
+-- SELECT username, NULL as timestamp
+-- FROM all_users
+-- WHERE username NOT IN (SELECT username FROM selected_users)
+-- ORDER BY COALESCE(timestamp, '9999-12-31T23:59:59.999Z'), username;
+
+
+
+
+SELECT users.username, MAX (CASE WHEN mt.sent_at is NULL THEN 0 else mt.sent_at END, CASE WHEN m.sent_at is NULL THEN 0 else m.sent_at END ) as maxdate FROM users                                                                                                                                                             
+LEFT OUTER JOIN messages m on m.sender_id = users.username AND m.receiver_id = ?
+LEFT OUTER JOIN messages mt on mt.receiver_id = users.username AND mt.sender_id = ?
+GROUP BY users.username ORDER BY MAX(maxdate) DESC, users.username COLLATE NOCASE ASC;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 -- I have two tables called users and messages.
