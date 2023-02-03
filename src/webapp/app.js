@@ -8,7 +8,7 @@ import { Forum, socket, sendMessage, userFieldConnection, userLogoutConnection }
 import { getCookie, createNewCookie, newPostValidation, signUpValidation, loginValidation, badValidation } from "./validate.js";
 import { hide, show, toggleMessageBoxVisibility, toggleThreadVisibility, toggleLoginVisibility, toggleRegisterVisibility } from "./visibility_togglers.js";
 
-new Forum()
+new Forum();
 
 export const postsWrapper = qS('posts-wrapper');
 export const threadWrapper = qS('thread-wrapper');
@@ -243,6 +243,7 @@ function login() {
                 currentUser.innerHTML = result.username;
             }
         })
+    
 
         .catch((err) => {
             console.log("Error with login", err);
@@ -470,6 +471,13 @@ async function makeNewComment() {
         let newComment = createPost(dataToSend, false, true);
         threadWrapper.appendChild(newComment);
         keepPostInFocus(newComment.id, 'end');
+        updateCommentCount(dataToSend.postID);
+        let jsonData = {};
+        jsonData["action"] = "new_comment";
+        jsonData["from"] = currentUser.innerHTML;
+        jsonData["postID"] = dataToSend.postID;
+        console.log("Sending", jsonData)
+        socket.send(JSON.stringify(jsonData));
     } else {
         console.log("Status other", res.status)
         return res.json()
@@ -477,6 +485,18 @@ async function makeNewComment() {
 
     // resetting form values
     $('commentContentID').value = '';
+}
+
+export function updateCommentCount(postID, markUnread = false) {
+    postsWrapper.querySelectorAll(`.post-comments`).forEach((comment) => {
+        if (comment.id == postID) {
+            let previousComments = comment.innerHTML.replace(/^\D+/g, '').replace(" comments", "") * 1;
+            comment.innerHTML = comment.innerHTML.replace(/\d+/g, previousComments + 1);
+            if (markUnread) {
+                comment.classList.add('unread');
+            }
+        }
+    });
 }
 
 async function makeNewPost() {
@@ -523,6 +543,9 @@ export function makeLinksClickable() {
     const threadOpeningElements = document.querySelectorAll('.post-title, .post-comments');
     threadOpeningElements.forEach((threadLink) => {
         threadLink.addEventListener('click', () => {
+            if (threadLink.classList.contains('unread')) {
+                threadLink.classList.remove('unread');''
+            }
             toggleThreadVisibility(true);
             isThread = true;
             let interSection = $('thread-intersection-observer');

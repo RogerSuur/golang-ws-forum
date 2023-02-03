@@ -1,6 +1,6 @@
 export const userRegister = document.getElementById("username-register")
 export let socket = null;
-import { currentUser, otherUser, getUsers, mDB, messagesWrapper, postsWrapper, spinner, sleep, loadTime, getPosts, makeLinksClickable } from './app.js'
+import { currentUser, otherUser, getUsers, mDB, messagesWrapper, postsWrapper, spinner, sleep, loadTime, getPosts, makeLinksClickable, updateCommentCount } from './app.js'
 import { createSingleMessage } from './messages.js'
 import { createDiv, $, qS, formatTimeStamp } from "./DOM_helpers.js";
 import { hide, show } from "./visibility_togglers.js";
@@ -63,6 +63,12 @@ export function Forum() {
 
                     }
                     break
+                case "new_comment":
+                    if (data.from != currentUser.innerHTML) {
+                        //console.log("new comments to be seen!", data)
+                        updateCommentCount(data.message_id, true)
+                    }
+                    break;
                 case "list_users":
                     webSocketUsers = data.connected_users
                     getUsers()
