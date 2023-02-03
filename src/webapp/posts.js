@@ -23,8 +23,13 @@ export const initPosts = (DB, from, to, isThread = false, prepend = false) => {
         if (i === to - 1 && DB.length != 1) {
             insertIntersection = true;
         }
+        
+        let isFirst = false;
+        if (isThread && i === 0) {
+            isFirst = true;
+        }
 
-        let newPost = createPost(DB[i], insertIntersection, isThread)
+        let newPost = createPost(DB[i], insertIntersection, isThread, isFirst)
         if (isThread) {
             if (DB.length == 1) {
                 threadWrapper.prepend(newPost);
@@ -43,9 +48,9 @@ export const initPosts = (DB, from, to, isThread = false, prepend = false) => {
     }
 }
 
-export function createPost(postData, insertIntersection = false, isThread = false) {
+export function createPost(postData, insertIntersection = false, isThread = false, isFirst = false) {
     const singlePost = createDiv('single-post');
-    if (isThread) {
+    if (isThread && !isFirst) {
         singlePost.setAttribute('id', `thread-${postData.commentID}`);
     } else {
         singlePost.setAttribute('id', `post-${postData.postID}`);

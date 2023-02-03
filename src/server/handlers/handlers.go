@@ -53,6 +53,7 @@ type WebSocketConnection struct {
 type WsPayload struct {
 	Action   string              `json:"action"`
 	Username string              `json:"username"`
+	PostID   string              `json:"postID"`
 	Content  string              `json:"content"`
 	Sender   string              `json:"from"`
 	Receiver string              `json:"to"`
@@ -107,6 +108,12 @@ func ListenToWsChannel() {
 				response.Action = e.Action
 				response.Sender = e.Sender
 				// fmt.Println("new posts notification")
+				BroadcastToAll(response)
+
+			case "new_comment":
+				response.Action = e.Action
+				response.Sender = e.Sender
+				response.ID = e.PostID
 				BroadcastToAll(response)
 
 			case "username":

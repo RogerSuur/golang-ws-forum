@@ -228,6 +228,14 @@ func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error with adding message", err.Error())
 		w.WriteHeader(500)
 		return
+	} 
+	
+	// update comment count for post
+	_, err = database.Statements["updateCommentCount"].Exec(comment.PostID)
+	if err != nil {
+		log.Println("Error with updating comment count", err.Error())
+		w.WriteHeader(500)
+		return
 	}
 
 	b, _ := json.Marshal("ok")
