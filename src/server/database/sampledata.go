@@ -153,7 +153,7 @@ func insertSampleComments(db *sql.DB) {
 	json.Unmarshal(byteValue, &posts)
 
 	sort.Slice(posts.Status.Post, func(i, j int) bool {
-		layout := "2/1/2006 15:04:05"
+		layout := time.RFC3339
 		a := posts.Status.Post[i].Timestamp
 		b := posts.Status.Post[j].Timestamp
 		t1, err := time.Parse(layout, a)
@@ -170,7 +170,15 @@ func insertSampleComments(db *sql.DB) {
 	}
 
 	for _, v := range posts.Status.Comment {
-		statement.Exec(v.Content, v.Timestamp, rand.Intn(7)+1, rand.Intn(27)+1)
+		postToComment := rand.Intn(27) + 1
+		// update comment count for post
+		commentUpdateStatement, err := db.Prepare(`UPDATE posts SET comments = comments + 1 WHERE post_id = ?`)
+		if err != nil {
+			log.Println("Error with updating comment count", err.Error())
+			return
+		}
+		commentUpdateStatement.Exec(postToComment)
+		statement.Exec(v.Content, v.Timestamp, rand.Intn(7)+1, postToComment)
 	}
 
 	fmt.Println("SampleComments inserted successfully!")
