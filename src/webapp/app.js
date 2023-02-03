@@ -244,7 +244,6 @@ function login() {
             }
         })
 
-
         .catch((err) => {
             console.log("Error with login", err);
         });
