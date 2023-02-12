@@ -2,7 +2,7 @@
 -- SELECT username, MAX(timestamp) as timestamp FROM messages JOIN users ON (messages.from_id = users.user_id OR messages.to_id = users.user_id) WHERE messages.from_id = 7 OR messages.to_id = 7 GROUP BY username ORDER BY strftime('%m/%d/%Y %H:%M:%S', timestamp) DESC;
 
 
-
+-- Leiab kasutajad kellega on sõnumi saatnud
 -- SELECT username, MAX(timestamp)
 -- FROM messages
 -- JOIN users ON (messages.from_id = users.user_id OR messages.to_id = users.user_id)
@@ -15,10 +15,6 @@
 -- JOIN messages m ON u.user_id = m.from_id OR u.user_id = m.to_id
 -- WHERE m.from_id = 3 OR m.to_id = 3
 -- ORDER BY m.timestamp ASC;
-
--- SELECT username
--- FROM users
--- ORDER BY username ASC;
 
 
 -- WITH users_jack_messages AS (
@@ -123,18 +119,83 @@
 
 
 
-SELECT users.username, MAX (CASE WHEN mt.sent_at is NULL THEN 0 else mt.sent_at END, CASE WHEN m.sent_at is NULL THEN 0 else m.sent_at END ) as maxdate FROM users                                                                                                                                                             
-LEFT OUTER JOIN messages m on m.sender_id = users.username AND m.receiver_id = ?
-LEFT OUTER JOIN messages mt on mt.receiver_id = users.username AND mt.sender_id = ?
-GROUP BY users.username ORDER BY MAX(maxdate) DESC, users.username COLLATE NOCASE ASC;
+-- SELECT users.username, MAX (CASE WHEN m.sent_at is NULL THEN 0 else mt.sent_at END, CASE WHEN m.sent_at is NULL THEN 0 else m.sent_at END ) as maxdate FROM users                                                                                                                                                             
+-- LEFT OUTER JOIN messages m on m.sender_id = users.username AND m.receiver_id = ?
+-- LEFT OUTER JOIN messages mt on mt.receiver_id = users.username AND mt.sender_id = ?
+-- GROUP BY users.username ORDER BY MAX(maxdate) DESC, users.username COLLATE NOCASE ASC;
+
+
+
+--PEAAGE TÖÖTAB AGA SÕNUMISAATJATE JÄRJEKORD ON VALE
+-- WITH selected_users AS (
+--     SELECT username, MAX(messages.timestamp) as timestamp
+--     FROM messages
+--     JOIN users ON (messages.from_id = users.user_id OR messages.to_id = users.user_id)
+--     WHERE messages.from_id = 3 OR messages.to_id = 3
+-- ),
+-- all_users AS (
+--   SELECT username
+--   FROM users
+-- )
+-- SELECT username, timestamp
+-- FROM selected_users
+-- UNION
+-- SELECT username, NULL as timestamp
+-- FROM all_users
+-- WHERE username NOT IN (SELECT username FROM selected_users)
+-- ORDER BY timestamp DESC, username COLLATE NOCASE ASC;
+
+-- SELECT username, MAX(timestamp)
+-- FROM messages
+-- JOIN users ON (messages.from_id = users.user_id OR messages.to_id = users.user_id)
+-- WHERE messages.from_id = 3 OR messages.to_id = 3
+-- GROUP BY username
+-- ORDER BY timestamp DESC;
 
 
 
 
+--Proovin viimast replicate-ida kasutades JOIN-i
+-- SELECT DISTINCT u.username, m.timestamp
+-- FROM users u
+-- JOIN messages m ON u.user_id = m.from_id OR u.user_id = m.to_id
+-- WHERE m.from_id = 3 OR m.to_id = 3
+-- JOIN users ON u.username ;
 
 
+-- SELECT username, user_id,
+--   IFNULL(MAX(message_id), 0), 
+--             IFNULL(to_id, 0), 
+--             IFNULL(from_id, 0)
+-- FROM users
+--  LEFT JOIN messages  ON 
+--             from_id = 3 AND to_id = user_id
+--         OR 
+--             from_id = user_id AND to_id = 3
+--         WHERE NOT user_id = 3
+-- GROUP BY user_id
+--         ORDER BY 
+--             message_id DESC, 
+--             username ASC;
 
 
+SELECT username
+FROM users
+ LEFT JOIN messages  ON 
+            from_id = 3 AND to_id = user_id
+        OR 
+            from_id = user_id AND to_id = 3
+        WHERE NOT user_id = 3
+GROUP BY user_id
+        ORDER BY 
+            IFNULL(MAX(message_id), 0) DESC, 
+            username ASC;
+
+-- SELECT DISTINCT u.username
+-- FROM users u
+-- JOIN messages m ON u.user_id = m.from_id OR u.user_id = m.to_id
+-- WHERE m.from_id = 3 OR m.to_id = 3
+-- ORDER BY m.timestamp ASC;
 
 
 

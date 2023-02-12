@@ -69,7 +69,7 @@ const topSentCallback = async entry => {
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
     //console.log("Firing topSentCallback")
-    
+
     // conditional check for Scrolling up
     if (
         currentY > topSentinelPreviousY &&
@@ -86,7 +86,7 @@ const topSentCallback = async entry => {
         await sleep(loadTime);
         hide(spinner);
         // load new data
-        getMessages(otherUser).then(() => {console.log("Fetching more messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex)})
+        getMessages(otherUser).then(() => { console.log("Fetching more messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex) })
     }
 
     topSentinelPreviousY = currentY;
@@ -102,7 +102,7 @@ const bottomSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-   
+
     if (
         currentY < bottomSentinelPreviousY &&
         currentRatio > bottomSentinelPreviousRatio &&
@@ -345,7 +345,7 @@ export async function getUsers() {
 
             messagesIndex = 0;
             topSentinelPreviousY = 0;
-            getMessages(otherUser).then(() => {console.log("Loading messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex)})
+            getMessages(otherUser).then(() => { console.log("Loading messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex) })
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${otherUser}`;
         });
@@ -442,7 +442,7 @@ async function makeNewComment() {
     dataToSend.timestamp = new Date().toISOString();
     dataToSend.user = currentUser.innerHTML;
     console.log("dataToSend", dataToSend);
-    
+
     //get post title
     //console.log("dataToSend", dataToSend);
 
@@ -453,7 +453,7 @@ async function makeNewComment() {
         },
         body: JSON.stringify(dataToSend)
     })
-    
+
     if (res.status == 200) {
         console.log("Status 200", res.status)
         // clear the postsWrapper element
@@ -462,11 +462,11 @@ async function makeNewComment() {
         // threadWrapper.appendChild(interSection);
         // initialise messagesObject
         // currentIndex = 0;
-        
+
         // Generate ID for HTML element (the actual ID is given in DB, but that is not known until the DB is updated and is not relevant here, too)
         let last = threadWrapper.lastElementChild.id.replace("thread-", "") * 1;
         dataToSend.commentID = (last + 1).toString();
-        
+
         let newComment = createPost(dataToSend, false, true);
         threadWrapper.appendChild(newComment);
         keepPostInFocus(newComment.id, 'end');
@@ -511,7 +511,7 @@ async function makeNewPost() {
         // currentIndex = 0;
         // pDB = postsObject.posts;
         // restart the posts area of forum
-        
+
         let last = postsWrapper.firstElementChild.id.replace("post-", '') * 1;
         dataToSend.postID = last + 1;
         let newPost = createPost(dataToSend);
@@ -529,7 +529,7 @@ async function makeNewPost() {
         console.log("Status other", res.status)
         return res.json()
     }
-    
+
     // resetting form values
     $('contentID').value = '';
     $('titleID').value = '';
@@ -556,7 +556,7 @@ export function makeLinksClickable() {
                 })
                 .catch((err) => {
                     console.log("Error with displaying comments: ", err)
-                    }); 
+                });
         });
     });
 

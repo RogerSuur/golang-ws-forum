@@ -238,7 +238,7 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rows, err := database.Statements["getUsers"].Query(userID, userID)
+	rows, err := database.Statements["getUsers"].Query(userID, userID, userID)
 	if err != nil {
 		log.Println("Error with getting users from DB:", err.Error())
 		return
@@ -249,8 +249,7 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var username string
-		var timestamp string
-		err = rows.Scan(&username, &timestamp)
+		err = rows.Scan(&username)
 		if err != nil {
 			log.Println("Error with scanning usernames:", err.Error())
 			w.WriteHeader(400)

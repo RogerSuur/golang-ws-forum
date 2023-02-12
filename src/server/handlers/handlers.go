@@ -113,7 +113,6 @@ func ListenToWsChannel() {
 				// get a list of all users and send it back via broadcast
 				clients[e.Conn] = e.Username // gives username to the connection
 				users := getUserList()
-				// database.UpdateOnlineUsers(users)
 				fmt.Println("clients", clients)
 				response.Action = "list_users"
 				response.ConnectedUsers = users
@@ -129,7 +128,7 @@ func ListenToWsChannel() {
 				BroadcastToAll(response)
 
 			case "broadcast":
-				//fmt.Println("broadcasting")
+				// fmt.Println("broadcasting")
 				response.Action = e.Action
 				response.Content = e.Content
 				response.Sender = e.Sender
