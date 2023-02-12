@@ -29,7 +29,7 @@ let postsObject = { "posts": [] };
 //let threadObject = await getJSON('/static/threadData.json')
 //let usersObject = await getJSON('/static/usersData.json');
 //let messagesObject = await getJSON('/static/messagesData.json');
-let messagesObject = { "messages": [{"content": "No messages yet"}] };
+let messagesObject = { "messages": [{ "content": "No messages yet" }] };
 // export let currentUser = 'Petra Marsh';
 export let currentUser = $("current-userID");
 export let otherUser;
@@ -67,7 +67,7 @@ const topSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-    
+
     // conditional check for Scrolling up
     if (
         currentY > topSentinelPreviousY &&
@@ -83,7 +83,7 @@ const topSentCallback = async entry => {
         await sleep(loadTime);
         hide(spinner);
         // load new data
-        getMessages(otherUser).then(() => {console.log("Fetching more messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex)})
+        getMessages(otherUser).then(() => { console.log("Fetching more messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex) })
     }
 
     topSentinelPreviousY = currentY;
@@ -99,7 +99,7 @@ const bottomSentCallback = async entry => {
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
-   
+
     if (
         currentY < bottomSentinelPreviousY &&
         currentRatio > bottomSentinelPreviousRatio &&
@@ -134,7 +134,7 @@ const bottomSentCallback = async entry => {
                     makeLinksClickable()
                 }
             })
-        
+
         keepPostInFocus(postInFocus, 'end');
 
     }
@@ -243,7 +243,7 @@ function login() {
                 currentUser.innerHTML = result.username;
             }
         })
-    
+
 
         .catch((err) => {
             console.log("Error with login", err);
@@ -254,7 +254,7 @@ export const start = async () => {
 
     //DB = initDB(DBSize, postsObject);
     await getUsers();
-    await getPosts().then(() => {makeLinksClickable()});
+    await getPosts().then(() => { makeLinksClickable() });
 
 }
 
@@ -283,7 +283,7 @@ export async function getMessages(toUser) {
         initMessages(mDB, 1, 0, toUser);
     }
     */
-    
+
     await updateMessages(currentUser.innerHTML, toUser)
     if (messagesIndex == 0) {
         messagesIndex = mDB.length;
@@ -358,7 +358,7 @@ export async function getUsers() {
 
             messagesIndex = 0;
             topSentinelPreviousY = 0;
-            getMessages(otherUser).then(() => {console.log("Loading messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex)})
+            getMessages(otherUser).then(() => { console.log("Loading messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex) })
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${otherUser}`;
         });
@@ -462,12 +462,12 @@ async function makeNewComment() {
         },
         body: JSON.stringify(dataToSend)
     })
-    
+
     if (res.status == 200) {
         // Generate ID for HTML element (the actual ID is given in DB, but that is not known until the DB is updated and is not relevant here, too)
         let last = threadWrapper.lastElementChild.id.replace("thread-", "") * 1;
         dataToSend.commentID = (last + 1).toString();
-        
+
         let newComment = createPost(dataToSend, false, true);
         threadWrapper.appendChild(newComment);
         keepPostInFocus(newComment.id, 'end');
@@ -515,13 +515,13 @@ async function makeNewPost() {
         body: JSON.stringify(dataToSend)
     })
 
-    if (res.status == 200) {       
+    if (res.status == 200) {
         let last = postsWrapper.firstElementChild.id.replace("post-", '') * 1;
         dataToSend.postID = last + 1;
         let newPost = createPost(dataToSend);
         postsWrapper.prepend(newPost);
         keepPostInFocus(newPost.id, 'start');
-        getPosts().then(() => {makeLinksClickable()});
+        getPosts().then(() => { makeLinksClickable() });
         let jsonData = {};
         console.log("broadcasting new post");
         jsonData["action"] = "new_post";
@@ -532,7 +532,7 @@ async function makeNewPost() {
         console.log("Status other", res.status)
         return res.json()
     }
-    
+
     // resetting form values
     $('contentID').value = '';
     $('titleID').value = '';
@@ -544,7 +544,7 @@ export function makeLinksClickable() {
     threadOpeningElements.forEach((threadLink) => {
         threadLink.addEventListener('click', () => {
             if (threadLink.classList.contains('unread')) {
-                threadLink.classList.remove('unread');''
+                threadLink.classList.remove('unread'); ''
             }
             toggleThreadVisibility(true);
             isThread = true;
@@ -561,10 +561,10 @@ export function makeLinksClickable() {
                     parentID.value = selectedPost.postID;
                     threadHeader.prepend(category);
                 })
-                .then(() => {initPostIntersectionObserver(false)})
+                .then(() => { initPostIntersectionObserver(false) })
                 .catch((err) => {
                     console.log("Error with displaying comments: ", err)
-                    }); 
+                });
         });
     });
 

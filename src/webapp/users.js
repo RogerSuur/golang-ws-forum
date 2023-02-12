@@ -14,7 +14,6 @@ export async function populateUsers() {
     let usersObject = await loadUsersObject();
 
     if (usersObject.offline !== null) {
-        console.log("usersObject:", usersObject);
         onlineUsersWrapper.innerHTML = '';
         offlineUsersWrapper.innerHTML = '';
         //Update usersObject with ws given list of users
@@ -66,7 +65,7 @@ const createOnlineUsers = function (onlineUsers, offlineUsers) {
 
 
 const constructUserLists = (usersArray, usersWrapper, type) => {
-    let heading = createDiv(`${type}-group`, `<i class="fa-solid fa-comments"></i>${usersArray.length - 1} users ${type}`);
+    let heading = createDiv(`${type}-group`, `<i class="fa-solid fa-comments"></i>${usersArray.length} users ${type}`);
     usersWrapper.appendChild(heading);
     usersArray.forEach((user) => {
         if (user.name !== currentUser.innerHTML) {
@@ -75,6 +74,10 @@ const constructUserLists = (usersArray, usersWrapper, type) => {
                 singleUser.classList.add('unread-messages');
             }
             usersWrapper.appendChild(singleUser);
+        }
+        if (user.name === currentUser.innerHTML) {
+            const headingElement = document.querySelector(".online-group");
+            headingElement.innerText = `${usersArray.length - 1} users ${type}`
         }
     });
 };

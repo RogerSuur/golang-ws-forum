@@ -156,7 +156,7 @@ func createTable(generateNew bool) {
 		"addComment":         `INSERT INTO comments (content, timestamp, user_id, post_id) VALUES (?,?,?,?)`,
 		"updateCommentCount": `UPDATE posts SET comments = comments + 1 WHERE post_id = ?`,
 		"addSession":         `INSERT INTO sessions (uuid, user_id) VALUES (?,?)`,
-		"getUsers":           `SELECT username, MAX(timestamp) FROM messages JOIN users ON (messages.from_id = users.user_id OR messages.to_id = users.user_id) WHERE messages.from_id = ? OR messages.to_id = ? GROUP BY username ORDER BY (timestamp) DESC;`,
+		"getUsers":           `SELECT username FROM users LEFT JOIN messages  ON from_id = ? AND to_id = user_id OR from_id = user_id AND to_id = ? WHERE NOT user_id = ? GROUP BY user_id ORDER BY IFNULL(MAX(message_id), 0) DESC, username ASC`,
 		"deleteSession":      `DELETE FROM sessions WHERE sessions.uuid = ?`,
 		"getPosts":           `SELECT post_id, username,title,timestamp, comments, content, category FROM posts LEFT JOIN users AS u2 ON posts.post_author = u2.user_id ORDER BY posts.post_id DESC`,
 		"getMessages":        `SELECT message_id, from_id, to_id, content, timestamp FROM messages WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?) ORDER BY message_id ASC`,
