@@ -243,7 +243,7 @@ function login() {
 export const start = async () => {
 
     //DB = initDB(DBSize, postsObject);
-    await getUsers();
+    //await getUsers();
     await getPosts();
     makeLinksClickable();
 

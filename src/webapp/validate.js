@@ -168,7 +168,8 @@ export function checkCookie() {
 
 export function createNewCookie(uuid) {
     const d = new Date();
-    d.setTime(d.getTime() + (1 * 7 * 60 * 1000));
+    // Make cookie last for 2 hours
+    d.setTime(d.getTime() + (2 * 60 * 60 * 1000));
     let expires = "expires=" + d.toUTCString();
     document.cookie = "username=" + encodeURI(uuid) + "; Path=/; " + expires + ";";
 }

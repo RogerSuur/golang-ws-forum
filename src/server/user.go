@@ -265,7 +265,6 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	// get all messages from the users and then sort the users based on the message to "user"
 
 	users.Status.Online = []Online{} // Needed to keep JSon going stupid
-
 	b, _ := json.Marshal(users)
 	w.Write(b)
 }
