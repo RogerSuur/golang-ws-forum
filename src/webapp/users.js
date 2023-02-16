@@ -10,22 +10,25 @@ let offlineUsersWrapper = document.querySelector(".offline");
 
 export async function populateUsers() {
     //loads fresh set of user
-    //let usersObject = await getJSON('/src/server/getUsersHandler');
     let usersObject = await loadUsersObject();
 
     if (usersObject.offline !== null) {
         onlineUsersWrapper.innerHTML = '';
         offlineUsersWrapper.innerHTML = '';
         //Update usersObject with ws given list of users
-        usersObject.online = webSocketUsers.data.online
-        //sort alphabetically
-        usersObject.online.sort((a, b) => {
-            if (a.name < b.name) return -1;
-            if (a.name > b.name) return 1;
-            return 0;
-        });
-        usersObject.offline = createOnlineUsers(usersObject.online, usersObject.offline)
 
+        usersObject.online = webSocketUsers.data.online
+
+        //sort alphabetically
+        // usersObject.online.sort((a, b) => {
+        //     if (a.name < b.name) return -1;
+        //     if (a.name > b.name) return 1;
+        //     return 0;
+        // });
+        console.log(usersObject.online);
+        console.log(usersObject.offline);
+        usersObject.offline = createOnlineUsers(usersObject.online, usersObject.offline)
+        console.log(usersObject.offline);
         constructUserLists(usersObject.online, onlineUsersWrapper, 'online');
         constructUserLists(usersObject.offline, offlineUsersWrapper, 'offline');
     }

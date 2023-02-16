@@ -20,7 +20,7 @@ export function Forum() {
     }
 
     //window.load = checkCookie()
-    
+
     // This needs to be moved out from here - it causes duplicate event listeners when multiple windows are open
     // Probably should heppen only after a sucessful login???
     // check https://stackoverflow.com/questions/47233581/socket-io-duplicate-emit-on-second-window
@@ -77,6 +77,10 @@ export function Forum() {
                     break;
                 case "broadcast":
                     //check wether to send notification or display msg
+                    console.log("broadcasting")
+
+                    sortUsersbyLastMessage(data.from)
+                    //console.log("currentuser.innerHTML:", currentuser.innerHTML, "otherUser", `${data.from}`);
                     if (!sendNotification(currentUser.innerHTML, data.from)) {
                         // refresh messages database
                         //console.log("Updating messages from WS with ", currentUser.innerHTML, otherUser)
@@ -87,22 +91,24 @@ export function Forum() {
                             .then((mDBlength) => {
                                 //console.log("mDBlength", mDBlength)
                                 */
-                                if (mDB.length - 1 > mDBlength) {
-                                    mDBlength = mDB.length;
-                                } else {
-                                    mDBlength += 1;
-                                }
-                                let newMessage = createSingleMessage(mDBlength, data.content, data.from, formatTimeStamp(formattedDate))
-                                messagesWrapper.prepend(newMessage);
-                            /*
-                            )})
-                            .catch(error => console.log(error))
-                            */
+                        if (mDB.length - 1 > mDBlength) {
+                            mDBlength = mDB.length;
+                        } else {
+                            mDBlength += 1;
+                        }
+                        let newMessage = createSingleMessage(mDBlength, data.content, data.from, formatTimeStamp(formattedDate))
+                        messagesWrapper.prepend(newMessage);
+                        //sortUsersbyLastMessage(data.from)
+                        /*
+                        )})
+                        .catch(error => console.log(error))
+                        */
                     } else {
                         //display notification
                         const user = $(`${data.from}`);
-                        let notification = user.querySelector('.notification')
+                        //sortUsersbyLastMessage(user.id)
 
+                        let notification = user.querySelector('.notification')
                         if (notification) {
                             const currentValue = parseInt(notification.innerHTML);
                             notification.innerHTML = currentValue + 1;
@@ -160,35 +166,26 @@ export async function sendMessage() {
         console.log("Error sending message", error)
     }
 
-    sortUsersbyLastMessage(currentUser.innerHTML, otherUser)
+    sortUsersbyLastMessage(otherUser)
     $('message').value = "";
 }
 
 //Sorts usersDiv by last message sent
-function sortUsersbyLastMessage(sender, receiver) {
+function sortUsersbyLastMessage(receiver) {
+    const userDiv = document.getElementById(receiver);
 
-    // const userList = $('user-list');
-    // const userNames = userList.getElementsByClassName('user-name');
-    // const activeReceiver = $('Mark');
+    if (userDiv) {
+        const parentDiv = userDiv.parentElement;
+        const userIsOnline = parentDiv.classList.contains('online');
 
-    // console.log(userList.hasChildNodes);
-    // console.log(userList.contains(activeReceiver));
-
-
-    // //userList.insertBefore(activeReceiver, userNames[0]);
-    // userList.insertBefore(activeReceiver, userList.firstChild)
-
-    // Get the element to be moved
-    var element = document.getElementById(`${receiver}`);
-
-    // Remove the element from its current position
-    element.remove();
-
-    // Get the "offline-group" element
-    var offlineGroup = document.getElementsByClassName("offline-group")[0];
-
-    // Insert the receiver div after the "offline-group" element
-    offlineGroup.after(element);
+        if (userIsOnline) {
+            var onlineGroup = document.getElementsByClassName("online-group")[0];
+            onlineGroup.after(userDiv)
+        } else {
+            var offlineGroup = document.getElementsByClassName("offline-group")[0];
+            offlineGroup.after(userDiv);
+        }
+    }
 }
 
 //Checks which conversation is open and wether to send notification or display msg
@@ -201,10 +198,8 @@ function sendNotification(currentUser, sender) {
     let messagesHeaderText = document.querySelector('.messages-header-text');
 
     if (messagesWindow.classList.contains('hidden')) {
-        console.log('The messagesWindow is hidden');
         return true
     } else {
-        console.log('The messagesWindow is not hidden');
         //check the user with whom the chat is open
         if (messagesHeaderText.textContent === `Your conversation with ${sender}`) {
             return false
