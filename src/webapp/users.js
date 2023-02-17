@@ -15,26 +15,12 @@ export async function populateUsers() {
     if (usersObject.offline !== null) {
         onlineUsersWrapper.innerHTML = '';
         offlineUsersWrapper.innerHTML = '';
-        //Update usersObject with ws given list of users
 
-        //TO DO
-        //get online users from websocketusers.data.online
-        //but
-        // sort online users in the same order
-        // as usersobject.offline is sorted
         usersObject.online = webSocketUsers.data.online
 
-        //sort alphabetically
-        // usersObject.online.sort((a, b) => {
-        //     if (a.name < b.name) return -1;
-        //     if (a.name > b.name) return 1;
-        //     return 0;
-        // });
-        console.log(usersObject.online);
-        console.log(usersObject.offline);
         usersObject.online = sortOnlineUsers(usersObject.online, usersObject.offline)
         usersObject.offline = removeDoubleUsers(usersObject.online, usersObject.offline)
-        console.log(usersObject.offline);
+
         constructUserLists(usersObject.online, onlineUsersWrapper, 'online');
         constructUserLists(usersObject.offline, offlineUsersWrapper, 'offline');
     }
@@ -73,27 +59,22 @@ const removeDoubleUsers = function (onlineUsers, offlineUsers) {
 }
 
 const sortOnlineUsers = function (onlineUsers, offlineUsers) {
-
-    // Create a map of user names to their indices in the offline array
     const offlineIndexMap = {};
     for (let i = 0; i < offlineUsers.length; i++) {
         const userName = offlineUsers[i].name;
         offlineIndexMap[userName] = i;
     }
 
-    // Sort the online array based on their indices in the offline array
     onlineUsers.sort((a, b) => {
         const aIndex = offlineIndexMap[a.name];
         const bIndex = offlineIndexMap[b.name];
         if (aIndex === undefined || bIndex === undefined) {
-            return 0; // If a user doesn't exist in the offline array, leave it in the same position
+            return 0;
         } else {
             return aIndex - bIndex;
         }
     });
 
-    // Now the online users array should be sorted in the same order as the offline array
-    console.log(onlineUsers);
     return onlineUsers
 }
 
