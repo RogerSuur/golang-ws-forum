@@ -20,7 +20,7 @@ export function Forum() {
     }
 
     //window.load = checkCookie()
-    
+
     // This needs to be moved out from here - it causes duplicate event listeners when multiple windows are open
     // Probably should heppen only after a sucessful login???
     // check https://stackoverflow.com/questions/47233581/socket-io-duplicate-emit-on-second-window
@@ -33,6 +33,7 @@ export function Forum() {
         };
 
         socket.onclose = () => {
+            alert("Connection to server has been lost")
             console.log("Connection closed");
         };
 
