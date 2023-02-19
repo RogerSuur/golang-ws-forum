@@ -209,8 +209,6 @@ func login(w http.ResponseWriter, r *http.Request) {
 func createSession(user_ID string) (UUID string, err error) {
 	UUID = uuid.NewV4().String()
 
-	fmt.Println("UUID:", UUID)
-	// insert that session to database
 	_, err = database.Statements["addSession"].Exec(UUID, user_ID)
 	if err != nil {
 		return "", err

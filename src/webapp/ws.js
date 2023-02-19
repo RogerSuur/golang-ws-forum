@@ -33,6 +33,7 @@ export function Forum() {
         };
 
         socket.onclose = () => {
+            alert("Connection to server has been lost")
             console.log("Connection closed");
         };
 

@@ -243,6 +243,7 @@ function login() {
                 currentUser.innerHTML = result.username;
             }
         })
+    
 
         .catch((err) => {
             console.log("Error with login", err);
