@@ -136,6 +136,11 @@ export async function sendMessage() {
     // console.log("Updating messages on sending message with", currentUser.innerHTML, otherUser)
     // await updateMessages(currentUser.innerHTML, otherUser)
 
+    if ($('message').value == "") {
+        alert("Please enter a message")
+        return
+    }
+    
     try {
         const jsonData = {};
         jsonData["action"] = "broadcast";

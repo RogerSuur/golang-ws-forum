@@ -190,7 +190,7 @@ function signUp() {
         })
 
         .then((result) => {
-            if (result.hasOwnProperty("message")) {
+            if (Object.prototype.hasOwnProperty.call(result, "message")) {
                 badValidation(result.message, result.requirement)
             } else {
                 currentUser.innerHTML = result.username
@@ -223,7 +223,8 @@ function login() {
         })
 
         .then((result) => {
-            if (result.hasOwnProperty('message')) {
+            // if (result.hasOwnProperty('message')) { <-- this is not recommended
+            if (Object.prototype.hasOwnProperty.call(result, "message")) {
                 //badValidation(result.message, result.requirement)
                 let input_area = $("username_loginID")
                 let input_area2 = $("password_loginID")
@@ -384,7 +385,7 @@ startHeaderClock;
 
 //Maybe can be refactored without needing this function
 buttons.forEach((button) => {
-    button.addEventListener('click', function (event) {
+    button.addEventListener('click', function () {
         switch (button.id) {
             case 'login':
                 //toggleLoginVisibility(false);
@@ -399,16 +400,10 @@ buttons.forEach((button) => {
                 toggleLoginVisibility(true);
                 break;
             case 'sendMessage':
-                if (message.value === "") {
-                    alert("fill out user and message")
-                    return
-                }
                 if (!socket) {
                     console.log("no connection");
                     return
                 }
-                // event.preventDefault();
-                // event.stopPropagation();
                 sendMessage()
                 break;
             default:
@@ -422,7 +417,7 @@ $('register-area').addEventListener('submit', (e) => {
         signUp();
     }
     console.log("new register area eventlistener");
-    e.preventDefault();
+    e.preventDefault(); // prevent page reload
 });
 
 $('login-area').addEventListener('submit', (e) => {
@@ -547,7 +542,7 @@ export function makeLinksClickable() {
     threadOpeningElements.forEach((threadLink) => {
         threadLink.addEventListener('click', () => {
             if (threadLink.classList.contains('unread')) {
-                threadLink.classList.remove('unread'); ''
+                threadLink.classList.remove('unread');
             }
             toggleThreadVisibility(true);
             isThread = true;
@@ -587,8 +582,6 @@ $("message").addEventListener("keydown", function (event) {
             console.log("no connection");
             return false
         }
-        // event.preventDefault();//dont send the form
-        // event.stopPropagation();
         sendMessage();
     }
     console.log("new message area eventlistener");
