@@ -3,7 +3,7 @@ export let socket = null;
 import { currentUser, otherUser, getUsers, mDB, messagesWrapper, postsWrapper, spinner, sleep, loadTime, getPosts, makeLinksClickable, updateCommentCount } from './app.js'
 import { createSingleMessage } from './messages.js'
 import { createDiv, $, qS, formatTimeStamp } from "./DOM_helpers.js";
-import { hide, show } from "./visibility_togglers.js";
+import { hide, show, toggleLoginVisibility } from "./visibility_togglers.js";
 import { checkCookie } from './validate.js';
 
 export let webSocketUsers;
@@ -35,6 +35,10 @@ export function Forum() {
         socket.onclose = () => {
             alert("Connection to server has been lost")
             console.log("Connection closed");
+            
+            // The following is not working too, because socket is not initiated at login, but at page load
+            // toggleLoginVisibility(true);
+            // currentUser.innerHTML = "";
         };
 
         socket.onmessage = (msg) => {
@@ -140,7 +144,7 @@ export async function sendMessage() {
         alert("Please enter a message")
         return
     }
-    
+
     try {
         const jsonData = {};
         jsonData["action"] = "broadcast";
