@@ -38,31 +38,39 @@ export const createSingleMessage = (index, content, from, timestamp, previousUse
 
     let singleMessage = createDiv('single-message');
 
-    singleMessage.setAttribute('id', `message-${index}`);
+    if (content == '#beginningofconversation#') {
+        
+        singleMessage.classList.add('no-messages');
+        singleMessage.innerHTML = 'This is the beginning of your conversation. Be the first to speak up!';
 
-    let messageContent = createDiv('message-content', content);
+    } else {
 
-    if (from !== previousUser) {
-        let messageAuthor = createDiv('message-user', from);
-        if (from === currentUser.innerHTML) {
-            messageAuthor.innerHTML = `Me`;
+        singleMessage.setAttribute('id', `message-${index}`);
+
+        let messageContent = createDiv('message-content', content);
+
+        if (from !== previousUser) {
+            let messageAuthor = createDiv('message-user', from);
+            if (from === currentUser.innerHTML) {
+                messageAuthor.innerHTML = `Me`;
+                singleMessage.classList.add('me');
+                messageAuthor.classList.add('me');
+                messageContent.classList.add('me');
+            }
+            singleMessage.appendChild(messageAuthor);
+
+        } else if (previousUser === currentUser.innerHTML) {
+
             singleMessage.classList.add('me');
-            messageAuthor.classList.add('me');
             messageContent.classList.add('me');
         }
-        singleMessage.appendChild(messageAuthor);
 
-    } else if (previousUser === currentUser.innerHTML) {
+        singleMessage.appendChild(messageContent);
 
-        singleMessage.classList.add('me');
-        messageContent.classList.add('me');
+        let messageDate = createDiv('message-date', timestamp);
+
+        singleMessage.appendChild(messageDate);
     }
-
-    singleMessage.appendChild(messageContent);
-
-    let messageDate = createDiv('message-date', timestamp);
-
-    singleMessage.appendChild(messageDate);
 
     return singleMessage
 

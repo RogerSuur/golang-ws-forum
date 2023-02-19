@@ -29,7 +29,7 @@ let postsObject = { "posts": [] };
 //let threadObject = await getJSON('/static/threadData.json')
 //let usersObject = await getJSON('/static/usersData.json');
 //let messagesObject = await getJSON('/static/messagesData.json');
-let messagesObject = { "messages": [{ "content": "No messages yet" }] };
+let messagesObject = { "messages": [] };
 // export let currentUser = 'Petra Marsh';
 export let currentUser = $("current-userID");
 export let otherUser;
@@ -312,6 +312,9 @@ export async function updateMessages(sender, receiver) {
             body: JSON.stringify(query)
         })
         let data = await response.json();
+        if (data.data.messages == undefined || data.data.messages == null) {
+            return mDB = [{ "content": "#beginningofconversation#" }];
+        }
         return mDB = await data.data.messages;
     } catch (err) {
         console.log("Error updating messages:", err);

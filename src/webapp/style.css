@@ -545,6 +545,13 @@ img {
   width: auto;
 }
 
+.no-messages {
+  font-size: small;
+  padding: 5px;
+  align-self: center;
+  color: var(--complementary-dark);
+}
+
 .message-user {
   padding: 3px;
   margin-left: 10px;
