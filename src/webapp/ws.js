@@ -8,6 +8,7 @@ import { checkCookie } from './validate.js';
 
 export let webSocketUsers;
 let formattedDate = new Date().toISOString();
+let shouldCheck = true;
 
 export function Forum() {
 
@@ -25,113 +26,140 @@ export function Forum() {
     // Probably should heppen only after a sucessful login???
     // check https://stackoverflow.com/questions/47233581/socket-io-duplicate-emit-on-second-window
     document.addEventListener("DOMContentLoaded", function () {
-        socket = new WebSocket("ws://localhost:8080/ws");
 
-        socket.onopen = () => {
-            console.log("Successfully connected");
-            checkCookie(currentUser.innerHTML)
-        };
 
-        socket.onclose = () => {
-            alert("Connection to server has been lost")
-            console.log("Connection closed");
-            
-            // The following is not working too, because socket is not initiated at login, but at page load
-            // toggleLoginVisibility(true);
-            // currentUser.innerHTML = "";
-        };
+        function startWs() {
+            console.log("startWs");
+            socket = new WebSocket("ws://localhost:8080/ws");
 
-        socket.onmessage = (msg) => {
-            let data = JSON.parse(msg.data);
-            console.log("Action is", data.action);
-            switch (data.action) {
-                case "new_post":
-                    //console.log("new posts", data.posts)
-                    if (data.from != currentUser.innerHTML) {
-                        //console.log("new posts to be seen!", data)
-                        let loadMore = createDiv([`load-more`, `posts`], `New posts have been added in real time! Load more ...`);
-                        postsWrapper.prepend(loadMore);
-                        loadMore.addEventListener("click", () => {
-                            loadMore.remove();
-                            //console.log("Load more posts", data.posts)
-                            let postsAreaRect = qS('posts-area').getBoundingClientRect();
-                            let x = postsAreaRect.left + postsAreaRect.width / 2 - 40;
-                            let y = postsAreaRect.bottom - 100;
-                            spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
-                            show(spinner);
-                            sleep(loadTime);
-                            hide(spinner);
-                            getPosts(0, true)
-                                .then(() => { makeLinksClickable() })
-                                .catch(error => console.log(error))
-                        })
+            socket.onopen = () => {
+                console.log("Successfully connected");
+                checkCookie(currentUser.innerHTML)
+                shouldCheck = false
+            };
 
-                    }
-                    break
-                case "new_comment":
-                    if (data.from != currentUser.innerHTML) {
-                        //console.log("new comments to be seen!", data)
-                        updateCommentCount(data.message_id, true)
-                    }
-                    break;
-                case "list_users":
-                    webSocketUsers = data.connected_users
-                    getUsers()
-                    // alert("list_users")
-                    //console.log("currentUser:", currentUser.value)
-                    break;
-                case "broadcast":
-                    //check wether to send notification or display msg
-                    console.log("broadcasting")
+            socket.onclose = () => {
+                //alert("Connection to server has been lost")
+                console.log("Connection closed");
+                //check();
 
-                    sortUsersbyLastMessage(data.from)
-                    //console.log("currentuser.innerHTML:", currentuser.innerHTML, "otherUser", `${data.from}`);
-                    if (!sendNotification(currentUser.innerHTML, data.from)) {
-                        // refresh messages database
-                        //console.log("Updating messages from WS with ", currentUser.innerHTML, otherUser)
-                        /*
-                        let's remove updateMessages from here now
-                        updateMessages(currentUser.innerHTML, otherUser)
-                            .then((response) => response.length)
-                            .then((mDBlength) => {
-                                //console.log("mDBlength", mDBlength)
-                                */
-                        if (mDB.length - 1 > mDBlength) {
-                            mDBlength = mDB.length;
-                        } else {
-                            mDBlength += 1;
+                shouldCheck = true
+                // The following is not working too, because socket is not initiated at login, but at page load
+                toggleLoginVisibility(true);
+                // currentUser.innerHTML = "";
+            };
+
+            socket.onmessage = (msg) => {
+                let data = JSON.parse(msg.data);
+                console.log("Action is", data.action);
+                switch (data.action) {
+                    case "new_post":
+                        //console.log("new posts", data.posts)
+                        if (data.from != currentUser.innerHTML) {
+                            //console.log("new posts to be seen!", data)
+                            let loadMore = createDiv([`load-more`, `posts`], `New posts have been added in real time! Load more ...`);
+                            postsWrapper.prepend(loadMore);
+                            loadMore.addEventListener("click", () => {
+                                loadMore.remove();
+                                //console.log("Load more posts", data.posts)
+                                let postsAreaRect = qS('posts-area').getBoundingClientRect();
+                                let x = postsAreaRect.left + postsAreaRect.width / 2 - 40;
+                                let y = postsAreaRect.bottom - 100;
+                                spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
+                                show(spinner);
+                                sleep(loadTime);
+                                hide(spinner);
+                                getPosts(0, true)
+                                    .then(() => { makeLinksClickable() })
+                                    .catch(error => console.log(error))
+                            })
+
                         }
-                        let newMessage = createSingleMessage(mDBlength, data.content, data.from, formatTimeStamp(formattedDate))
-                        messagesWrapper.prepend(newMessage);
-                        /*
-                        )})
-                        .catch(error => console.log(error))
-                        */
-                    } else {
-                        //display notification
-                        const user = $(`${data.from}`);
-                        //sortUsersbyLastMessage(user.id)
-
-                        let notification = user.querySelector('.notification')
-                        if (notification) {
-                            const currentValue = parseInt(notification.innerHTML);
-                            notification.innerHTML = currentValue + 1;
-                        } else {
-                            notification = document.createElement('span');
-                            notification.setAttribute('class', 'notification')
-                            user.appendChild(notification);
-                            notification.innerHTML = 1;
+                        break
+                    case "new_comment":
+                        if (data.from != currentUser.innerHTML) {
+                            //console.log("new comments to be seen!", data)
+                            updateCommentCount(data.message_id, true)
                         }
-                    }
-                    break;
-                case "login":
-                    console.log("login in socket")
+                        break;
+                    case "list_users":
+                        webSocketUsers = data.connected_users
+                        getUsers()
+                        // alert("list_users")
+                        //console.log("currentUser:", currentUser.value)
+                        break;
+                    case "broadcast":
+                        //check wether to send notification or display msg
+                        console.log("broadcasting")
+
+                        sortUsersbyLastMessage(data.from)
+                        //console.log("currentuser.innerHTML:", currentuser.innerHTML, "otherUser", `${data.from}`);
+                        if (!sendNotification(currentUser.innerHTML, data.from)) {
+                            // refresh messages database
+                            //console.log("Updating messages from WS with ", currentUser.innerHTML, otherUser)
+                            /*
+                            let's remove updateMessages from here now
+                            updateMessages(currentUser.innerHTML, otherUser)
+                                .then((response) => response.length)
+                                .then((mDBlength) => {
+                                    //console.log("mDBlength", mDBlength)
+                                    */
+                            if (mDB.length - 1 > mDBlength) {
+                                mDBlength = mDB.length;
+                            } else {
+                                mDBlength += 1;
+                            }
+                            let newMessage = createSingleMessage(mDBlength, data.content, data.from, formatTimeStamp(formattedDate))
+                            messagesWrapper.prepend(newMessage);
+                            /*
+                            )})
+                            .catch(error => console.log(error))
+                            */
+                        } else {
+                            //display notification
+                            const user = $(`${data.from}`);
+                            //sortUsersbyLastMessage(user.id)
+
+                            let notification = user.querySelector('.notification')
+                            if (notification) {
+                                const currentValue = parseInt(notification.innerHTML);
+                                notification.innerHTML = currentValue + 1;
+                            } else {
+                                notification = document.createElement('span');
+                                notification.setAttribute('class', 'notification')
+                                user.appendChild(notification);
+                                notification.innerHTML = 1;
+                            }
+                        }
+                        break;
+                    case "login":
+                        console.log("login in socket")
+                }
+            };
+
+            socket.onerror = (error) => {
+                console.log("there was an error", error);
+            };
+        }
+
+        function check() {
+            if (shouldCheck) {
+                console.log("Checking WebSocket connection status...");
+                if (!socket || socket.readyState == 3) {
+                    console.log("WebSocket connection is not open or has been closed. Starting new connection...");
+                    startWs();
+                }
             }
-        };
+        }
 
-        socket.onerror = (error) => {
-            console.log("there was an error", error);
-        };
+        // Set up the setInterval to call the check function every 5 seconds
+        let intervalId = setInterval(check, 5000);
+        // Cancel the setInterval after 1 minute (60000 milliseconds)
+        setTimeout(() => {
+            clearInterval(intervalId);
+        }, 60000);
+
+        startWs();
     })
 }
 
