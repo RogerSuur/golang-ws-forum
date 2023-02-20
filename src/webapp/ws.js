@@ -29,7 +29,6 @@ export function Forum() {
 
 
         function startWs() {
-            console.log("startWs");
             socket = new WebSocket("ws://localhost:8080/ws");
 
             socket.onopen = () => {

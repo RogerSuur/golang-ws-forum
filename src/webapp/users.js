@@ -12,18 +12,26 @@ export async function populateUsers() {
     //loads fresh set of user
     let usersObject = await loadUsersObject();
 
+
     if (usersObject.offline !== null) {
         onlineUsersWrapper.innerHTML = '';
         offlineUsersWrapper.innerHTML = '';
 
         usersObject.online = webSocketUsers.data.online
 
+        usersObject.online = removeDoubleOnlineUsers(usersObject.online)
         usersObject.online = sortOnlineUsers(usersObject.online, usersObject.offline)
         usersObject.offline = removeDoubleUsers(usersObject.online, usersObject.offline)
 
         constructUserLists(usersObject.online, onlineUsersWrapper, 'online');
         constructUserLists(usersObject.offline, offlineUsersWrapper, 'offline');
     }
+};
+
+const removeDoubleOnlineUsers = function (onlineUsers) {
+    return onlineUsers.filter((user, index, self) => {
+        return index === self.findIndex(u => u.name === user.name);
+    });
 };
 
 async function loadUsersObject() {
