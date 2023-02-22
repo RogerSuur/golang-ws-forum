@@ -244,7 +244,7 @@ function login() {
                 currentUser.innerHTML = result.username;
             }
         })
-    
+
 
         .catch((err) => {
             console.log("Error with login", err);
@@ -254,9 +254,9 @@ function login() {
 export const start = async () => {
 
     //DB = initDB(DBSize, postsObject);
-    await getUsers();
+    //võtsin await ära, nüüd postitused kogu aeg ees aga error message on igakord nüüd present
     await getPosts().then(() => { makeLinksClickable() });
-
+    getUsers();
 }
 
 /* Loads next batch of posts */
