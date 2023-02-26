@@ -268,7 +268,7 @@ async function updateComments(postID) {
 /* Loads user lists and creates event listeners for them to load the conversations */
 export async function getUsers() {
     await populateUsers()
-    const userElements = qS('.user-name');
+    const userElements = document.querySelectorAll('.user-name');
     userElements.forEach((user) => {
         user.addEventListener('click', () => {
             toggleMessageBoxVisibility(true);

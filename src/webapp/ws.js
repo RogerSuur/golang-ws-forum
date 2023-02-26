@@ -193,8 +193,8 @@ function sendNotification(currentUser, sender) {
         return false
     }
 
-    let messagesWindow = qS('.messages-area');
-    let messagesHeaderText = qS('.messages-header-text');
+    let messagesWindow = qS('messages-area');
+    let messagesHeaderText = qS('messages-header-text');
 
     if (messagesWindow.classList.contains('hidden')) {
         return true
