@@ -11,7 +11,6 @@ func routes() http.Handler {
 	mux.HandleFunc("/src/server/", handlers.Home)
 	// mux.HandleFunc("/src/server/err", err)
 
-	// mux.HandleFunc("/src/server/logout", logout)
 	mux.HandleFunc("/src/server/login", login)
 	mux.HandleFunc("/src/server/signup", SignUpHandler)
 	mux.HandleFunc("/src/server/addPostHandler", addPostHandler)
@@ -23,10 +22,7 @@ func routes() http.Handler {
 	mux.HandleFunc("/src/server/getCommentsHandler", getCommentsHandler)
 	mux.HandleFunc("/src/server/checkCookieHandler", checkCookieHandler)
 	mux.HandleFunc("/src/server/deleteCookieHandler", deleteCookieHandler)
-	// mux.HandleFunc("/src/server/authenticate", authenticate)
 	mux.HandleFunc("/ws", handlers.WsEndPoint)
 	mux.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("./src/webapp"))))
-	// files := http.FileServer(http.Dir("/public"))
-	// mux.Handle("/", http.StripPrefix("/", files))
 	return mux
 }

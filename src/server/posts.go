@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -140,7 +139,7 @@ func getMessagesQuery(ID1 string, ID2 string) ([]byte, error) {
 			return nil, err
 		}
 	}
-	// fmt.Println("Last message retrieved: ", messages.Status.Message[len(messages.Status.Message)-1])
+
 	jsonResponse, err := json.Marshal(messages)
 	if err != nil {
 		log.Println("Error with generating JSON response", err.Error())
@@ -150,7 +149,6 @@ func getMessagesQuery(ID1 string, ID2 string) ([]byte, error) {
 }
 
 func addPostHandler(w http.ResponseWriter, r *http.Request) {
-	// var user string = r.Header.Get("X-Username")
 	var post Post
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&post)
@@ -161,11 +159,7 @@ func addPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	post.User, _ = getID(post.User)
-	// currentTime := time.Now().UTC()
-	// post.Timestamp = currentTime.Format(time.RFC3339)
-	// post.Category = "Lorem"
-	// post.Comments = 0
-	// fmt.Printf("Empty %+v\n", post)
+
 	_, err = database.Statements["addPost"].Exec(post.User, post.Title, post.Content, post.Timestamp, post.Category, post.Comments)
 	if err != nil {
 		log.Println("Error with adding post", err.Error())
@@ -189,7 +183,6 @@ func addMessageHandler(w http.ResponseWriter, r *http.Request) {
 
 	dt := time.Now()
 	message.Timestamp = dt.Format("2006/1/2 15:04:05")
-	// fmt.Println("Adding message:", message)
 
 	message.Sender, _ = getID(message.Sender)
 	message.Receiver, _ = getID(message.Receiver)
@@ -206,7 +199,6 @@ func addMessageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
-	// var user string = r.Header.Get("X-Username")
 	var comment Comment
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&comment)
@@ -217,7 +209,6 @@ func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	comment.Author, _ = getID(comment.Author)
-	fmt.Println("Adding comment:", comment)
 	_, err = database.Statements["addComment"].Exec(comment.Content, comment.Timestamp, comment.Author, comment.PostID)
 	if err != nil {
 		log.Println("Error with adding message", err.Error())
@@ -237,21 +228,7 @@ func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func getPostID(name string) (string, error) { // This func seems to be unused?
-	rows, err := database.Statements["getPostID"].Query(name)
-	if err != nil {
-		log.Println("Error getting postID", err.Error())
-		return "0", err
-	}
-	defer rows.Close()
-	postID := ""
-	rows.Next()
-	rows.Scan(&postID)
-	rows.Close()
-	return postID, nil
-}
-
-func getCommentParent(postID string) (Comment, error) { // This func seems to be unused?
+func getCommentParent(postID string) (Comment, error) {
 	var parentPost Comment
 	rows, err := database.Statements["getCommentParent"].Query(postID)
 	if err != nil {

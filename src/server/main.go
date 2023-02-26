@@ -13,9 +13,6 @@ import (
 func main() {
 	mux := routes() // redirects a request to a handler.
 
-	// http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("./src/webapp"))))
-	// http.HandleFunc("/ws", handlers.WsEndPoint)
-	// _ = http.ListenAndServe(":8080", nil)
 	generateNew := false
 	args := os.Args[1:]
 

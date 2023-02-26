@@ -1,5 +1,5 @@
-export function $(x) {return document.getElementById(x);} 
-export function qS(x) {return document.querySelector(`.${x}`);}
+export function $(x) { return document.getElementById(x); }
+export function qS(x) { return document.querySelector(`.${x}`); }
 
 export const createDiv = (className, innerHTML, id) => {
     let div = document.createElement('div');
@@ -11,17 +11,15 @@ export const createDiv = (className, innerHTML, id) => {
     } else {
         div.classList.add(className);
     }
-    
+
     if (id) {
         div.setAttribute('id', id);
     }
 
     if (innerHTML) {
         div.innerHTML = innerHTML;
-        //const contents = document.createTextNode(JSON.stringify(innerHTML));
-        //div.appendChild(contents);
     }
-    
+
     return div;
 }
 

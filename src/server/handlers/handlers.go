@@ -86,7 +86,7 @@ func ListenForWs(conn *WebSocketConnection) {
 	for {
 		err := conn.ReadJSON(&payload)
 		if err != nil {
-			// do nothing
+			//ignore websocket close otherwise will spam terminal
 		} else {
 			payload.Conn = *conn
 			wsChan <- payload
@@ -100,14 +100,11 @@ func ListenToWsChannel() {
 	for {
 		for {
 			e := <-wsChan // everytime we get a payload from the channel
-			// response.Action = "Got here"
-			// response.Message = fmt.Sprintf("Some message and action was%v", e.Action)
 			switch e.Action {
 
 			case "new_post":
 				response.Action = e.Action
 				response.Sender = e.Sender
-				// fmt.Println("new posts notification")
 				BroadcastToAll(response)
 
 			case "new_comment":
@@ -130,18 +127,14 @@ func ListenToWsChannel() {
 				delete(clients, e.Conn)
 				fmt.Println("case left", clients)
 				users := getUserList()
-				// database.UpdateOnlineUsers(users)
 				response.ConnectedUsers = users
 				BroadcastToAll(response)
 
 			case "broadcast":
-				// fmt.Println("broadcasting")
 				response.Action = e.Action
 				response.Content = e.Content
 				response.Sender = e.Sender
 				response.Receiver = e.Receiver
-				// write message to database
-				// database.UpdateMessagesData(e.Username, e.MessageReceiver, e.Message)
 				BroadcastToClient(e.Sender, e.Receiver, response)
 			}
 		}

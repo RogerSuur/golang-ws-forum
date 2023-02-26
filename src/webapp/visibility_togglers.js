@@ -16,7 +16,6 @@ export function hide(x) { return x.classList.add('hidden'); }
 export function show(x) { return x.classList.remove('hidden'); }
 
 export function toggleMessageBoxVisibility(makeVisible) {
-    //console.log(makeVisible, "toggle messagebox");
     if (makeVisible) {
         messagesBackgroundOverlay.style.zIndex = '1'; // bring overlay in front of posts area
         show(messagesWrapper.parentElement); // make messages box visible

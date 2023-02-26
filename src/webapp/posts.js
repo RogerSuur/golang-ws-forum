@@ -3,18 +3,16 @@ import { createDiv, horizontalDivider, $, formatTimeStamp } from './DOM_helpers.
 
 export const initPosts = (DB, from, to, isThread = false, prepend = false) => {
 
-    //console.log("initPosts", DB, from, to, isThread);
-
     let i = from;
     while (i < to) {
 
-        let existing 
+        let existing
         if (isThread) {
             existing = $(`thread-${DB[i].commentID}`);
         } else {
             existing = $(`post-${DB[i].postID}`);
         }
-        
+
         if (existing) {
             i++;
             continue;
@@ -23,7 +21,7 @@ export const initPosts = (DB, from, to, isThread = false, prepend = false) => {
         if (i === to - 1 && DB.length != 1) {
             insertIntersection = true;
         }
-        
+
         let isFirst = false;
         if (isThread && i === 0) {
             isFirst = true;
@@ -43,7 +41,7 @@ export const initPosts = (DB, from, to, isThread = false, prepend = false) => {
                 postsWrapper.appendChild(newPost);
             }
         }
-       
+
         i++;
     }
 }
@@ -85,7 +83,6 @@ export function createPost(postData, insertIntersection = false, isThread = fals
     singlePost.appendChild(postBody);
 
     if (insertIntersection) {
-        //interSection.remove();
         if (isThread) {
             let interSection = $('thread-intersection-observer');
             interSection.remove();
@@ -122,14 +119,4 @@ export function createPost(postData, insertIntersection = false, isThread = fals
     }
 
     return singlePost;
-}
-
-export function createCommentNode(post) {
-    let commentIcon = document.createElement('i');
-    commentIcon.classList.add('fa-regular', 'fa-message');
-
-    let commentCount = commentIcon.outerHTML + `&nbsp;${post.comments} comment`;
-    if (post.comments > 1 || post.comments == 0)
-        commentCount += 's';
-    return commentCount;
 }

@@ -1,4 +1,4 @@
-import { createDiv } from "./DOM_helpers.js";
+import { createDiv, $ } from "./DOM_helpers.js";
 import { currentUser, start } from "./app.js";
 import { toggleLoginVisibility } from "./visibility_togglers.js";
 import { userFieldConnection } from "./ws.js";
@@ -11,7 +11,7 @@ const patterns = {
 
 export const newPostValidation = () => {
 
-    let data = new FormData(document.getElementById('new-post'));
+    let data = new FormData($('new-post'));
     let dataToSend = Object.fromEntries(data)
 
     let errors = document.getElementsByClassName('error-message');
@@ -23,7 +23,7 @@ export const newPostValidation = () => {
         badValidation("title", "Please add a title")
         return false
     } else {
-        let title_input_area = document.getElementById("titleID")
+        let title_input_area = $("titleID")
         title_input_area.style.borderColor = "";
     }
 
@@ -31,7 +31,7 @@ export const newPostValidation = () => {
         badValidation("content", "We are not mind-readers")
         return false
     } else {
-        let input_area = document.getElementById("contentID")
+        let input_area = $("contentID")
         input_area.style.borderColor = "";
     }
 
@@ -39,7 +39,7 @@ export const newPostValidation = () => {
 }
 
 export const loginValidation = () => {
-    let data = new FormData(document.getElementById('login-area'));
+    let data = new FormData($('login-area'));
     let dataToSend = Object.fromEntries(data)
 
     let errors = document.getElementsByClassName('error-message');
@@ -51,7 +51,7 @@ export const loginValidation = () => {
         badValidation("username_login", "Please add a username")
         return false
     } else {
-        let username_input_area = document.getElementById("username_loginID")
+        let username_input_area = $("username_loginID")
         username_input_area.style.borderColor = "";
     }
 
@@ -59,7 +59,7 @@ export const loginValidation = () => {
         badValidation("password_login", "Please enter password")
         return false
     } else {
-        let input_area = document.getElementById("password_loginID")
+        let input_area = $("password_loginID")
         input_area.style.borderColor = "";
     }
 
@@ -68,7 +68,7 @@ export const loginValidation = () => {
 
 export const signUpValidation = () => {
 
-    let data = new FormData(document.getElementById('register-area'));
+    let data = new FormData($('register-area'));
     let dataToSend = Object.fromEntries(data)
 
     let errors = document.getElementsByClassName('error-message');
@@ -119,7 +119,7 @@ function validateRegex(field, value, requirement) {
 }
 
 export function badValidation(field, requirement) {
-    let input_area = document.getElementById(field + "ID")
+    let input_area = $(field + "ID")
     input_area.style.borderColor = 'red'
     let errorMessage = createDiv('error-message', requirement, 'error-message');
     input_area.parentNode.insertBefore(errorMessage, input_area)
@@ -127,7 +127,7 @@ export function badValidation(field, requirement) {
 }
 
 function goodValidation(field) {
-    let div = document.getElementById(field + "ID")
+    let div = $(field + "ID")
     div.style.borderColor = 'green'
 }
 

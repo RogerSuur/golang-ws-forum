@@ -25,10 +25,6 @@ const closeMessagesBox = qS('close-messages-button');
 const closeThread = qS('close-thread-button');
 
 let postsObject = { "posts": [] };
-//let postsObject = await getJSON('/static/postsData.json');
-//let threadObject = await getJSON('/static/threadData.json')
-//let usersObject = await getJSON('/static/usersData.json');
-//let messagesObject = await getJSON('/static/messagesData.json');
 let messagesObject = { "messages": [] };
 // export let currentUser = 'Petra Marsh';
 export let currentUser = $("current-userID");
@@ -47,7 +43,6 @@ let isThread = false;
 
 let currentIndex = 0,
     postsIndex,
-    //threadIndex,
     messagesIndex = mDB.length;
 
 export const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -223,9 +218,7 @@ function login() {
         })
 
         .then((result) => {
-            // if (result.hasOwnProperty('message')) { <-- this is not recommended
             if (Object.prototype.hasOwnProperty.call(result, "message")) {
-                //badValidation(result.message, result.requirement)
                 let input_area = $("username_loginID")
                 let input_area2 = $("password_loginID")
                 input_area.style.borderColor = 'red'
@@ -238,7 +231,6 @@ function login() {
                 toggleLoginVisibility(false);
                 start();
                 initPostIntersectionObserver(true);
-                //initThreadIntersectionObserver();
                 initMessageIntersectionObserver();
                 userFieldConnection(result.username);
                 currentUser.innerHTML = result.username;
@@ -252,9 +244,6 @@ function login() {
 }
 
 export const start = async () => {
-
-    //DB = initDB(DBSize, postsObject);
-    //võtsin await ära, nüüd postitused kogu aeg ees aga error message on igakord nüüd present
     await getPosts().then(() => { makeLinksClickable() });
     getUsers();
 }
@@ -265,7 +254,7 @@ export async function getPosts(index = currentIndex, prepend = false, isThread =
         postsObject = await getJSON('/src/server/getPostsHandler');
         pDB = postsObject.posts;
     }
-    console.log("Total number of posts", pDB.length, ", loading at index", index, ", is comments thread", isThread);
+
     if (index + nrOfItemsToLoad > pDB.length) {
         initPosts(pDB, index, pDB.length, isThread, prepend);
     } else {
@@ -277,13 +266,6 @@ export async function getPosts(index = currentIndex, prepend = false, isThread =
 
 /* Loads next batch of messages in a conversation */
 export async function getMessages(toUser) {
-    /* 
-    console.log("mDB", mDB)
-    if (mDB[0].timestamp == undefined) {
-        console.log("No messages to show");
-        initMessages(mDB, 1, 0, toUser);
-    }
-    */
 
     await updateMessages(currentUser.innerHTML, toUser)
     if (messagesIndex == 0) {
@@ -323,7 +305,6 @@ export async function updateMessages(sender, receiver) {
 }
 
 async function updateComments(postID) {
-    console.log("Updating comments for postID:", postID)
     try {
         const query = {
             postID: postID.toString(),
@@ -346,7 +327,7 @@ async function updateComments(postID) {
 /* Loads user lists and creates event listeners for them to load the conversations */
 export async function getUsers() {
     await populateUsers()
-    const userElements = document.querySelectorAll('.user-name');
+    const userElements = qS('.user-name');
     userElements.forEach((user) => {
         user.addEventListener('click', () => {
             toggleMessageBoxVisibility(true);
@@ -362,7 +343,7 @@ export async function getUsers() {
 
             messagesIndex = 0;
             topSentinelPreviousY = 0;
-            getMessages(otherUser).then(() => { console.log("Loading messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex) })
+            getMessages(otherUser)
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
             messageBoxHeader.textContent = `Your conversation with ${otherUser}`;
         });
@@ -371,13 +352,6 @@ export async function getUsers() {
     closeMessagesBox.addEventListener('click', () => {
         toggleMessageBoxVisibility(false);
         messagesIndex = mDB.length;
-        /*
-        if (isThread) {
-            currentIndex = threadIndex;
-        } else {
-            currentIndex = postsIndex;
-        }
-        */
     });
 }
 
@@ -431,17 +405,14 @@ $('login-area').addEventListener('submit', (e) => {
 $('new-post').addEventListener('submit', (e) => {
     if (newPostValidation()) {
         makeNewPost();
-        //toggleRegisterVisibility(false)
     }
     console.log("new Post area eventlistener");
     e.preventDefault();
 });
 
 $('new-comment').addEventListener('submit', (e) => {
-    //check that comment field is not empty) {
     makeNewComment();
-    //toggleRegisterVisibility(false)
-    //}
+
     console.log("new Comment area eventlistener");
     e.preventDefault();
 });

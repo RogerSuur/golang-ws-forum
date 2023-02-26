@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"01.kood.tech/git/jrms/real-time-forum/src/server/database"
@@ -94,7 +93,6 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 
 	var data signupData
 	decoder := json.NewDecoder(r.Body)
-	// decoder.DisallowUnknownFields()
 	err := decoder.Decode(&data)
 	if err != nil {
 		log.Println("Error decoding signup data:", err.Error())
@@ -129,13 +127,13 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(b)
 		return
 	} else {
-		user_ID, err := getIDbyUsername(data.Username)
+		user_ID, err := getID(data.Username)
 		if err != nil {
 			log.Println("Error with getting user ID:", err.Error())
 			w.WriteHeader(500)
 			return
 		}
-		UUID, err := createSession(strconv.FormatInt(int64(user_ID), 10))
+		UUID, err := createSession(user_ID)
 		if err != nil {
 			log.Println("Error with creating session:", err.Error())
 			w.WriteHeader(500)
@@ -156,7 +154,6 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 func login(w http.ResponseWriter, r *http.Request) {
 	var data signinData
 	decoder := json.NewDecoder(r.Body)
-	// decoder.DisallowUnknownFields()
 	err := decoder.Decode(&data)
 	if err != nil {
 		log.Println("Error with decoding signindata:", err.Error())
@@ -166,7 +163,6 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	var hashpass signinData
 
-	// Put this to separate function
 	err = database.Statements["getUser"].QueryRow(data.Username, data.Email).Scan(&hashpass.UserID, &hashpass.Username, &hashpass.Password)
 	if err != nil {
 		log.Println("Error with querying user data:", err.Error())
@@ -197,7 +193,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// write tht session to clientside
+	// write that session to clientside
 	w.WriteHeader(200)
 	jsonResponse, _ := json.Marshal(map[string]string{
 		"UUID":     UUID,
@@ -216,27 +212,15 @@ func createSession(user_ID string) (UUID string, err error) {
 	return UUID, nil
 }
 
-func getIDbyUsername(username string) (ID int, err error) {
-	rows, err := database.Statements["getID"].Query(username)
-	if err != nil {
-		return 0, err
-	}
-	defer rows.Close()
-	rows.Next()
-	rows.Scan(&ID)
-	rows.Close()
-	return ID, nil
-}
-
 func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	var user string = r.Header.Get("X-Username")
-	userID, err := getIDbyUsername(user)
+	userID, err := getID(user)
 	if err != nil {
 		log.Println("Error with getting users ID", err.Error())
 		return
 	}
 
-	rows, err := database.Statements["getUsers"].Query(userID, userID, userID)
+	rows, err := database.Statements["getUsers"].Query(userID)
 	if err != nil {
 		log.Println("Error with getting users from DB:", err.Error())
 		return
@@ -245,6 +229,7 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 	var users Data
 
+	// get all messages from the users and then sort the users based on the message to "user"
 	for rows.Next() {
 		var username string
 		err = rows.Scan(&username)
@@ -260,9 +245,8 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 			})
 		}
 	}
-	// get all messages from the users and then sort the users based on the message to "user"
 
-	users.Status.Online = []Online{} // Needed to keep JSon going stupid
+	users.Status.Online = []Online{} // Needed to keep JSon from going stupid
 	b, _ := json.Marshal(users)
 	w.Write(b)
 }

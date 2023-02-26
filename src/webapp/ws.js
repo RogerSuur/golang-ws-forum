@@ -1,4 +1,3 @@
-export const userRegister = document.getElementById("username-register")
 export let socket = null;
 import { currentUser, otherUser, getUsers, mDB, messagesWrapper, postsWrapper, spinner, sleep, loadTime, getPosts, makeLinksClickable, updateCommentCount } from './app.js'
 import { createSingleMessage } from './messages.js'
@@ -20,13 +19,7 @@ export function Forum() {
         socket.send(JSON.stringify(jsonData))
     }
 
-    //window.load = checkCookie()
-
-    // This needs to be moved out from here - it causes duplicate event listeners when multiple windows are open
-    // Probably should heppen only after a sucessful login???
-    // check https://stackoverflow.com/questions/47233581/socket-io-duplicate-emit-on-second-window
     document.addEventListener("DOMContentLoaded", function () {
-
 
         function startWs() {
             socket = new WebSocket("ws://localhost:8080/ws");
@@ -38,14 +31,10 @@ export function Forum() {
             };
 
             socket.onclose = () => {
-                //alert("Connection to server has been lost")
                 console.log("Connection closed");
-                //check();
 
                 shouldCheck = true
-                // The following is not working too, because socket is not initiated at login, but at page load
                 toggleLoginVisibility(true);
-                // currentUser.innerHTML = "";
             };
 
             socket.onmessage = (msg) => {
@@ -53,14 +42,11 @@ export function Forum() {
                 console.log("Action is", data.action);
                 switch (data.action) {
                     case "new_post":
-                        //console.log("new posts", data.posts)
                         if (data.from != currentUser.innerHTML) {
-                            //console.log("new posts to be seen!", data)
                             let loadMore = createDiv([`load-more`, `posts`], `New posts have been added in real time! Load more ...`);
                             postsWrapper.prepend(loadMore);
                             loadMore.addEventListener("click", () => {
                                 loadMore.remove();
-                                //console.log("Load more posts", data.posts)
                                 let postsAreaRect = qS('posts-area').getBoundingClientRect();
                                 let x = postsAreaRect.left + postsAreaRect.width / 2 - 40;
                                 let y = postsAreaRect.bottom - 100;
@@ -77,32 +63,18 @@ export function Forum() {
                         break
                     case "new_comment":
                         if (data.from != currentUser.innerHTML) {
-                            //console.log("new comments to be seen!", data)
                             updateCommentCount(data.message_id, true)
                         }
                         break;
                     case "list_users":
                         webSocketUsers = data.connected_users
                         getUsers()
-                        // alert("list_users")
-                        //console.log("currentUser:", currentUser.value)
                         break;
                     case "broadcast":
-                        //check wether to send notification or display msg
-                        console.log("broadcasting")
-
                         sortUsersbyLastMessage(data.from)
-                        //console.log("currentuser.innerHTML:", currentuser.innerHTML, "otherUser", `${data.from}`);
+                        //check whether to send notification or display msg
                         if (!sendNotification(currentUser.innerHTML, data.from)) {
-                            // refresh messages database
-                            //console.log("Updating messages from WS with ", currentUser.innerHTML, otherUser)
-                            /*
-                            let's remove updateMessages from here now
-                            updateMessages(currentUser.innerHTML, otherUser)
-                                .then((response) => response.length)
-                                .then((mDBlength) => {
-                                    //console.log("mDBlength", mDBlength)
-                                    */
+
                             if (mDB.length - 1 > mDBlength) {
                                 mDBlength = mDB.length;
                             } else {
@@ -110,14 +82,10 @@ export function Forum() {
                             }
                             let newMessage = createSingleMessage(mDBlength, data.content, data.from, formatTimeStamp(formattedDate))
                             messagesWrapper.prepend(newMessage);
-                            /*
-                            )})
-                            .catch(error => console.log(error))
-                            */
+
                         } else {
                             //display notification
                             const user = $(`${data.from}`);
-                            //sortUsersbyLastMessage(user.id)
 
                             let notification = user.querySelector('.notification')
                             if (notification) {
@@ -131,8 +99,8 @@ export function Forum() {
                             }
                         }
                         break;
-                    case "login":
-                        console.log("login in socket")
+                    default:
+                        console.log("unknown socket message")
                 }
             };
 
@@ -164,8 +132,6 @@ export function Forum() {
 
 //send messages to server
 export async function sendMessage() {
-    // console.log("Updating messages on sending message with", currentUser.innerHTML, otherUser)
-    // await updateMessages(currentUser.innerHTML, otherUser)
 
     if ($('message').value == "") {
         alert("Please enter a message")
@@ -179,7 +145,6 @@ export async function sendMessage() {
         jsonData["to"] = otherUser;
         jsonData["content"] = $('message').value;
         jsonData["timestamp"] = formattedDate;
-        //socket.send(JSON.stringify(jsonData));
 
         const res = await fetch('/src/server/addMessageHandler', {
             method: 'POST',
@@ -188,8 +153,6 @@ export async function sendMessage() {
             },
             body: JSON.stringify(jsonData)
         })
-
-        //console.log("messageData", jsonData);
 
         if (res.status === 200) {
             console.log("Message sent successfully.")
@@ -208,7 +171,7 @@ export async function sendMessage() {
 
 //Sorts usersDiv by last message sent
 function sortUsersbyLastMessage(receiver) {
-    const userDiv = document.getElementById(receiver);
+    const userDiv = $(receiver);
 
     if (userDiv) {
         const parentDiv = userDiv.parentElement;
@@ -230,8 +193,8 @@ function sendNotification(currentUser, sender) {
         return false
     }
 
-    let messagesWindow = document.querySelector('.messages-area');
-    let messagesHeaderText = document.querySelector('.messages-header-text');
+    let messagesWindow = qS('.messages-area');
+    let messagesHeaderText = qS('.messages-header-text');
 
     if (messagesWindow.classList.contains('hidden')) {
         return true

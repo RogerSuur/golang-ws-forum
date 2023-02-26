@@ -1,12 +1,10 @@
-import { otherUser } from './app.js';
 import { createDiv } from './DOM_helpers.js';
-import { getJSON } from "./read_JSON.js";
 import { webSocketUsers } from './ws.js';
 import { currentUser } from './app.js';
 
 
-let onlineUsersWrapper = document.querySelector(".online");
-let offlineUsersWrapper = document.querySelector(".offline");
+let onlineUsersWrapper = qS(".online");
+let offlineUsersWrapper = qS(".offline");
 
 export async function populateUsers() {
     //loads fresh set of user
@@ -57,6 +55,7 @@ async function loadUsersObject() {
     return data
 }
 
+// If user comes online, remove from offline list
 const removeDoubleUsers = function (onlineUsers, offlineUsers) {
     offlineUsers.forEach(function (user) {
         if (onlineUsers.find(e => e.name === user.name)) {

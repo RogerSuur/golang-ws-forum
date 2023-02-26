@@ -268,8 +268,8 @@ img {
   display: flex;
 }
 
-.login-wrapper > .user-input-area,
-.register-wrapper > .user-input-area {
+.login-wrapper>.user-input-area,
+.register-wrapper>.user-input-area {
   padding: 5%;
   white-space: nowrap;
   width: max-content;
@@ -293,14 +293,14 @@ img {
   scroll-behavior: smooth;
 }
 
-.thread-wrapper > .single-post:first-of-type {
+.thread-wrapper>.single-post:first-of-type {
   margin-left: 0;
   width: 98%;
   margin-top: 20px;
 }
 
-.thread-wrapper > .single-post,
-.thread-wrapper > .more-comments {
+.thread-wrapper>.single-post,
+.thread-wrapper>.more-comments {
   margin-left: 10%;
   width: 88%;
   margin-top: 0;
@@ -397,8 +397,8 @@ img {
   width: max-content;
 }
 
-.login-footer > button,
-.register-footer > button {
+.login-footer>button,
+.register-footer>button {
   color: var(--accent-color);
 }
 
@@ -665,7 +665,7 @@ select {
 }
 
 button,
-label  {
+label {
   border-radius: 10px;
   padding: 3px;
   align-self: flex-end;
@@ -739,6 +739,7 @@ i {
   width: 80px;
   height: 80px;
 }
+
 .lds-ellipsis div {
   position: absolute;
   top: 33px;
@@ -748,42 +749,52 @@ i {
   background: #ccc;
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
+
 .lds-ellipsis div:nth-child(1) {
   left: 8px;
   animation: lds-ellipsis1 0.6s infinite;
 }
+
 .lds-ellipsis div:nth-child(2) {
   left: 8px;
   animation: lds-ellipsis2 0.6s infinite;
 }
+
 .lds-ellipsis div:nth-child(3) {
   left: 32px;
   animation: lds-ellipsis2 0.6s infinite;
 }
+
 .lds-ellipsis div:nth-child(4) {
   left: 56px;
   animation: lds-ellipsis3 0.6s infinite;
 }
+
 @keyframes lds-ellipsis1 {
   0% {
     transform: scale(0);
   }
+
   100% {
     transform: scale(1);
   }
 }
+
 @keyframes lds-ellipsis3 {
   0% {
     transform: scale(1);
   }
+
   100% {
     transform: scale(0);
   }
 }
+
 @keyframes lds-ellipsis2 {
   0% {
     transform: translate(0, 0);
   }
+
   100% {
     transform: translate(24px, 0);
   }
@@ -809,20 +820,6 @@ a {
   margin-inline: inherit;
 }
 
-/* .notification {
-  background-color: #555;
-  color: white;
-  text-decoration: none;
-  padding: 15px 26px;
-  position: relative;
-  display: inline-block;
-  border-radius: 2px;
-} */
-
-/* .notification:hover {
-  background: red;
-} */
-
 .notification {
   top: -10px;
   right: -10px;
@@ -831,12 +828,3 @@ a {
   background-color: red;
   color: white;
 }
-
-/*
-#intersection-observer,
-#thread-intersection-observer,
-#message-intersection-observer {
-  border: red solid 3px;
-  width: 100%;
-}
-*/

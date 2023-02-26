@@ -1,10 +1,8 @@
 import { messagesWrapper, currentUser } from "./app.js";
 import { createDiv, $, formatTimeStamp } from "./DOM_helpers.js";
-//import { getJSON } from "./read_JSON.js";
 
 export const initMessages = (DB, fromIndex, toIndex) => {
 
-    //console.log("From", fromIndex, "to", toIndex)
     let interSection = $('message-intersection-observer');
 
     if (fromIndex === DB.length) {
@@ -25,7 +23,6 @@ export const initMessages = (DB, fromIndex, toIndex) => {
         } else {
             nextUser = DB[i - 1].from;
         }
-        //console.log("i", DB[i].content, "DB[i] current", DB[i].from, "DB[i-1] next", nextUser)
         let singleMessage = createSingleMessage(i, DB[i].content, DB[i].from, formatTimeStamp(DB[i].timestamp), nextUser)
 
         messagesWrapper.appendChild(singleMessage);
@@ -39,7 +36,7 @@ export const createSingleMessage = (index, content, from, timestamp, previousUse
     let singleMessage = createDiv('single-message');
 
     if (content == '#beginningofconversation#') {
-        
+
         singleMessage.classList.add('no-messages');
         singleMessage.innerHTML = 'This is the beginning of your conversation. Be the first to speak up!';
 
