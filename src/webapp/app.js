@@ -1,6 +1,6 @@
 import { createDiv, $, qS } from "./DOM_helpers.js";
 import { startHeaderClock } from "./header_clock.js";
-import { getJSON } from "./read_JSON.js";
+import { getJSON, logoutJSON, makeNewCommentJSON, signUpJSON, loginJSON, makeNewPostJSON } from "./read_JSON.js";
 import { initPosts, createPost } from "./posts.js";
 import { initMessages } from "./messages.js";
 import { populateUsers } from "./users.js";
@@ -174,73 +174,14 @@ function signUp() {
     let data = new FormData($('register-area'));
     let dataToSend = Object.fromEntries(data);
 
-    fetch('/src/server/signup', {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dataToSend)
-    })
-
-        .then((res) => {
-            return res.json()
-        })
-
-        .then((result) => {
-            if (Object.prototype.hasOwnProperty.call(result, "message")) {
-                badValidation(result.message, result.requirement)
-            } else {
-                currentUser.innerHTML = result.username
-                createNewCookie(result.UUID)
-                toggleRegisterVisibility(false)
-                start()
-                initPostIntersectionObserver(true);
-                initMessageIntersectionObserver();
-                userFieldConnection(result.username)
-            }
-        })
-
-        .catch((err) => {
-            console.log("Error with signup", err);
-        });
+    signUpJSON(dataToSend)
 }
 
 function login() {
     let data = new FormData($('login-area'));
     let dataToSend = Object.fromEntries(data)
 
-    fetch('/src/server/login', {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dataToSend)
-    })
-
-        .then((res) => {
-            return res.json();
-        })
-
-        .then((result) => {
-            if (Object.prototype.hasOwnProperty.call(result, "message")) {
-                let input_area = $("username_loginID")
-                let input_area2 = $("password_loginID")
-                input_area.style.borderColor = 'red'
-                input_area2.style.borderColor = 'red'
-                let errorMessage = createDiv('error-message', result.requirement, 'error-message');
-                input_area.parentNode.insertBefore(errorMessage, input_area)
-            } else {
-                //Attach the UUID to the document
-                createNewCookie(result.UUID);
-                toggleLoginVisibility(false);
-                start();
-                initPostIntersectionObserver(true);
-                initMessageIntersectionObserver();
-                userFieldConnection(result.username);
-                currentUser.innerHTML = result.username;
-            }
-        })
-
-
-        .catch((err) => {
-            console.log("Error with login", err);
-        });
+    loginJSON(dataToSend)
 }
 
 export const start = async () => {
@@ -424,13 +365,7 @@ async function makeNewComment() {
     dataToSend.timestamp = new Date().toISOString();
     dataToSend.user = currentUser.innerHTML;
 
-    const res = await fetch('/src/server/addCommentsHandler', {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSend)
-    })
+    const res = await makeNewCommentJSON(dataToSend)
 
     if (res.status == 200) {
         // Generate ID for HTML element (the actual ID is given in DB, but that is not known until the DB is updated and is not relevant here, too)
@@ -476,13 +411,7 @@ async function makeNewPost() {
     dataToSend.comments = 0;
     dataToSend.user = currentUser.innerHTML;
 
-    const res = await fetch('/src/server/addPostHandler', {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSend)
-    })
+    const res = makeNewPostJSON(dataToSend)
 
     if (res.status == 200) {
         let last = postsWrapper.firstElementChild.id.replace("post-", '') * 1;
@@ -562,24 +491,7 @@ $('logout_User').addEventListener('click', () => {
     let user_uuid = getCookie();
 
     //fetch to send db request deleting cookie
-    fetch('/src/server/deleteCookieHandler', {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: user_uuid
-    })
-        .then((res) => {
-            if (res.ok) {
-                toggleLoginVisibility(true)
-                userLogoutConnection()
-                currentUser.innerHTML = ""
-            } else {
-                throw res.statusText
-            }
-        })
-
-        .catch((error) => {
-            console.error('Error:', error);
-        });
+    logoutJSON(user_uuid)
 
     document.cookie = "username" + "=" + ";" + "Max-Age=-99999999" + ";path=/;"
     let input_area = $("username_loginID")
