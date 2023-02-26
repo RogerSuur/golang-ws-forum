@@ -5,7 +5,7 @@ import { qS } from './DOM_helpers.js';
 
 
 let onlineUsersWrapper = qS("online");
-let offlineUsersWrapper = qS("offline");
+let allUsersWrapper = qS("all-users");
 
 export async function populateUsers() {
     //loads fresh set of user
@@ -14,7 +14,7 @@ export async function populateUsers() {
 
     if (usersObject.offline !== null) {
         onlineUsersWrapper.innerHTML = '';
-        offlineUsersWrapper.innerHTML = '';
+        allUsersWrapper.innerHTML = '';
 
         usersObject.online = webSocketUsers.data.online
 
@@ -23,7 +23,7 @@ export async function populateUsers() {
         usersObject.offline = removeDoubleUsers(usersObject.online, usersObject.offline)
 
         constructUserLists(usersObject.online, onlineUsersWrapper, 'online');
-        constructUserLists(usersObject.offline, offlineUsersWrapper, 'offline');
+        constructUserLists(usersObject.offline, allUsersWrapper, 'all-users');
     }
 };
 
@@ -57,25 +57,25 @@ async function loadUsersObject() {
 }
 
 // If user comes online, remove from offline list
-const removeDoubleUsers = function (onlineUsers, offlineUsers) {
-    offlineUsers.forEach(function (user) {
+const removeDoubleUsers = function (onlineUsers, allUsers) {
+    allUsers.forEach(function (user) {
         if (onlineUsers.find(e => e.name === user.name)) {
-            offlineUsers = offlineUsers.filter(item => item !== user)
+            allUsers = allUsers.filter(item => item !== user)
         }
     })
-    return offlineUsers
+    return allUsers
 }
 
-const sortOnlineUsers = function (onlineUsers, offlineUsers) {
-    const offlineIndexMap = {};
-    for (let i = 0; i < offlineUsers.length; i++) {
-        const userName = offlineUsers[i].name;
-        offlineIndexMap[userName] = i;
+const sortOnlineUsers = function (onlineUsers, allUsers) {
+    const allUsersIndexMap = {};
+    for (let i = 0; i < allUsers.length; i++) {
+        const userName = allUsers[i].name;
+        allUsersIndexMap[userName] = i;
     }
 
     onlineUsers.sort((a, b) => {
-        const aIndex = offlineIndexMap[a.name];
-        const bIndex = offlineIndexMap[b.name];
+        const aIndex = allUsersIndexMap[a.name];
+        const bIndex = allUsersIndexMap[b.name];
         if (aIndex === undefined || bIndex === undefined) {
             return 0;
         } else {
