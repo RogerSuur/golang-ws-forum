@@ -1,10 +1,11 @@
 import { createDiv } from './DOM_helpers.js';
 import { webSocketUsers } from './ws.js';
 import { currentUser } from './app.js';
+import { qS } from './DOM_helpers.js';
 
 
-let onlineUsersWrapper = qS(".online");
-let offlineUsersWrapper = qS(".offline");
+let onlineUsersWrapper = qS("online");
+let offlineUsersWrapper = qS("offline");
 
 export async function populateUsers() {
     //loads fresh set of user
