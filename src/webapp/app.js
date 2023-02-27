@@ -6,7 +6,8 @@ import { initMessages } from "./messages.js";
 import { populateUsers } from "./users.js";
 import { Forum, socket, sendMessage } from './ws.js';
 import { getCookie, newPostValidation, signUpValidation, loginValidation } from "./validate.js";
-import { hide, show, toggleMessageBoxVisibility, toggleThreadVisibility, toggleLoginVisibility, toggleRegisterVisibility } from "./visibility_togglers.js";
+import { toggleMessageBoxVisibility, toggleThreadVisibility, toggleLoginVisibility, toggleRegisterVisibility } from "./visibility_togglers.js";
+import { sentinels, initPostIntersectionObserver } from "./infinity_scroll.js";
 
 new Forum();
 
@@ -14,161 +15,21 @@ export const postsWrapper = qS('posts-wrapper');
 export const threadWrapper = qS('thread-wrapper');
 export const messagesWrapper = qS('messages-wrapper');
 
-export const spinner = qS('lds-ellipsis');
-
-const buttons = document.querySelectorAll('button');
-
-const threadHeader = qS('thread-header-text');
-const parentID = $('parentID');
-const messageBoxHeader = qS('messages-header-text');
-const closeMessagesBox = qS('close-messages-button');
-const closeThread = qS('close-thread-button');
-
 let postsObject = { "posts": [] };
 let messagesObject = { "messages": [] };
 // export let currentUser = 'Petra Marsh';
 export let currentUser = $("current-userID");
 export let otherUser;
 
-let topSentinelPreviousY = 0;
-let topSentinelPreviousRatio = 0;
-let bottomSentinelPreviousY = 0;
-let bottomSentinelPreviousRatio = 0;
-
 const nrOfItemsToLoad = 10;
-export const loadTime = 1500;
-let pDB = postsObject.posts;
+export let pDB = postsObject.posts;
 export let mDB = messagesObject.messages;
-let isThread = false;
+export let isThread = false;
 
-let currentIndex = 0,
+export let currentIndex = 0,
     postsIndex,
     messagesIndex = mDB.length;
 
-export const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-export const keepPostInFocus = (postInFocus, position) => {
-    const scrollPointItem = $(postInFocus);
-    scrollPointItem.scrollIntoView({ behavior: 'auto', block: position });
-}
-
-const topSentCallback = async entry => {
-    if (messagesIndex == 0 && topSentinelPreviousRatio != 0) {
-        // if we are at the end of the DB, do nothing
-        console.log("No more messages to load");
-        return;
-    }
-
-    const currentY = entry.boundingClientRect.top;
-    const currentRatio = entry.intersectionRatio;
-    const isIntersecting = entry.isIntersecting;
-
-    // conditional check for Scrolling up
-    if (
-        currentY > topSentinelPreviousY &&
-        isIntersecting &&
-        currentRatio >= topSentinelPreviousRatio
-    ) {
-        // set spinner
-        let messagesAreaRect = qS('messages-area').getBoundingClientRect();
-        let x = messagesAreaRect.left + messagesAreaRect.width / 2 - 40;
-        let y = messagesAreaRect.top + 40;
-        spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
-        show(spinner);
-        await sleep(loadTime);
-        hide(spinner);
-        // load new data
-        getMessages(otherUser).then(() => { console.log("Fetching more messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex) })
-    }
-
-    topSentinelPreviousY = currentY;
-    topSentinelPreviousRatio = currentRatio;
-}
-
-const bottomSentCallback = async entry => {
-    if (currentIndex >= pDB.length) {
-        // if we are at the end of the DB, do nothing
-        console.log('end of DB');
-        return;
-    }
-    const currentY = entry.boundingClientRect.top;
-    const currentRatio = entry.intersectionRatio;
-    const isIntersecting = entry.isIntersecting;
-
-    if (
-        currentY < bottomSentinelPreviousY &&
-        currentRatio > bottomSentinelPreviousRatio &&
-        isIntersecting
-    ) {
-        // set spinner
-        let rect;
-        if (isThread) {
-            rect = qS('thread-area').getBoundingClientRect();
-        } else {
-            rect = qS('posts-area').getBoundingClientRect();
-        }
-        let x = rect.left + rect.width / 2 - 40;
-        let y = rect.bottom - 100;
-        spinner.setAttribute('style', `left: ${x}px; top: ${y}px;`);
-        if (entry.target.getBoundingClientRect().top < window.innerHeight) {
-            show(spinner);
-            await sleep(loadTime);
-            hide(spinner);
-        }
-
-        // load new data
-        let postInFocus;
-        if (isThread) {
-            postInFocus = threadWrapper.lastChild.id;
-        } else {
-            postInFocus = postsWrapper.lastChild.id;
-        }
-        getPosts(currentIndex, false, isThread)
-            .then(() => {
-                if (!isThread) {
-                    makeLinksClickable()
-                }
-            })
-
-        keepPostInFocus(postInFocus, 'end');
-
-    }
-
-    bottomSentinelPreviousY = currentY;
-    bottomSentinelPreviousRatio = currentRatio;
-}
-
-const callback = entries => {
-    entries.forEach(entry => {
-        bottomSentCallback(entry);
-    });
-}
-
-let observer = new IntersectionObserver(callback);
-
-export const initPostIntersectionObserver = (open) => {
-    if (open) {
-        observer.observe($(`intersection-observer`));
-        observer.unobserve($(`thread-intersection-observer`));
-    } else {
-        observer.unobserve($(`intersection-observer`));
-        observer.observe($(`thread-intersection-observer`));
-    }
-}
-
-export const initMessageIntersectionObserver = () => {
-
-    const messagesCallback = entries => {
-        entries.forEach(entry => {
-            topSentCallback(entry);
-        });
-    }
-    let options = {
-        root: qS('messages-area')
-    }
-    let messagesObserver = new IntersectionObserver(messagesCallback, options);
-    messagesObserver.observe($(`message-intersection-observer`));
-}
 
 function signUp() {
     let data = new FormData($('register-area'));
@@ -283,14 +144,14 @@ export async function getUsers() {
             }
 
             messagesIndex = 0;
-            topSentinelPreviousY = 0;
+            sentinels.topSentinelPreviousY = 0;
             getMessages(otherUser)
             messagesWrapper.scrollTop = messagesWrapper.scrollHeight; // scroll to bottom of messages (to the last message)
-            messageBoxHeader.textContent = `Your conversation with ${otherUser}`;
+            qS('messages-header-text').textContent = `Your conversation with ${otherUser}`;
         });
     });
 
-    closeMessagesBox.addEventListener('click', () => {
+    qS('close-messages-button').addEventListener('click', () => {
         toggleMessageBoxVisibility(false);
         messagesIndex = mDB.length;
     });
@@ -299,7 +160,7 @@ export async function getUsers() {
 startHeaderClock;
 
 //Maybe can be refactored without needing this function
-buttons.forEach((button) => {
+document.querySelectorAll('button').forEach((button) => {
     button.addEventListener('click', function () {
         switch (button.id) {
             case 'login':
@@ -418,9 +279,9 @@ export function makeLinksClickable() {
                     getPosts(0, false, isThread);
                     let selectedPost = postsObject.posts.filter(post => post.postID === threadLink.id)[0]
                     let category = createDiv('post-category', selectedPost.category, selectedPost.category);
-                    threadHeader.innerHTML = selectedPost.title;
-                    parentID.value = selectedPost.postID;
-                    threadHeader.prepend(category);
+                    qS('thread-header-text').innerHTML = selectedPost.title;
+                    $('parentID').value = selectedPost.postID;
+                    qS('thread-header-text').prepend(category);
                 })
                 .then(() => { initPostIntersectionObserver(false) })
                 .catch((err) => {
@@ -429,7 +290,7 @@ export function makeLinksClickable() {
         });
     });
 
-    closeThread.addEventListener('click', () => {
+    qS('close-thread-button').addEventListener('click', () => {
         toggleThreadVisibility(false);
         initPostIntersectionObserver(true);
         currentIndex = postsIndex;

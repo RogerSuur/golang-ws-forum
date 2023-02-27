@@ -1,9 +1,10 @@
 export let socket = null;
-import { currentUser, otherUser, getUsers, mDB, messagesWrapper, postsWrapper, spinner, sleep, loadTime, getPosts, makeLinksClickable, updateCommentCount } from './app.js'
+import { currentUser, otherUser, getUsers, mDB, messagesWrapper, postsWrapper, getPosts, makeLinksClickable, updateCommentCount } from './app.js'
 import { createSingleMessage } from './messages.js'
 import { createDiv, $, qS, formatTimeStamp } from "./DOM_helpers.js";
 import { hide, show, toggleLoginVisibility } from "./visibility_togglers.js";
 import { checkCookie } from './validate.js';
+import { spinner, sleep, loadTime } from './infinity_scroll.js';
 
 export let webSocketUsers;
 let formattedDate = new Date().toISOString();
