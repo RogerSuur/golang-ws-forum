@@ -10,6 +10,7 @@ import { toggleMessageBoxVisibility, toggleThreadVisibility, toggleLoginVisibili
 import { sentinels, initPostIntersectionObserver } from "./infinity_scroll.js";
 
 new Forum();
+startHeaderClock;
 
 export const postsWrapper = qS('posts-wrapper');
 export const threadWrapper = qS('thread-wrapper');
@@ -157,11 +158,10 @@ export async function getUsers() {
     });
 }
 
-startHeaderClock;
-
 $('register-form').addEventListener('submit', (e) => {
     if (signUpValidation()) {
         signUp();
+        $("register-form").reset()
     }
     e.preventDefault(); // prevent page reload
 });
@@ -169,6 +169,8 @@ $('register-form').addEventListener('submit', (e) => {
 $('login-form').addEventListener('submit', (e) => {
     if (loginValidation()) {
         login();
+        $("login-form").reset()
+
     }
     e.preventDefault(); // prevent page reload
 });
@@ -215,7 +217,7 @@ function checkSocketAndSend() {
     if (newMessageValidation()) {
         sendMessage();
     }
-};
+}
 
 $('logout-user').addEventListener('click', () => {
     let user_uuid = getCookie();
@@ -228,7 +230,7 @@ $('logout-user').addEventListener('click', () => {
     let input_area2 = $("password_loginID")
     input_area.style.borderColor = ''
     input_area2.style.borderColor = ''
-    $("login-area").reset()
+    $("login-form").reset()
 
     toggleLoginVisibility(true);
 })
@@ -243,7 +245,7 @@ async function makeNewComment() {
     await makeNewCommentJSON(dataToSend)
 
     // resetting form values
-    $('commentContentID').value = '';
+    $('new-comment').reset();
 }
 
 export function updateCommentCount(postID, markUnread = false) {
@@ -269,9 +271,7 @@ async function makeNewPost() {
     await makeNewPostJSON(dataToSend)
 
     // resetting form values
-    $('contentID').value = '';
-    $('titleID').value = '';
-    $('categoryID').value = 'general';
+    $('new-post').reset();
 }
 
 export function makeLinksClickable() {
