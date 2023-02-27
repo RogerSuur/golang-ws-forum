@@ -37,6 +37,7 @@ export async function signUpJSON(dataToSend) {
             } else {
                 successfulLogin(result)
                 toggleRegisterVisibility(false)
+                $("register-form").reset()
             }
         })
 
@@ -69,6 +70,7 @@ export async function loginJSON(dataToSend) {
             } else {
                 successfulLogin(result)
                 toggleLoginVisibility(false)
+                $("login-form").reset()
             }
         })
 
@@ -142,8 +144,7 @@ export async function makeNewPostJSON(dataToSend) {
         console.error("Unexpected status:", res.status)
         return res.json()
     }
-
-
+    
     return res
 }
 

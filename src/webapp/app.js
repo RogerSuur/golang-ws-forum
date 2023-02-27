@@ -160,8 +160,7 @@ export async function getUsers() {
 
 $('register-form').addEventListener('submit', (e) => {
     if (signUpValidation()) {
-        signUp();
-        $("register-form").reset()
+        signUp(); 
     }
     e.preventDefault(); // prevent page reload
 });
@@ -169,8 +168,6 @@ $('register-form').addEventListener('submit', (e) => {
 $('login-form').addEventListener('submit', (e) => {
     if (loginValidation()) {
         login();
-        $("login-form").reset()
-
     }
     e.preventDefault(); // prevent page reload
 });
