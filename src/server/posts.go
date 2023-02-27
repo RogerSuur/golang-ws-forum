@@ -16,10 +16,10 @@ func getPostsHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(500)
 		return
 	}
-	var posts Data
+	var posts database.Data
 
 	for rows.Next() {
-		var post Post
+		var post database.Post
 		err = rows.Scan(&post.PostID, &post.User, &post.Title, &post.Timestamp, &post.Comments, &post.Content, &post.Category)
 
 		posts.Status.Post = append(posts.Status.Post, post)
@@ -54,10 +54,10 @@ func getCommentsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var comments Data
-	var comment Comment
+	var comments database.Data
+	var comment database.Comment
 
-	comment, err = getCommentParent(d.PostID)
+	comment, _ = getCommentParent(d.PostID)
 	comments.Status.Comment = append(comments.Status.Comment, comment)
 	for rows.Next() {
 
@@ -123,10 +123,10 @@ func getMessagesQuery(ID1 string, ID2 string) ([]byte, error) {
 		log.Println("Erron in reading rows", err.Error())
 		return nil, err
 	}
-	var messages Data
+	var messages database.Data
 
 	for rows.Next() {
-		var message Message
+		var message database.Message
 		err = rows.Scan(&message.MessageID, &message.Sender, &message.Receiver, &message.Content, &message.Timestamp)
 
 		message.Receiver, _ = getUsername(message.Receiver)
@@ -214,8 +214,8 @@ func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error with adding message", err.Error())
 		w.WriteHeader(500)
 		return
-	} 
-	
+	}
+
 	// update comment count for post
 	_, err = database.Statements["updateCommentCount"].Exec(comment.PostID)
 	if err != nil {
@@ -228,8 +228,8 @@ func addCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func getCommentParent(postID string) (Comment, error) {
-	var parentPost Comment
+func getCommentParent(postID string) (database.Comment, error) {
+	var parentPost database.Comment
 	rows, err := database.Statements["getCommentParent"].Query(postID)
 	if err != nil {
 		log.Println("Error getting postID", err.Error())

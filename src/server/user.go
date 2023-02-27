@@ -29,16 +29,6 @@ type signinData struct {
 	Password string `json:"password_login"`
 }
 
-type Online struct {
-	Username string `json:"name"`
-	Unread   bool   `json:"unread"`
-}
-
-type Offline struct {
-	Username string `json:"name"`
-	Unread   bool   `json:"unread"`
-}
-
 type Post struct {
 	User      string `json:"user"`
 	PostID    string `json:"postID"`
@@ -63,18 +53,6 @@ type Comment struct {
 	Content   string `json:"content"`
 	Timestamp string `json:"timestamp"`
 	PostID    string `json:"postID"`
-}
-
-type Status struct {
-	Comment []Comment `json:"comments"`
-	Post    []Post    `json:"posts"`
-	Online  []Online  `json:"online"`
-	Offline []Offline `json:"offline"`
-	Message []Message `json:"messages"`
-}
-
-type Data struct {
-	Status Status `json:"data"`
 }
 
 func SignUpHandler(w http.ResponseWriter, r *http.Request) {
@@ -227,7 +205,7 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	var users Data
+	var users database.Data
 
 	// get all messages from the users and then sort the users based on the message to "user"
 	for rows.Next() {
@@ -239,14 +217,14 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if username != user {
-			users.Status.Offline = append(users.Status.Offline, Offline{
+			users.Status.Offline = append(users.Status.Offline, database.Offline{
 				Username: username,
 				Unread:   false,
 			})
 		}
 	}
 
-	users.Status.Online = []Online{} // Needed to keep JSon from going stupid
+	users.Status.Online = []database.Online{} // Needed to keep JSon from going stupid
 	b, _ := json.Marshal(users)
 	w.Write(b)
 }
