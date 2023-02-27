@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"01.kood.tech/git/jrms/real-time-forum/src/server/database"
-	"01.kood.tech/git/jrms/real-time-forum/src/server/handlers"
+	"01.kood.tech/git/jrms/real-time-forum/src/server/ws_handler"
 )
 
 func main() {
@@ -26,7 +26,7 @@ func main() {
 	}
 
 	database.DatabaseGod(generateNew)
-	go handlers.ListenToWsChannel()
+	go ws_handler.ListenToWsChannel()
 	log.Println("Starting web server on port 8080")
 	server := &http.Server{
 		Addr:    "localhost:8080",

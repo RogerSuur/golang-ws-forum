@@ -1,4 +1,4 @@
-package handlers
+package ws_handler
 
 import (
 	"fmt"
