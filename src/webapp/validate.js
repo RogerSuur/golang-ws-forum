@@ -1,7 +1,7 @@
 import { createDiv, $ } from "./DOM_helpers.js";
 import { currentUser, start } from "./app.js";
 import { toggleLoginVisibility } from "./visibility_togglers.js";
-import { userFieldConnection } from "./ws.js";
+import { userConnected } from "./ws.js";
 
 const patterns = {
     "username-register": /^[a-zA-Z\d]{1,15}$/,
@@ -39,8 +39,50 @@ export const newPostValidation = () => {
     return true
 }
 
+export const newCommentValidation = () => {
+
+    let data = new FormData($('new-comment'));
+    let dataToSend = Object.fromEntries(data)
+
+    let errors = document.getElementsByClassName('error-message');
+    while (errors[0]) {
+        errors[0].parentNode.removeChild(errors[0]);
+    }
+
+    if (dataToSend.content == "") {
+        badValidation("commentContent", "We are not mind-readers")
+        return false
+    } else {
+        let input_area = $("commentContentID")
+        input_area.style.borderColor = "";
+    }
+
+    return true
+}
+
+export const newMessageValidation = () => {
+
+    let data = new FormData($('new-message'));
+    let dataToSend = Object.fromEntries(data)
+
+    let errors = document.getElementsByClassName('error-message');
+    while (errors[0]) {
+        errors[0].parentNode.removeChild(errors[0]);
+    }
+
+    if (dataToSend.message == "") {
+        badValidation("message", "We are not mind-readers")
+        return false
+    } else {
+        let input_area = $("messageID")
+        input_area.style.borderColor = "";
+    }
+
+    return true
+}
+
 export const loginValidation = () => {
-    let data = new FormData($('login-area'));
+    let data = new FormData($('login-form'));
     let dataToSend = Object.fromEntries(data)
 
     let errors = document.getElementsByClassName('error-message');
@@ -69,7 +111,7 @@ export const loginValidation = () => {
 
 export const signUpValidation = () => {
 
-    let data = new FormData($('register-area'));
+    let data = new FormData($('register-form'));
     let dataToSend = Object.fromEntries(data)
 
     let errors = document.getElementsByClassName('error-message');
@@ -157,7 +199,7 @@ export function checkCookie() {
 
             .then((result) => {
                 //set username to result.user
-                userFieldConnection(result.user)
+                userConnected(result.user)
                 currentUser.innerHTML = result.user;
             })
 

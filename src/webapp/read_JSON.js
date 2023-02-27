@@ -2,7 +2,7 @@ import { createNewCookie, badValidation } from "./validate.js"
 import { toggleRegisterVisibility, toggleLoginVisibility } from "./visibility_togglers.js"
 import { start, makeLinksClickable, updateCommentCount, currentUser, postsWrapper, threadWrapper, getPosts } from "./app.js"
 import { keepPostInFocus, initPostIntersectionObserver, initMessageIntersectionObserver } from "./infinity_scroll.js"
-import { userFieldConnection, userLogoutConnection, socket } from "./ws.js"
+import { userConnected, userLogoutConnection, socket } from "./ws.js"
 import { $, createDiv } from "./DOM_helpers.js"
 import { createPost } from "./posts.js"
 
@@ -35,18 +35,13 @@ export async function signUpJSON(dataToSend) {
             if (Object.prototype.hasOwnProperty.call(result, "message")) {
                 badValidation(result.message, result.requirement)
             } else {
-                currentUser.innerHTML = result.username
-                createNewCookie(result.UUID)
+                successfulLogin(result)
                 toggleRegisterVisibility(false)
-                start()
-                initPostIntersectionObserver(true);
-                initMessageIntersectionObserver();
-                userFieldConnection(result.username)
             }
         })
 
         .catch((err) => {
-            console.log("Error with signup", err);
+            console.error("Signup:", err);
         });
 
     return data
@@ -72,22 +67,24 @@ export async function loginJSON(dataToSend) {
                 let errorMessage = createDiv('error-message', result.requirement, 'error-message');
                 input_area.parentNode.insertBefore(errorMessage, input_area)
             } else {
-                //Attach the UUID to the document
-                createNewCookie(result.UUID);
-                toggleLoginVisibility(false);
-                start();
-                initPostIntersectionObserver(true);
-                initMessageIntersectionObserver();
-                userFieldConnection(result.username);
-                currentUser.innerHTML = result.username;
+                successfulLogin(result)
+                toggleLoginVisibility(false)
             }
         })
 
-
         .catch((err) => {
-            console.log("Error with login", err);
+            console.error("Login", err);
         });
     return data
+}
+
+function successfulLogin(result) {
+    createNewCookie(result.UUID)
+    start()
+    initPostIntersectionObserver(true);
+    initMessageIntersectionObserver();
+    userConnected(result.username)
+    currentUser.innerHTML = result.username;
 }
 
 export async function makeNewCommentJSON(dataToSend) {
@@ -112,10 +109,9 @@ export async function makeNewCommentJSON(dataToSend) {
         jsonData["action"] = "new_comment";
         jsonData["from"] = currentUser.innerHTML;
         jsonData["postID"] = dataToSend.postID;
-        console.log("Sending", jsonData)
         socket.send(JSON.stringify(jsonData));
     } else {
-        console.log("Status other", res.status)
+        console.error("Unexpected status:", res.status)
         return res.json()
     }
 
@@ -138,13 +134,12 @@ export async function makeNewPostJSON(dataToSend) {
         keepPostInFocus(newPost.id, 'start');
         getPosts().then(() => { makeLinksClickable() });
         let jsonData = {};
-        console.log("broadcasting new post");
         jsonData["action"] = "new_post";
         jsonData["from"] = currentUser.innerHTML;
         socket.send(JSON.stringify(jsonData));
 
     } else {
-        console.log("Status other", res.status)
+        console.error("Unexpected status:", res.status)
         return res.json()
     }
 

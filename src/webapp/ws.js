@@ -26,7 +26,7 @@ export function Forum() {
             socket = new WebSocket("ws://localhost:8080/ws");
 
             socket.onopen = () => {
-                console.log("Successfully connected");
+                console.log("Successfully connected to server");
                 checkCookie(currentUser.innerHTML)
                 shouldCheck = false
             };
@@ -40,7 +40,6 @@ export function Forum() {
 
             socket.onmessage = (msg) => {
                 let data = JSON.parse(msg.data);
-                console.log("Action is", data.action);
                 switch (data.action) {
                     case "new_post":
                         if (data.from != currentUser.innerHTML) {
@@ -57,7 +56,7 @@ export function Forum() {
                                 hide(spinner);
                                 getPosts(0, true)
                                     .then(() => { makeLinksClickable() })
-                                    .catch(error => console.log(error))
+                                    .catch(error => console.error("Loading new posts:", error))
                             })
 
                         }
@@ -101,12 +100,12 @@ export function Forum() {
                         }
                         break;
                     default:
-                        console.log("unknown socket message")
+                        console.log("Unknown action:", data.action);
                 }
             };
 
             socket.onerror = (error) => {
-                console.log("there was an error", error);
+                console.error("Socket:", error);
             };
         }
 
@@ -134,17 +133,12 @@ export function Forum() {
 //send messages to server
 export async function sendMessage() {
 
-    if ($('message').value == "") {
-        alert("Please enter a message")
-        return
-    }
-
     try {
         const jsonData = {};
         jsonData["action"] = "broadcast";
         jsonData["from"] = currentUser.innerHTML;
         jsonData["to"] = otherUser;
-        jsonData["content"] = $('message').value;
+        jsonData["content"] = $('messageID').value;
         jsonData["timestamp"] = formattedDate;
 
         const res = await fetch('/src/server/addMessageHandler', {
@@ -156,18 +150,17 @@ export async function sendMessage() {
         })
 
         if (res.status === 200) {
-            console.log("Message sent successfully.")
             socket.send(JSON.stringify(jsonData));
         } else {
-            console.log("Message not sent", res.status)
+            console.error("Message not sent:", res.status)
         }
 
     } catch (error) {
-        console.log("Error sending message", error)
+        console.error("Sending message:", error)
     }
 
     sortUsersbyLastMessage(otherUser)
-    $('message').value = "";
+    $('messageID').value = "";
 }
 
 //Sorts usersDiv by last message sent
@@ -209,9 +202,8 @@ function sendNotification(currentUser, sender) {
 }
 
 //gives loginwsconnection a username
-export function userFieldConnection(username) {
+export function userConnected(username) {
     let jsonData = {};
-    console.log("userfield connection");
     jsonData["action"] = "username";
     jsonData["username"] = username;
     socket.send(JSON.stringify(jsonData));
@@ -220,7 +212,6 @@ export function userFieldConnection(username) {
 //removes wsconnections
 export function userLogoutConnection() {
     let jsonData = {};
-    console.log("userlogoutconnection");
     jsonData["action"] = "left";
     socket.send(JSON.stringify(jsonData));
 }

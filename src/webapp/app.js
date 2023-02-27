@@ -5,7 +5,7 @@ import { initPosts } from "./posts.js";
 import { initMessages } from "./messages.js";
 import { populateUsers } from "./users.js";
 import { Forum, socket, sendMessage } from './ws.js';
-import { getCookie, newPostValidation, signUpValidation, loginValidation } from "./validate.js";
+import { getCookie, newPostValidation, newCommentValidation, newMessageValidation, signUpValidation, loginValidation } from "./validate.js";
 import { toggleMessageBoxVisibility, toggleThreadVisibility, toggleLoginVisibility, toggleRegisterVisibility } from "./visibility_togglers.js";
 import { sentinels, initPostIntersectionObserver } from "./infinity_scroll.js";
 
@@ -32,14 +32,14 @@ export let currentIndex = 0,
 
 
 function signUp() {
-    let data = new FormData($('register-area'));
+    let data = new FormData($('register-form'));
     let dataToSend = Object.fromEntries(data);
 
     signUpJSON(dataToSend)
 }
 
 function login() {
-    let data = new FormData($('login-area'));
+    let data = new FormData($('login-form'));
     let dataToSend = Object.fromEntries(data)
 
     loginJSON(dataToSend)
@@ -102,7 +102,7 @@ export async function updateMessages(sender, receiver) {
         }
         return mDB = await data.data.messages;
     } catch (err) {
-        console.log("Error updating messages:", err);
+        console.error("Updating messages:", err);
     }
 }
 
@@ -122,7 +122,7 @@ async function updateComments(postID) {
         let data = await response.json();
         return pDB = await data.data.comments;
     } catch (err) {
-        console.log("Error updating comments:", err);
+        console.error("Updating comments:", err);
     }
 }
 
@@ -159,65 +159,79 @@ export async function getUsers() {
 
 startHeaderClock;
 
-//Maybe can be refactored without needing this function
-document.querySelectorAll('button').forEach((button) => {
-    button.addEventListener('click', function () {
-        switch (button.id) {
-            case 'login':
-                //toggleLoginVisibility(false);
-                //start();
-                break;
-            case 'register':
-                toggleRegisterVisibility(true);
-                break;
-            case 'create':
-                break;
-            case 'logout':
-                toggleLoginVisibility(true);
-                break;
-            case 'sendMessage':
-                if (!socket) {
-                    console.log("no connection");
-                    return
-                }
-                sendMessage()
-                break;
-            default:
-                console.log("Button", button.id)
-        }
-    });
-});
-
-$('register-area').addEventListener('submit', (e) => {
+$('register-form').addEventListener('submit', (e) => {
     if (signUpValidation()) {
         signUp();
     }
-    console.log("new register area eventlistener");
     e.preventDefault(); // prevent page reload
 });
 
-$('login-area').addEventListener('submit', (e) => {
+$('login-form').addEventListener('submit', (e) => {
     if (loginValidation()) {
         login();
     }
-    console.log("new login area eventlistener");
-    e.preventDefault();
+    e.preventDefault(); // prevent page reload
+});
+
+$('register').addEventListener('click', () => {
+    toggleRegisterVisibility(true);
+});
+
+$('back-to-login').addEventListener('click', () => {
+    toggleLoginVisibility(true);
 });
 
 $('new-post').addEventListener('submit', (e) => {
     if (newPostValidation()) {
         makeNewPost();
     }
-    console.log("new Post area eventlistener");
     e.preventDefault();
 });
 
 $('new-comment').addEventListener('submit', (e) => {
-    makeNewComment();
-
-    console.log("new Comment area eventlistener");
+    if (newCommentValidation()) {
+        makeNewComment();
+    }
     e.preventDefault();
 });
+
+$('messageID').addEventListener('keydown', (e) => {
+    if (e.code === 'Enter' || e.code === 'NumpadEnter') {
+        checkSocketAndSend();
+        e.preventDefault();
+    } // here an 'else' block could be used for to trigger typing-in-progress
+});
+
+$('send-message').addEventListener('click', (e) => {
+    checkSocketAndSend()
+    e.preventDefault();
+})
+
+function checkSocketAndSend() {
+    if (!socket) {
+        console.error("No websocket connection");
+        return
+    }
+    if (newMessageValidation()) {
+        sendMessage();
+    }
+};
+
+$('logout-user').addEventListener('click', () => {
+    let user_uuid = getCookie();
+
+    //fetch to send db request deleting cookie
+    logoutJSON(user_uuid)
+
+    document.cookie = "username" + "=" + ";" + "Max-Age=-99999999" + ";path=/;"
+    let input_area = $("username_loginID")
+    let input_area2 = $("password_loginID")
+    input_area.style.borderColor = ''
+    input_area2.style.borderColor = ''
+    $("login-area").reset()
+
+    toggleLoginVisibility(true);
+})
 
 async function makeNewComment() {
     let data = new FormData($('new-comment'));
@@ -227,7 +241,6 @@ async function makeNewComment() {
     dataToSend.user = currentUser.innerHTML;
 
     await makeNewCommentJSON(dataToSend)
-
 
     // resetting form values
     $('commentContentID').value = '';
@@ -285,7 +298,7 @@ export function makeLinksClickable() {
                 })
                 .then(() => { initPostIntersectionObserver(false) })
                 .catch((err) => {
-                    console.log("Error with displaying comments: ", err)
+                    console.error("Displaying comments: ", err)
                 });
         });
     });
@@ -298,31 +311,3 @@ export function makeLinksClickable() {
         isThread = false;
     });
 }
-
-
-$("message").addEventListener("keydown", function (event) {
-    if (event.code === "Enter" || event.code === "NumpadEnter") {
-        if (!socket) {
-            console.log("no connection");
-            return false
-        }
-        sendMessage();
-    }
-    console.log("new message area eventlistener");
-})
-
-$('logout_User').addEventListener('click', () => {
-    let user_uuid = getCookie();
-
-    //fetch to send db request deleting cookie
-    logoutJSON(user_uuid)
-
-    document.cookie = "username" + "=" + ";" + "Max-Age=-99999999" + ";path=/;"
-    let input_area = $("username_loginID")
-    let input_area2 = $("password_loginID")
-    input_area.style.borderColor = ''
-    input_area2.style.borderColor = ''
-    $("login-area").reset()
-
-    toggleLoginVisibility(true);
-})

@@ -43,13 +43,13 @@ async function loadUsersObject() {
     })
         .then((response) => response.json())
         .then((result) => {
-            if (!Object.prototype.hasOwnProperty.call(result, "data")) alert(result.message);
+            if (!Object.prototype.hasOwnProperty.call(result, "data")) console.err("No user data:", result.message);
             else {
                 return result.data
             }
         })
         .catch((err) => {
-            console.log(err);
+            console.error("Fetching users:", err);
         });
     return data
 }

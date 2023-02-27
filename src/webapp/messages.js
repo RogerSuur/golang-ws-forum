@@ -21,9 +21,10 @@ export const initMessages = (DB, fromIndex, toIndex) => {
         if (i === 0) {
             nextUser = '';
         } else {
-            nextUser = DB[i - 1].from;
+            nextUser = DB[i - 1].sender;
         }
-        let singleMessage = createSingleMessage(i, DB[i].content, DB[i].from, formatTimeStamp(DB[i].timestamp), nextUser)
+
+        let singleMessage = createSingleMessage(DB[i], DB[i].content, DB[i].sender, formatTimeStamp(DB[i].timestamp), nextUser)
 
         messagesWrapper.appendChild(singleMessage);
 

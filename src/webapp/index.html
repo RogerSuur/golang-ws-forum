@@ -31,7 +31,7 @@
           <div class="current-user" id="current-userID"></div>
         </div>
         <div class="horizontal-spacer">|</div>
-        <button id="logout_User" class="logout-button" type="button">
+        <button id="logout-user" class="logout-button" type="button">
           Logout
         </button>
       </div>
@@ -108,7 +108,7 @@
             Is this the real life? Is this just fantasy?
           </div>
           <input type="hidden" id="parentID" name="postID" value="none">
-          <textarea id="commentContentID" name="content" placeholder="Comment" required></textarea>
+          <textarea id="commentContentID" name="content" placeholder="Comment"></textarea>
           <div class="button-wrapper">
             <button id="comment" type="submit">Post Your Comment</button>
           </div>
@@ -125,13 +125,13 @@
       <div class="messages-wrapper">
         <div id="message-intersection-observer"></div>
       </div>
-      <div class="user-input-area">
-        <input type="text" name="message" class="form-control" id="message" placeholder="Type your message here..." />
+      <form class="user-input-area" id="new-message">
+        <input type="text" name="message" class="form-control" id="messageID" placeholder="Type your message here..." />
         <div class="button-wrapper">
-          <button id="sendMessage" type="submit">Send Message</button>
+          <button id="send-message" type="submit">Send Message</button>
           <!-- <input type="hidden" name="action" id="action" /> -->
         </div>
-      </div>
+      </form>
     </div>
     <div class="user-list hidden" id="user-list">
       <div class="online" id="online">
@@ -143,7 +143,7 @@
     </div>
     <div class="login-area">
       <div class="login-wrapper">
-        <form class="user-input-area" id="login-area">
+        <form class="user-input-area" id="login-form">
           <div class="login-header">Enter Your Account Credentials</div>
           <input type="text" id="username_loginID" name="username_login" placeholder="Username or email" />
           <input type="password" id="password_loginID" name="password_login" placeholder="Password" />
@@ -158,7 +158,7 @@
         </div>
       </div>
     </div>
-    <form class="register-area hidden" id="register-area">
+    <form class="register-area hidden" id="register-form">
       <div class="register-wrapper">
         <div class="user-input-area">
           <div class="register-header">
@@ -190,7 +190,7 @@
           </div>
         </div>
         <div class="register-footer">
-          Already have a Real Time&#8482; account?<button id="logout" type="button">
+          Already have a Real Time&#8482; account?<button id="back-to-login" type="button">
             Login
           </button>
         </div>

@@ -6,7 +6,7 @@ const threadWrapper = qS('thread-wrapper');
 const messagesWrapper = qS('messages-wrapper');
 
 const profile = qS('user-profile-container');
-const logout = $('logout');
+const logout = $('logout-user');
 const adsArea = qS('ads-area');
 const loginArea = qS('login-area');
 const registerArea = qS('register-area');

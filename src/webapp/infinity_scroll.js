@@ -1,4 +1,4 @@
-import { getPosts, getMessages, currentUser, otherUser, messagesIndex, currentIndex, isThread, postsWrapper, threadWrapper, makeLinksClickable, pDB } from "./app.js";
+import { getPosts, getMessages, otherUser, messagesIndex, currentIndex, isThread, postsWrapper, threadWrapper, makeLinksClickable, pDB } from "./app.js";
 import { $, qS } from "./DOM_helpers.js";
 import { show, hide } from "./visibility_togglers.js";
 
@@ -21,7 +21,6 @@ export const sentinels = {
 const topSentCallback = async entry => {
     if (messagesIndex == 0 && sentinels.topSentinelPreviousRatio != 0) {
         // if we are at the end of the DB, do nothing
-        console.log("No more messages to load");
         return;
     }
 
@@ -44,7 +43,7 @@ const topSentCallback = async entry => {
         await sleep(loadTime);
         hide(spinner);
         // load new data
-        getMessages(otherUser).then(() => { console.log("Fetching more messages from", currentUser.innerHTML, "to", otherUser, "at index", messagesIndex) })
+        getMessages(otherUser)
     }
 
     sentinels.topSentinelPreviousY = currentY;
@@ -54,7 +53,6 @@ const topSentCallback = async entry => {
 const bottomSentCallback = async entry => {
     if (currentIndex >= pDB.length) {
         // if we are at the end of the DB, do nothing
-        console.log('end of DB');
         return;
     }
     const currentY = entry.boundingClientRect.top;
