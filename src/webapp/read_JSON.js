@@ -1,8 +1,9 @@
 import { createNewCookie, badValidation } from "./validate.js"
 import { toggleRegisterVisibility, toggleLoginVisibility } from "./visibility_togglers.js"
-import { start, initPostIntersectionObserver, makeLinksClickable, updateCommentCount, initMessageIntersectionObserver, currentUser, postsWrapper, threadWrapper, keepPostInFocus, getPosts } from "./app.js"
+import { start, makeLinksClickable, updateCommentCount, currentUser, postsWrapper, threadWrapper, getPosts } from "./app.js"
+import { keepPostInFocus, initPostIntersectionObserver, initMessageIntersectionObserver } from "./infinity_scroll.js"
 import { userFieldConnection, userLogoutConnection, socket } from "./ws.js"
-import { $ } from "./DOM_helpers.js"
+import { $, createDiv } from "./DOM_helpers.js"
 import { createPost } from "./posts.js"
 
 export async function getJSON(path) {

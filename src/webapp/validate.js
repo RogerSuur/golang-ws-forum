@@ -5,6 +5,7 @@ import { userFieldConnection } from "./ws.js";
 
 const patterns = {
     "username-register": /^[a-zA-Z\d]{1,15}$/,
+    // this rexex may contain an unnecessary escape character (the backsplash before the dot)
     "email-register": /^([a-z\d\.]+)@([a-z\d]+)\.([a-z]{2,8})$/,
     "password-register": /^[\w]{1,15}$/,
 }

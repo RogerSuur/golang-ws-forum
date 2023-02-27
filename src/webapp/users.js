@@ -1,8 +1,6 @@
-import { createDiv } from './DOM_helpers.js';
 import { webSocketUsers } from './ws.js';
 import { currentUser } from './app.js';
-import { qS } from './DOM_helpers.js';
-
+import { qS, createDiv } from './DOM_helpers.js';
 
 let onlineUsersWrapper = qS("online");
 let offlineUsersWrapper = qS("offline");
@@ -25,13 +23,13 @@ export async function populateUsers() {
         constructUserLists(usersObject.online, onlineUsersWrapper, 'online');
         constructUserLists(usersObject.offline, offlineUsersWrapper, 'offline');
     }
-};
+}
 
 const removeDoubleOnlineUsers = function (onlineUsers) {
     return onlineUsers.filter((user, index, self) => {
         return index === self.findIndex(u => u.name === user.name);
     });
-};
+}
 
 async function loadUsersObject() {
     const data = await fetch('/src/server/getUsersHandler', {
@@ -45,7 +43,7 @@ async function loadUsersObject() {
     })
         .then((response) => response.json())
         .then((result) => {
-            if (!result.hasOwnProperty('data')) alert(result.message);
+            if (!Object.prototype.hasOwnProperty.call(result, "data")) alert(result.message);
             else {
                 return result.data
             }
@@ -102,4 +100,4 @@ const constructUserLists = (usersArray, usersWrapper, type) => {
             headingElement.innerText = `${usersArray.length - 1} users ${type}`
         }
     });
-};
+}
