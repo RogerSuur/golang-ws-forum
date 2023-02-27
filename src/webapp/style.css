@@ -414,7 +414,8 @@ img {
 }
 
 .online,
-.offline {
+.offline,
+.all-users {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -429,7 +430,8 @@ img {
   background-color: var(--secondary-color);
 }
 
-.offline {
+.offline,
+.all-users {
   background-color: var(--secondary-color);
   opacity: 0.75;
 }
