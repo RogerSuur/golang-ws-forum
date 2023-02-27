@@ -1,7 +1,8 @@
-import { createNewCookie } from "./validate"
-import { toggleRegisterVisibility } from "./visibility_togglers"
-import { start, initPostIntersectionObserver, initMessageIntersectionObserver } from "./app"
-import { userFieldConnection, userLogoutConnection } from "./ws"
+import { createNewCookie, badValidation } from "./validate.js"
+import { toggleRegisterVisibility, toggleLoginVisibility } from "./visibility_togglers.js"
+import { start, initPostIntersectionObserver, initMessageIntersectionObserver, currentUser } from "./app.js"
+import { userFieldConnection, userLogoutConnection } from "./ws.js"
+import { $ } from "./DOM_helpers.js"
 
 export async function getJSON(path) {
     const data = await fetch(`${path}`)

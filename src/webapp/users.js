@@ -5,7 +5,7 @@ import { qS } from './DOM_helpers.js';
 
 
 let onlineUsersWrapper = qS("online");
-let allUsersWrapper = qS("all-users");
+let offlineUsersWrapper = qS("offline");
 
 export async function populateUsers() {
     //loads fresh set of user
@@ -14,7 +14,7 @@ export async function populateUsers() {
 
     if (usersObject.offline !== null) {
         onlineUsersWrapper.innerHTML = '';
-        allUsersWrapper.innerHTML = '';
+        offlineUsersWrapper.innerHTML = '';
 
         usersObject.online = webSocketUsers.data.online
 
@@ -23,7 +23,7 @@ export async function populateUsers() {
         usersObject.offline = removeDoubleUsers(usersObject.online, usersObject.offline)
 
         constructUserLists(usersObject.online, onlineUsersWrapper, 'online');
-        constructUserLists(usersObject.offline, allUsersWrapper, 'all-users');
+        constructUserLists(usersObject.offline, offlineUsersWrapper, 'offline');
     }
 };
 
