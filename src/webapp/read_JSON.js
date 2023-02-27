@@ -1,3 +1,8 @@
+import { createNewCookie } from "./validate"
+import { toggleRegisterVisibility } from "./visibility_togglers"
+import { start, initPostIntersectionObserver, initMessageIntersectionObserver } from "./app"
+import { userFieldConnection, userLogoutConnection } from "./ws"
+
 export async function getJSON(path) {
     const data = await fetch(`${path}`)
         .then(response => {

@@ -146,7 +146,7 @@ const callback = entries => {
 
 let observer = new IntersectionObserver(callback);
 
-const initPostIntersectionObserver = (open) => {
+export const initPostIntersectionObserver = (open) => {
     if (open) {
         observer.observe($(`intersection-observer`));
         observer.unobserve($(`thread-intersection-observer`));
@@ -156,7 +156,7 @@ const initPostIntersectionObserver = (open) => {
     }
 }
 
-const initMessageIntersectionObserver = () => {
+export const initMessageIntersectionObserver = () => {
 
     const messagesCallback = entries => {
         entries.forEach(entry => {
