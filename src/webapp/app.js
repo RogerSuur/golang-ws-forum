@@ -1,11 +1,11 @@
 import { createDiv, $, qS } from "./DOM_helpers.js";
 import { startHeaderClock } from "./header_clock.js";
 import { getJSON, logoutJSON, makeNewCommentJSON, signUpJSON, loginJSON, makeNewPostJSON } from "./read_JSON.js";
-import { initPosts, createPost } from "./posts.js";
+import { initPosts } from "./posts.js";
 import { initMessages } from "./messages.js";
 import { populateUsers } from "./users.js";
-import { Forum, socket, sendMessage, userFieldConnection, userLogoutConnection } from './ws.js';
-import { getCookie, createNewCookie, newPostValidation, signUpValidation, loginValidation, badValidation } from "./validate.js";
+import { Forum, socket, sendMessage } from './ws.js';
+import { getCookie, newPostValidation, signUpValidation, loginValidation } from "./validate.js";
 import { hide, show, toggleMessageBoxVisibility, toggleThreadVisibility, toggleLoginVisibility, toggleRegisterVisibility } from "./visibility_togglers.js";
 
 new Forum();
@@ -47,7 +47,7 @@ let currentIndex = 0,
 
 export const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-const keepPostInFocus = (postInFocus, position) => {
+export const keepPostInFocus = (postInFocus, position) => {
     const scrollPointItem = $(postInFocus);
     scrollPointItem.scrollIntoView({ behavior: 'auto', block: position });
 }
@@ -365,27 +365,8 @@ async function makeNewComment() {
     dataToSend.timestamp = new Date().toISOString();
     dataToSend.user = currentUser.innerHTML;
 
-    const res = await makeNewCommentJSON(dataToSend)
+    await makeNewCommentJSON(dataToSend)
 
-    if (res.status == 200) {
-        // Generate ID for HTML element (the actual ID is given in DB, but that is not known until the DB is updated and is not relevant here, too)
-        let last = threadWrapper.lastElementChild.id.replace("thread-", "") * 1;
-        dataToSend.commentID = (last + 1).toString();
-
-        let newComment = createPost(dataToSend, false, true);
-        threadWrapper.appendChild(newComment);
-        keepPostInFocus(newComment.id, 'end');
-        updateCommentCount(dataToSend.postID);
-        let jsonData = {};
-        jsonData["action"] = "new_comment";
-        jsonData["from"] = currentUser.innerHTML;
-        jsonData["postID"] = dataToSend.postID;
-        console.log("Sending", jsonData)
-        socket.send(JSON.stringify(jsonData));
-    } else {
-        console.log("Status other", res.status)
-        return res.json()
-    }
 
     // resetting form values
     $('commentContentID').value = '';
@@ -411,25 +392,7 @@ async function makeNewPost() {
     dataToSend.comments = 0;
     dataToSend.user = currentUser.innerHTML;
 
-    const res = makeNewPostJSON(dataToSend)
-
-    if (res.status == 200) {
-        let last = postsWrapper.firstElementChild.id.replace("post-", '') * 1;
-        dataToSend.postID = last + 1;
-        let newPost = createPost(dataToSend);
-        postsWrapper.prepend(newPost);
-        keepPostInFocus(newPost.id, 'start');
-        getPosts().then(() => { makeLinksClickable() });
-        let jsonData = {};
-        console.log("broadcasting new post");
-        jsonData["action"] = "new_post";
-        jsonData["from"] = currentUser.innerHTML;
-        socket.send(JSON.stringify(jsonData));
-
-    } else {
-        console.log("Status other", res.status)
-        return res.json()
-    }
+    await makeNewPostJSON(dataToSend)
 
     // resetting form values
     $('contentID').value = '';

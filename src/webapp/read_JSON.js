@@ -1,8 +1,9 @@
 import { createNewCookie, badValidation } from "./validate.js"
 import { toggleRegisterVisibility, toggleLoginVisibility } from "./visibility_togglers.js"
-import { start, initPostIntersectionObserver, initMessageIntersectionObserver, currentUser } from "./app.js"
-import { userFieldConnection, userLogoutConnection } from "./ws.js"
+import { start, initPostIntersectionObserver, makeLinksClickable, updateCommentCount, initMessageIntersectionObserver, currentUser, postsWrapper, threadWrapper, keepPostInFocus, getPosts } from "./app.js"
+import { userFieldConnection, userLogoutConnection, socket } from "./ws.js"
 import { $ } from "./DOM_helpers.js"
+import { createPost } from "./posts.js"
 
 export async function getJSON(path) {
     const data = await fetch(`${path}`)
@@ -89,25 +90,65 @@ export async function loginJSON(dataToSend) {
 }
 
 export async function makeNewCommentJSON(dataToSend) {
-    const data = await fetch('/src/server/addCommentsHandler', {
+    const res = await fetch('/src/server/addCommentsHandler', {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(dataToSend)
     })
-    return data
+
+    if (res.status == 200) {
+        // Generate ID for HTML element (the actual ID is given in DB, but that is not known until the DB is updated and is not relevant here, too)
+        let last = threadWrapper.lastElementChild.id.replace("thread-", "") * 1;
+        dataToSend.commentID = (last + 1).toString();
+
+        let newComment = createPost(dataToSend, false, true);
+        threadWrapper.appendChild(newComment);
+        keepPostInFocus(newComment.id, 'end');
+        updateCommentCount(dataToSend.postID);
+        let jsonData = {};
+        jsonData["action"] = "new_comment";
+        jsonData["from"] = currentUser.innerHTML;
+        jsonData["postID"] = dataToSend.postID;
+        console.log("Sending", jsonData)
+        socket.send(JSON.stringify(jsonData));
+    } else {
+        console.log("Status other", res.status)
+        return res.json()
+    }
+
+    return res
 }
 
 export async function makeNewPostJSON(dataToSend) {
-    const data = await fetch('/src/server/addPostHandler', {
+    const res = await fetch('/src/server/addPostHandler', {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(dataToSend)
     })
-    return data
+    if (res.status == 200) {
+        let last = postsWrapper.firstElementChild.id.replace("post-", '') * 1;
+        dataToSend.postID = last + 1;
+        let newPost = createPost(dataToSend);
+        postsWrapper.prepend(newPost);
+        keepPostInFocus(newPost.id, 'start');
+        getPosts().then(() => { makeLinksClickable() });
+        let jsonData = {};
+        console.log("broadcasting new post");
+        jsonData["action"] = "new_post";
+        jsonData["from"] = currentUser.innerHTML;
+        socket.send(JSON.stringify(jsonData));
+
+    } else {
+        console.log("Status other", res.status)
+        return res.json()
+    }
+
+
+    return res
 }
 
 export function logoutJSON(user_uuid) {
