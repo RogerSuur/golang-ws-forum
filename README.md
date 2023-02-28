@@ -14,6 +14,10 @@ Starting the server with the **optional** argument `-new` will generate a databa
 go run src/server/*.go -new
 ```
 
+In addition to registering new users you can use these logins to test the dummy data:
+- Usernames: Jack, John, Kate, Mark, Susan, Vic666
+- Password: 1234 (same for all test users)
+
 ### FEATURES
 - Register a new user and login
 - View posts
