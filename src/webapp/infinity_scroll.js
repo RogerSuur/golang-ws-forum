@@ -19,11 +19,6 @@ export const sentinels = {
 }
 
 const topSentCallback = async entry => {
-    if (messagesIndex == 0 && sentinels.topSentinelPreviousRatio != 0) {
-        // if we are at the end of the DB, do nothing
-        return;
-    }
-
     const currentY = entry.boundingClientRect.top;
     const currentRatio = entry.intersectionRatio;
     const isIntersecting = entry.isIntersecting;
@@ -44,6 +39,11 @@ const topSentCallback = async entry => {
         hide(spinner);
         // load new data
         getMessages(otherUser)
+    }
+
+    if (messagesIndex == 0 && sentinels.topSentinelPreviousRatio != 0) {
+        // if we are at the end of the DB, do nothing
+        return;
     }
 
     sentinels.topSentinelPreviousY = currentY;
