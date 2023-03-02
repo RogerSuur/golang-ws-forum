@@ -32,5 +32,5 @@ func main() {
 		Addr:    "localhost:8080",
 		Handler: mux,
 	}
-	server.ListenAndServe()
+	log.Fatal(server.ListenAndServe())
 }
