@@ -447,6 +447,9 @@ $("message").addEventListener("keydown", function (event) {
         }
         sendMessage();
     }
+
+    //HERE comes some of the typing in progress stuff
+    
     console.log("new message area eventlistener");
 })
 
